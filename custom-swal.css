@@ -1,0 +1,25 @@
+.custom-swal-popup {
+    background-color: #1a202c; /* เปลี่ยนสีพื้นหลัง */
+    color: #edf2f7; /* เปลี่ยนสีข้อความ */
+    border-radius: 10px; /* มุมโค้ง */
+  }
+  
+  .custom-swal-title {
+    color: #48bb5b; /* เปลี่ยนสีหัวข้อ */
+    font-weight: bold;
+  }
+  
+  .custom-swal-content {
+    color: #e2e8f0; /* เปลี่ยนสีเนื้อหา */
+  }
+  
+  .custom-swal-button {
+    background-color: #2b6cb0; /* เปลี่ยนสีปุ่ม */
+    color: #fff;
+    border-radius: 5px;
+  }
+  
+  .custom-swal-button:hover {
+    background-color: #2c5282; /* สีเมื่อ hover */
+  }
+  
