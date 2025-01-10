@@ -96,9 +96,6 @@
 //   secret: process.env.NEXTAUTH_SECRET,
 // };
 
-// const handler = NextAuth(authOptions);
-// export { handler as GET, handler as POST };
-
 import NextAuth, { AuthOptions, DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -136,7 +133,7 @@ const authOptions: AuthOptions = {
         const adminAccounts = [
           { username: "admin", password: "123456", role: "admin", id: "1" },
           { username: "admin2", password: "123456", role: "admin", id: "2" },
-          { username: "admin3", password: "1234566", role: "admin", id: "3" },
+          { username: "admin3", password: "123456", role: "admin", id: "3" },
         ];
 
         const user = adminAccounts.find(
@@ -174,6 +171,28 @@ const authOptions: AuthOptions = {
         token.role = user.role || "user";
         token.id = user.id || null;
       }
+
+      if (account?.provider === "google") {
+        try {
+          await connectToDatabase();
+          const existingUser = await User.findOne({ email: user.email });
+          if (!existingUser) {
+            const newUser = new User({
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              role: "user",
+            });
+            await newUser.save();
+          } else {
+            token.role = existingUser.role;
+            token.id = existingUser._id.toString();
+          }
+        } catch (error) {
+          console.error("Error in Google Login:", error);
+        }
+      }
+
       return token;
     },
   },
@@ -181,6 +200,7 @@ const authOptions: AuthOptions = {
     async signIn({ user }) {
       if (user?.id) {
         try {
+          // เพิ่มสถานะผู้ใช้ในระบบออนไลน์
           await fetch(`${process.env.NEXTAUTH_URL}/api/online-users`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -194,6 +214,7 @@ const authOptions: AuthOptions = {
     async signOut({ token }) {
       if (token?.id) {
         try {
+          // ลบสถานะผู้ใช้เมื่อออกจากระบบ
           await fetch(`${process.env.NEXTAUTH_URL}/api/online-users`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
@@ -213,3 +234,5 @@ const authOptions: AuthOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+
+

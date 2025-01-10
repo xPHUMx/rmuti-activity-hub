@@ -50,26 +50,62 @@
 // }
 
 
+// import mongoose, { Connection } from "mongoose";
+
+// const cached = global.mongoose || { conn: null, promise: null };
+
+// async function connectToDatabase(): Promise<Connection> {
+//   if (cached.conn) {
+//     return cached.conn;
+//   }
+
+//   if (!cached.promise) {
+//     cached.promise = mongoose.connect(process.env.MONGODB_URI as string).then((mongooseInstance) => {
+//       return mongooseInstance.connection;
+//     });
+//   }
+
+//   cached.conn = await cached.promise;
+//   global.mongoose = cached;
+
+//   return cached.conn;
+// }
+
+// export default connectToDatabase;
+
+
 import mongoose, { Connection } from "mongoose";
 
-const cached = global.mongoose || { conn: null, promise: null };
+declare global {
+  var mongoose: {
+    conn: Connection | null;
+    promise: Promise<Connection> | null;
+  };
+}
+
+// ตรวจสอบและตั้งค่า global.mongoose
+if (!global.mongoose) {
+  global.mongoose = { conn: null, promise: null };
+}
 
 async function connectToDatabase(): Promise<Connection> {
-  if (cached.conn) {
-    return cached.conn;
+  // ถ้ามีการเชื่อมต่ออยู่แล้ว ให้คืนค่าการเชื่อมต่อเดิม
+  if (global.mongoose.conn) {
+    return global.mongoose.conn;
   }
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGODB_URI as string).then((mongooseInstance) => {
-      return mongooseInstance.connection;
-    });
+  // ถ้ายังไม่มี Promise การเชื่อมต่อ ให้สร้างใหม่
+  if (!global.mongoose.promise) {
+    global.mongoose.promise = mongoose
+      .connect(process.env.MONGODB_URI as string)
+      .then((mongooseInstance) => mongooseInstance.connection);
   }
 
-  cached.conn = await cached.promise;
-  global.mongoose = cached;
-
-  return cached.conn;
+  // รอการเชื่อมต่อ
+  global.mongoose.conn = await global.mongoose.promise;
+  return global.mongoose.conn;
 }
 
 export default connectToDatabase;
+
 

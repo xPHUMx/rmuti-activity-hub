@@ -1,32 +1,160 @@
+// import { NextResponse } from "next/server";
+// import connectToDatabase from "../../../utils/db";
+
+// // POST Method: เพิ่มสถานะผู้ใช้ออนไลน์
+// export async function POST(req: Request) {
+//   console.log("POST /api/online-users called");
+//   try {
+//     const body = await req.json().catch(() => null);
+
+//     // ตรวจสอบว่า userId ถูกส่งมาหรือไม่
+//     if (!body || !body.userId) {
+//       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+//     }
+
+//     const { userId } = body;
+//     const db = await connectToDatabase();
+
+//     console.log("Adding or updating userId:", userId);
+
+//     // เพิ่มหรืออัปเดตสถานะผู้ใช้ออนไลน์
+//     await db.collection("onlineUsers").updateOne(
+//       { userId },
+//       { $set: { userId, lastActive: new Date() } },
+//       { upsert: true }
+//     );
+
+//     // นับจำนวนผู้ใช้ออนไลน์
+//     const onlineUsers = await db.collection("onlineUsers").find().toArray();
+
+//     return NextResponse.json(
+//       { count: onlineUsers.length, users: onlineUsers },
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     console.error("Error in POST /api/online-users:", error);
+//     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+//   }
+// }
+
+// // DELETE Method: ลบสถานะผู้ใช้ออนไลน์
+// export async function DELETE(req: Request) {
+//   console.log("DELETE /api/online-users called");
+//   try {
+//     const body = await req.json().catch(() => null);
+
+//     // ตรวจสอบว่า userId ถูกส่งมาหรือไม่
+//     if (!body || !body.userId) {
+//       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+//     }
+
+//     const { userId } = body;
+//     const db = await connectToDatabase();
+
+//     console.log("Removing userId:", userId);
+
+//     // ลบสถานะผู้ใช้ออกจากฐานข้อมูล
+//     await db.collection("onlineUsers").deleteOne({ userId });
+
+//     // นับจำนวนผู้ใช้ออนไลน์หลังการลบ
+//     const onlineUsers = await db.collection("onlineUsers").find().toArray();
+
+//     return NextResponse.json(
+//       { count: onlineUsers.length, users: onlineUsers },
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     console.error("Error in DELETE /api/online-users:", error);
+//     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+//   }
+// }
+
 import { NextResponse } from "next/server";
+import connectToDatabase from "../../../utils/db";
 
-let onlineUsers: Set<string> = new Set(); // Set เพื่อเก็บ userId ของคนออนไลน์
-
-// GET: ดึงจำนวนผู้ใช้ออนไลน์
+// GET Method: ดึงจำนวนผู้ใช้ออนไลน์
 export async function GET() {
-  return NextResponse.json({ count: onlineUsers.size });
+  console.log("GET /api/online-users called");
+  try {
+    const db = await connectToDatabase();
+
+    // ดึงข้อมูลผู้ใช้ออนไลน์
+    const onlineUsers = await db.collection("onlineUsers").find().toArray();
+
+    console.log("Online users:", onlineUsers);
+
+    return NextResponse.json(
+      { count: onlineUsers.length, users: onlineUsers },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error in GET /api/online-users:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
-// POST: เพิ่มผู้ใช้ออนไลน์
+// POST Method: เพิ่มหรืออัปเดตสถานะผู้ใช้ออนไลน์
 export async function POST(req: Request) {
-  const { userId } = await req.json();
+  console.log("POST /api/online-users called");
+  try {
+    const body = await req.json().catch(() => null);
 
-  if (!userId) {
-    return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+    if (!body || !body.userId) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    const { userId } = body;
+    const db = await connectToDatabase();
+
+    console.log("Adding or updating userId:", userId);
+
+    // เพิ่มหรืออัปเดตสถานะผู้ใช้ออนไลน์
+    await db.collection("onlineUsers").updateOne(
+      { userId },
+      { $set: { userId, lastActive: new Date() } },
+      { upsert: true }
+    );
+
+    // นับจำนวนผู้ใช้ออนไลน์
+    const onlineUsers = await db.collection("onlineUsers").find().toArray();
+
+    return NextResponse.json(
+      { count: onlineUsers.length, users: onlineUsers },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error in POST /api/online-users:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
-
-  onlineUsers.add(userId); // เพิ่ม userId เข้าไปใน onlineUsers
-  return NextResponse.json({ message: "User marked as online" });
 }
 
-// DELETE: ลบผู้ใช้ออกจากสถานะออนไลน์
+// DELETE Method: ลบสถานะผู้ใช้ออนไลน์
 export async function DELETE(req: Request) {
-  const { userId } = await req.json();
+  console.log("DELETE /api/online-users called");
+  try {
+    const body = await req.json().catch(() => null);
 
-  if (!userId) {
-    return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+    if (!body || !body.userId) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    const { userId } = body;
+    const db = await connectToDatabase();
+
+    console.log("Removing userId:", userId);
+
+    // ลบสถานะผู้ใช้ออกจากฐานข้อมูล
+    await db.collection("onlineUsers").deleteOne({ userId });
+
+    // นับจำนวนผู้ใช้ออนไลน์หลังการลบ
+    const onlineUsers = await db.collection("onlineUsers").find().toArray();
+
+    return NextResponse.json(
+      { count: onlineUsers.length, users: onlineUsers },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error in DELETE /api/online-users:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
-
-  onlineUsers.delete(userId); // ลบ userId ออกจาก onlineUsers
-  return NextResponse.json({ message: "User marked as offline" });
 }
