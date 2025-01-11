@@ -159,9 +159,9 @@ const authOptions: AuthOptions = {
     async session({ session, token }) {
       if (token) {
         session.user = {
-          ...session.user,
-          role: (token.role as string) || "user",
-          id: (token.id as string) || null,
+          ...session.user, // เก็บข้อมูลที่มีอยู่
+          role: token.role as string, // เพิ่ม role
+          id: token.id as string, // เพิ่ม id
         };
       }
       return session;
@@ -198,9 +198,9 @@ const authOptions: AuthOptions = {
   },
   events: {
     async signIn({ user }) {
+      console.log("User signing in with ID:", user.id); // เพิ่ม log เพื่อตรวจสอบ
       if (user?.id) {
         try {
-          // เพิ่มสถานะผู้ใช้ในระบบออนไลน์
           await fetch(`${process.env.NEXTAUTH_URL}/api/online-users`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -212,16 +212,16 @@ const authOptions: AuthOptions = {
       }
     },
     async signOut({ token }) {
+      console.log("User is signing out with token:", token?.id); // ตรวจสอบค่า token.id
       if (token?.id) {
         try {
-          // ลบสถานะผู้ใช้เมื่อออกจากระบบ
           await fetch(`${process.env.NEXTAUTH_URL}/api/online-users`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: token.id }),
+            body: JSON.stringify({ userId: token.id }), // ใช้ token.id แทน
           });
         } catch (error) {
-          console.error("Error marking user as offline:", error);
+          console.error("Error marking user offline:", error);
         }
       }
     },
