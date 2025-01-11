@@ -868,12 +868,28 @@
 //   );
 // }
 
-
 "use client";
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+  FaUser,
+  FaPlusCircle,
+  FaCalendarAlt,
+  FaClock,
+  FaGraduationCap,
+  FaIdCard,
+  FaInfoCircle,
+  FaUsers,
+  FaClipboardList,
+  FaPencilAlt,
+  FaCheck,
+  FaTimes,
+  FaPhone,
+} from "react-icons/fa";
 
 interface Activity {
   _id: string;
@@ -902,6 +918,8 @@ export default function RegisterPage() {
   const [registeredActivities, setRegisteredActivities] = useState<string[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [showPopup, setShowPopup] = useState(false);
+  const [showParticipantsPopup, setShowParticipantsPopup] = useState(false);
+  const [participants, setParticipants] = useState<Activity["participants"]>([]);
   const [formData, setFormData] = useState({
     fullName: "",
     studentId: "",
@@ -909,14 +927,13 @@ export default function RegisterPage() {
     phone: "",
   });
 
-  // Fetch Activities and Registered Activities
+  // Fetch activities and registered activities
   useEffect(() => {
     async function fetchActivitiesAndRegistrations() {
       try {
         const res = await fetch("/api/activities");
-        if (!res.ok) {
-          throw new Error("Failed to fetch activities");
-        }
+        if (!res.ok) throw new Error("Failed to fetch activities");
+
         const activities: Activity[] = await res.json();
         setActivities(activities);
 
@@ -924,9 +941,8 @@ export default function RegisterPage() {
           const registeredRes = await fetch(
             `/api/users/registrations?userId=${session.user.id}`
           );
-          if (!registeredRes.ok) {
-            throw new Error("Failed to fetch registered activities");
-          }
+          if (!registeredRes.ok) throw new Error("Failed to fetch registered activities");
+
           const registeredData: Registration[] = await registeredRes.json();
           setRegisteredActivities(registeredData.map((reg) => reg.activityId));
         } else {
@@ -945,7 +961,7 @@ export default function RegisterPage() {
     fetchActivitiesAndRegistrations();
   }, [session]);
 
-  // Validate Form and Confirm Registration
+  // Validate and confirm form data
   const validateAndConfirm = () => {
     if (!formData.fullName || !formData.studentId || !formData.year || !formData.phone) {
       Swal.fire({
@@ -955,26 +971,29 @@ export default function RegisterPage() {
       });
       return;
     }
+
     if (formData.studentId.length !== 12) {
       Swal.fire({
         icon: "warning",
-        title: "ข้อมูลไม่ถูกต้อง",
+        title: "รหัสนักศึกษาไม่ถูกต้อง",
         text: "รหัสนักศึกษาต้องมี 12 หลัก",
       });
       return;
     }
+
     if (formData.phone.length !== 10) {
       Swal.fire({
         icon: "warning",
-        title: "ข้อมูลไม่ถูกต้อง",
+        title: "เบอร์โทรไม่ถูกต้อง",
         text: "เบอร์โทรต้องมี 10 หลัก",
       });
       return;
     }
+
     handleRegister();
   };
 
-  // Handle Register
+  // Handle registration
   const handleRegister = async () => {
     if (!selectedActivity || !session?.user?.id) {
       Swal.fire({
@@ -985,7 +1004,7 @@ export default function RegisterPage() {
       return;
     }
 
-    // ตรวจสอบว่า userId อยู่ในรูปแบบ ObjectId (24-character Hexadecimal)
+    // ตรวจสอบ userId ว่าเป็น ObjectId รูปแบบถูกต้อง
     if (session.user.id.length !== 24) {
       Swal.fire({
         icon: "error",
@@ -1010,7 +1029,7 @@ export default function RegisterPage() {
         const errorData = await res.json();
         Swal.fire({
           icon: "error",
-          title: "ข้อผิดพลาด",
+          title: "ลงทะเบียนล้มเหลว",
           text: errorData.message || "ไม่สามารถลงทะเบียนได้",
         });
         return;
@@ -1018,12 +1037,11 @@ export default function RegisterPage() {
 
       setRegisteredActivities((prev) => [...prev, selectedActivity._id]);
       setShowPopup(false);
+
       Swal.fire({
         icon: "success",
         title: "ลงทะเบียนสำเร็จ!",
         text: "คุณได้ลงทะเบียนกิจกรรมเรียบร้อยแล้ว",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "ตกลง",
       });
 
       setFormData({ fullName: "", studentId: "", year: "", phone: "" });
@@ -1052,6 +1070,7 @@ export default function RegisterPage() {
               <th className="p-3 text-left">จำนวนผู้เข้าร่วม/สูงสุด</th>
               <th className="p-3 text-left">สถานะ</th>
               <th className="p-3 text-left">ลงทะเบียน</th>
+              <th className="p-3 text-left">รายชื่อผู้เข้าร่วม</th>
             </tr>
           </thead>
           <tbody>
@@ -1064,7 +1083,17 @@ export default function RegisterPage() {
                   {activity.participants.length}/{activity.maxParticipants}
                 </td>
                 <td className="p-3">
-                  {activity.status === "open" ? "เปิด" : "ปิด"}
+                  {activity.status === "open" ? (
+                    <span className="flex items-center gap-2 text-green-400">
+                      <FaCheckCircle />
+                      เปิด
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2 text-red-400">
+                      <FaTimesCircle />
+                      ปิด
+                    </span>
+                  )}
                 </td>
                 <td className="p-3">
                   {registeredActivities.includes(activity._id) ? (
@@ -1075,20 +1104,123 @@ export default function RegisterPage() {
                         setSelectedActivity(activity);
                         setShowPopup(true);
                       }}
-                      className="bg-blue-500 text-white px-3 py-1 rounded"
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-400"
                     >
                       ลงทะเบียน
                     </button>
                   )}
+                </td>
+                <td className="p-3">
+                  <button
+                    onClick={() => {
+                      setParticipants(activity.participants);
+                      setShowParticipantsPopup(true);
+                    }}
+                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-400"
+                  >
+                    ดูรายชื่อ
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Popup สำหรับการลงทะเบียน */}
       {showPopup && (
-        <div className="popup">
-          {/* Popup form */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-2xl font-bold mb-4 text-blue-400 flex items-center gap-2">
+              <FaPencilAlt /> กรอกข้อมูลลงทะเบียน
+            </h2>
+            <div className="relative mb-3">
+              <FaUser className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="ชื่อ-นามสกุล"
+                value={formData.fullName}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
+                className="w-full pl-10 p-2 rounded bg-gray-700 text-white"
+              />
+            </div>
+            <div className="relative mb-3">
+              <FaIdCard className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="รหัสนักศึกษา"
+                value={formData.studentId}
+                onChange={(e) =>
+                  setFormData({ ...formData, studentId: e.target.value })
+                }
+                className="w-full pl-10 p-2 rounded bg-gray-700 text-white"
+              />
+            </div>
+            <div className="relative mb-3">
+              <FaGraduationCap className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="ชั้นปี"
+                value={formData.year}
+                onChange={(e) =>
+                  setFormData({ ...formData, year: e.target.value })
+                }
+                className="w-full pl-10 p-2 rounded bg-gray-700 text-white"
+              />
+            </div>
+            <div className="relative mb-3">
+              <FaPhone className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="เบอร์โทร"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+                className="w-full pl-10 p-2 rounded bg-gray-700 text-white"
+              />
+            </div>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowPopup(false)}
+                className="bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                <FaTimes /> ยกเลิก
+              </button>
+              <button
+                onClick={validateAndConfirm}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                <FaCheck /> ลงทะเบียน
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup สำหรับรายชื่อผู้เข้าร่วม */}
+      {showParticipantsPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 max-h-96 overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4 text-blue-400">
+              <FaClipboardList /> รายชื่อผู้เข้าร่วม
+            </h2>
+            <ul className="space-y-2">
+              {participants.map((participant, index) => (
+                <li key={index} className="text-white">
+                  {index + 1}. {participant.fullName} ({participant.studentId})
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={() => setShowParticipantsPopup(false)}
+              className="mt-4 bg-gray-600 px-4 py-2 rounded text-white"
+            >
+              ปิด
+            </button>
+          </div>
         </div>
       )}
     </div>
