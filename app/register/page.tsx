@@ -946,24 +946,8 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { FaCheckCircle, FaTimesCircle, FaUser, FaPlusCircle, FaCalendarAlt, FaClock, FaGraduationCap, FaIdCard, FaInfoCircle, FaUsers, FaClipboardList, FaPencilAlt, FaCheck, FaTimes, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
-import {
-  FaCheckCircle,
-  FaTimesCircle,
-  FaUser,
-  FaPlusCircle,
-  FaCalendarAlt,
-  FaClock,
-  FaGraduationCap,
-  FaIdCard,
-  FaInfoCircle,
-  FaUsers,
-  FaClipboardList,
-  FaPencilAlt,
-  FaCheck,
-  FaTimes,
-  FaPhone,
-} from "react-icons/fa";
 
 interface Activity {
   _id: string;
@@ -1001,13 +985,13 @@ export default function RegisterPage() {
     phone: "",
   });
 
-  // Fetch activities and registered activities
   useEffect(() => {
     async function fetchActivitiesAndRegistrations() {
       try {
         const res = await fetch("/api/activities");
-        if (!res.ok) throw new Error("Failed to fetch activities");
-
+        if (!res.ok) {
+          throw new Error("Failed to fetch activities");
+        }
         const activities: Activity[] = await res.json();
         setActivities(activities);
 
@@ -1015,8 +999,9 @@ export default function RegisterPage() {
           const registeredRes = await fetch(
             `/api/users/registrations?userId=${session.user.id}`
           );
-          if (!registeredRes.ok) throw new Error("Failed to fetch registered activities");
-
+          if (!registeredRes.ok) {
+            throw new Error("Failed to fetch registered activities");
+          }
           const registeredData: Registration[] = await registeredRes.json();
           setRegisteredActivities(registeredData.map((reg) => reg.activityId));
         } else {
@@ -1035,7 +1020,6 @@ export default function RegisterPage() {
     fetchActivitiesAndRegistrations();
   }, [session]);
 
-  // Validate and confirm form data
   const validateAndConfirm = () => {
     if (!formData.fullName || !formData.studentId || !formData.year || !formData.phone) {
       Swal.fire({
@@ -1045,35 +1029,41 @@ export default function RegisterPage() {
       });
       return;
     }
-
     if (formData.studentId.length !== 12) {
       Swal.fire({
         icon: "warning",
-        title: "รหัสนักศึกษาไม่ถูกต้อง",
+        title: "ข้อมูลไม่ถูกต้อง",
         text: "รหัสนักศึกษาต้องมี 12 หลัก",
       });
       return;
     }
-
     if (formData.phone.length !== 10) {
       Swal.fire({
         icon: "warning",
-        title: "เบอร์โทรไม่ถูกต้อง",
+        title: "ข้อมูลไม่ถูกต้อง",
         text: "เบอร์โทรต้องมี 10 หลัก",
       });
       return;
     }
-
     handleRegister();
   };
 
-  // Handle registration
   const handleRegister = async () => {
     if (!selectedActivity || !session?.user?.id) {
       Swal.fire({
         icon: "error",
         title: "ข้อผิดพลาด",
         text: "ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง",
+      });
+      return;
+    }
+
+    // ตรวจสอบว่า userId อยู่ในรูปแบบ ObjectId (24-character Hexadecimal)
+    if (session.user.id.length !== 24) {
+      Swal.fire({
+        icon: "error",
+        title: "รหัสผู้ใช้งานไม่ถูกต้อง",
+        text: "กรุณาล็อกอินใหม่อีกครั้ง",
       });
       return;
     }
@@ -1093,7 +1083,7 @@ export default function RegisterPage() {
         const errorData = await res.json();
         Swal.fire({
           icon: "error",
-          title: "ลงทะเบียนล้มเหลว",
+          title: "ข้อผิดพลาด",
           text: errorData.message || "ไม่สามารถลงทะเบียนได้",
         });
         return;
@@ -1101,11 +1091,12 @@ export default function RegisterPage() {
 
       setRegisteredActivities((prev) => [...prev, selectedActivity._id]);
       setShowPopup(false);
-
       Swal.fire({
         icon: "success",
         title: "ลงทะเบียนสำเร็จ!",
         text: "คุณได้ลงทะเบียนกิจกรรมเรียบร้อยแล้ว",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "ตกลง",
       });
 
       setFormData({ fullName: "", studentId: "", year: "", phone: "" });
@@ -1128,42 +1119,18 @@ export default function RegisterPage() {
         <table className="w-full bg-gray-800 rounded-lg shadow-lg">
           <thead className="bg-gray-700">
             <tr>
-              <th className="p-3 text-left">
-                <FaInfoCircle className="inline-block mr-2 text-blue-400" />
-                ชื่อกิจกรรม
-              </th>
-              <th className="p-3 text-left">
-                <FaCalendarAlt className="inline-block mr-2 text-blue-400" />
-                เวลาเริ่ม
-              </th>
-              <th className="p-3 text-left">
-                <FaClock className="inline-block mr-2 text-blue-400" />
-                เวลาปิด
-              </th>
-              <th className="p-3 text-left">
-                <FaUsers className="inline-block mr-2 text-blue-400" />
-                จำนวนผู้เข้าร่วม/สูงสุด
-              </th>
-              <th className="p-3 text-left">
-                <FaCheckCircle className="inline-block mr-2 text-blue-400" />
-                สถานะ
-              </th>
-              <th className="p-3 text-left">
-                <FaPlusCircle className="inline-block mr-2 text-blue-400" />
-                ลงทะเบียน
-              </th>
-              <th className="p-3 text-left">
-                <FaClipboardList className="inline-block mr-2 text-blue-400" />
-                รายชื่อผู้เข้าร่วม
-              </th>
+              <th className="p-3 text-left"><FaInfoCircle className="inline-block mr-2" />ชื่อกิจกรรม</th>
+              <th className="p-3 text-left"><FaCalendarAlt className="inline-block mr-2" />เวลาเริ่ม</th>
+              <th className="p-3 text-left"><FaClock className="inline-block mr-2" />เวลาปิด</th>
+              <th className="p-3 text-left"><FaUsers className="inline-block mr-2" />จำนวนผู้เข้าร่วม/สูงสุด</th>
+              <th className="p-3 text-left"><FaCheckCircle className="inline-block mr-2" />สถานะ</th>
+              <th className="p-3 text-left"><FaPlusCircle className="inline-block mr-2" />ลงทะเบียน</th>
+              <th className="p-3 text-left"><FaUser className="inline-block mr-2" />รายชื่อผู้เข้าร่วม</th>
             </tr>
           </thead>
           <tbody>
             {activities.map((activity) => (
-              <tr
-                key={activity._id}
-                className="hover:bg-gray-600 border-b border-gray-700"
-              >
+              <tr key={activity._id} className="hover:bg-gray-600">
                 <td className="p-3">{activity.title}</td>
                 <td className="p-3">{new Date(activity.time).toLocaleString()}</td>
                 <td className="p-3">{new Date(activity.closeTime).toLocaleString()}</td>
@@ -1185,32 +1152,40 @@ export default function RegisterPage() {
                 </td>
                 <td className="p-3">
                   {registeredActivities.includes(activity._id) ? (
-                    <span className="flex items-center gap-2 text-gray-400 italic">
+                    <span className="flex items-center gap-2 text-gray-400 italic opacity-50">
                       <FaUser />
                       ลงทะเบียนแล้ว
                     </span>
-                  ) : (
+                  ) : activity.participants.length >= activity.maxParticipants ? (
+                    <span className="flex items-center gap-2 text-red-400 italic">
+                      <FaTimesCircle />
+                      เต็ม
+                    </span>
+                  ) : activity.status === "open" ? (
                     <button
                       onClick={() => {
                         setSelectedActivity(activity);
                         setShowPopup(true);
                       }}
-                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-400 flex items-center gap-2"
+                      className="flex items-center gap-2 bg-blue-500 px-3 py-1 rounded hover:bg-blue-400"
                     >
                       <FaPlusCircle />
                       ลงทะเบียน
                     </button>
+                  ) : (
+                    <span className="text-gray-400">ปิด</span>
                   )}
                 </td>
                 <td className="p-3">
                   <button
                     onClick={() => {
+                      setSelectedActivity(activity);
                       setParticipants(activity.participants);
                       setShowParticipantsPopup(true);
                     }}
-                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-400 flex items-center gap-2"
+                    className="flex items-center gap-2 bg-green-500 px-3 py-1 rounded hover:bg-green-400"
                   >
-                    <FaClipboardList />
+                    <FaUser />
                     ดูรายชื่อ
                   </button>
                 </td>
@@ -1220,7 +1195,7 @@ export default function RegisterPage() {
         </table>
       </div>
 
-      {/* Popup สำหรับการลงทะเบียน */}
+      {/* Popup */}
       {showPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
@@ -1228,7 +1203,9 @@ export default function RegisterPage() {
               <FaPencilAlt /> กรอกข้อมูลลงทะเบียน
             </h2>
             <div className="relative mb-3">
-              <FaUser className="absolute left-3 top-3 text-gray-400" />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FaUser className="h-5 w-5 text-gray-400" />
+              </div>
               <input
                 type="text"
                 placeholder="ชื่อ-นามสกุล"
@@ -1236,11 +1213,13 @@ export default function RegisterPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, fullName: e.target.value })
                 }
-                className="w-full pl-10 p-2 rounded bg-gray-700 text-white focus:ring-2 focus:ring-blue-400"
+                className="w-full p-2 pl-10 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div className="relative mb-3">
-              <FaIdCard className="absolute left-3 top-3 text-gray-400" />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FaIdCard className="h-5 w-5 text-gray-400" />
+              </div>
               <input
                 type="text"
                 placeholder="รหัสนักศึกษา"
@@ -1248,11 +1227,13 @@ export default function RegisterPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, studentId: e.target.value })
                 }
-                className="w-full pl-10 p-2 rounded bg-gray-700 text-white focus:ring-2 focus:ring-blue-400"
+                className="w-full p-2 pl-10 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div className="relative mb-3">
-              <FaGraduationCap className="absolute left-3 top-3 text-gray-400" />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FaGraduationCap className="h-5 w-5 text-gray-400" />
+              </div>
               <input
                 type="text"
                 placeholder="ชั้นปี"
@@ -1260,11 +1241,13 @@ export default function RegisterPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, year: e.target.value })
                 }
-                className="w-full pl-10 p-2 rounded bg-gray-700 text-white focus:ring-2 focus:ring-blue-400"
+                className="w-full p-2 pl-10 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div className="relative mb-3">
-              <FaPhone className="absolute left-3 top-3 text-gray-400" />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FaPhone className="h-5 w-5 text-gray-400" />
+              </div>
               <input
                 type="text"
                 placeholder="เบอร์โทร"
@@ -1272,30 +1255,27 @@ export default function RegisterPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, phone: e.target.value })
                 }
-                className="w-full pl-10 p-2 rounded bg-gray-700 text-white focus:ring-2 focus:ring-blue-400"
+                className="w-full p-2 pl-10 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div>
             <div className="flex justify-end gap-4">
               <button
                 onClick={() => setShowPopup(false)}
-                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-500 flex items-center gap-2"
+                className="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded text-white hover:bg-gray-600"
               >
-                <FaTimes />
-                ยกเลิก
+                <FaTimes className="h-5 w-5" /> ยกเลิก
               </button>
               <button
                 onClick={validateAndConfirm}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400 flex items-center gap-2"
+                className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded text-white hover:bg-blue-500"
               >
-                <FaCheck />
-                ลงทะเบียน
+                <FaCheck className="h-5 w-5" /> ลงทะเบียน
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Popup สำหรับรายชื่อผู้เข้าร่วม */}
       {showParticipantsPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 max-h-96 overflow-y-auto">
@@ -1311,7 +1291,7 @@ export default function RegisterPage() {
             </ul>
             <button
               onClick={() => setShowParticipantsPopup(false)}
-              className="mt-4 bg-gray-600 px-4 py-2 rounded hover:bg-gray-500 text-white"
+              className="mt-4 bg-gray-700 px-4 py-2 rounded hover:bg-gray-600"
             >
               ปิด
             </button>
