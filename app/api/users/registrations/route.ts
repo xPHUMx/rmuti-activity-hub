@@ -58,7 +58,7 @@ export async function GET(req: Request) {
       );
     }
 
-    return new Response(JSON.stringify(user.registeredActivities), {
+    return new Response(JSON.stringify(user.registeredActivities), {  
       status: 200,
     });
   } catch (error) {

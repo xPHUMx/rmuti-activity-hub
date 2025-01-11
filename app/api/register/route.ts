@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
     if (alreadyRegistered) {
       return NextResponse.json(
         { message: "Participant already registered" },
-        { status: 200 }
+        { status: 400 }
       );
     }
 
