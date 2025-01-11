@@ -210,6 +210,12 @@ export async function POST(req: NextRequest) {
 
     // เพิ่มผู้เข้าร่วมกิจกรรม
     activity.participants.push(participant);
+
+    // ตรวจสอบจำนวนผู้เข้าร่วมและเปลี่ยนสถานะเป็น "closed" หากครบจำนวน
+    if (activity.participants.length >= activity.maxParticipants) {
+      activity.status = "closed";
+    }
+
     await activity.save();
 
     // ตรวจสอบ userId และแปลงเป็น ObjectId (หากจำเป็น)

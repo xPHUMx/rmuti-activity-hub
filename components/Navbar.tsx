@@ -331,7 +331,7 @@ export default function Navbar() {
                 onClick={() => handleNavigation(item.href)}
                 className={classNames(
                   pathname === item.href
-                    ? "bg-orange-600 text-white"
+                    ? "bg-orange-800 text-white"
                     : "text-gray-300 hover:bg-gray-700 hover:text-white",
                   "rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2"
                 )}
