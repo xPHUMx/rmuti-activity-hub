@@ -988,13 +988,13 @@ export default function RegisterPage() {
   useEffect(() => {
     async function fetchActivitiesAndRegistrations() {
       try {
-        const res = await fetch("/api/activities");
-        if (!res.ok) {
+        const activitiesRes = await fetch("/api/activities");
+        if (!activitiesRes.ok) {
           throw new Error("Failed to fetch activities");
         }
-        const activities: Activity[] = await res.json();
+        const activities = await activitiesRes.json();
         setActivities(activities);
-
+  
         if (session?.user?.id) {
           const registeredRes = await fetch(
             `/api/users/registrations?userId=${session.user.id}`
@@ -1002,10 +1002,17 @@ export default function RegisterPage() {
           if (!registeredRes.ok) {
             throw new Error("Failed to fetch registered activities");
           }
-          const registeredData: Registration[] = await registeredRes.json();
-          setRegisteredActivities(registeredData.map((reg) => reg.activityId));
-        } else {
-          setRegisteredActivities([]);
+          const registeredData = await registeredRes.json();
+  
+          if (registeredData.message === "No registered activities found") {
+            setRegisteredActivities([]);
+          } else {
+            setRegisteredActivities(
+              registeredData
+                .filter((reg: any) => reg.activityId) // ตรวจสอบว่า activityId ไม่ใช่ null
+                .map((reg: any) => reg.activityId._id)
+            );
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -1016,9 +1023,10 @@ export default function RegisterPage() {
         });
       }
     }
-
+  
     fetchActivitiesAndRegistrations();
   }, [session]);
+  
 
   const validateAndConfirm = () => {
     if (!formData.fullName || !formData.studentId || !formData.year || !formData.phone) {

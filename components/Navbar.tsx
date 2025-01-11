@@ -306,144 +306,162 @@ export default function Navbar() {
         </div>
       )}
 
-      <Disclosure as="nav" className="bg-gray-800 shadow-md">
-        {({ open }) => (
-          <>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex h-16 items-center justify-between">
-                {/* Logo */}
-                <div className="flex items-center">
+<Disclosure as="nav" className="bg-gray-800 shadow-md">
+  {({ open }) => (
+    <>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Image
+              src="/img/logohaed1.png"
+              alt="Your Company Logo"
+              width={80}
+              height={80}
+              priority
+              className="object-contain"
+            />
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden sm:flex space-x-4">
+            {navigation.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => handleNavigation(item.href)}
+                className={classNames(
+                  pathname === item.href
+                    ? "bg-orange-600 text-white"
+                    : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                  "rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2"
+                )}
+              >
+                {item.icon}
+                {item.name}
+              </button>
+            ))}
+          </div>
+
+          {/* User Profile Dropdown */}
+          <div className="flex items-center space-x-4">
+            <button
+              type="button"
+              className="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+              onClick={clearNotifications}
+            >
+              <span className="sr-only">View notifications</span>
+              <BellAlertIcon className="h-6 w-6" aria-hidden="true" />
+              {notifications > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs text-white">
+                  {notifications}
+                </span>
+              )}
+            </button>
+
+            {session && (
+              <Menu as="div" className="relative">
+                <Menu.Button className="flex items-center rounded-full">
+                  <span className="sr-only">Open user menu</span>
                   <Image
-                    src="/img/logohaed1.png"
-                    alt="Your Company Logo"
-                    width={80}
-                    height={80}
-                    priority
-                    style={{
-                      objectFit: "contain",
-                      filter: "contrast(1.2)",
-                    }}
+                    src={session.user?.image || "/img/default-profile.png"}
+                    alt="User profile"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 rounded-full"
                   />
-                </div>
-
-                {/* Desktop Navigation */}
-                <div className="hidden sm:flex space-x-4">
-                  {navigation.map((item) => (
-                    <button
-                      key={item.name}
-                      onClick={() => handleNavigation(item.href)}
-                      className={classNames(
-                        pathname === item.href
-                          ? "bg-orange-800 text-white"
-                          : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                        "rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2"
+                </Menu.Button>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={classNames(
+                            active ? "bg-gray-700" : "",
+                            "block px-4 py-2 text-sm text-gray-300"
+                          )}
+                        >
+                          {session.user?.email || "email"}
+                        </div>
                       )}
-                    >
-                      {item.icon}
-                      {item.name}
-                    </button>
-                  ))}
-                </div>
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          className={classNames(
+                            active ? "bg-gray-700" : "",
+                            "block px-4 py-2 text-sm text-gray-300"
+                          )}
+                        >
+                          {session.user?.name || "User"}
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          onClick={() =>
+                            signOut({ callbackUrl: "/login" })
+                          }
+                          className={classNames(
+                            active ? "bg-gray-700" : "",
+                            "block w-full text-left px-4 py-2 text-sm text-gray-300"
+                          )}
+                        >
+                          ออกจากระบบ
+                        </button>
+                      )}
+                    </Menu.Item>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            )}
+          </div>
 
-                {/* User Profile Dropdown */}
-                <div className="flex items-center space-x-4">
-                  <button
-                    type="button"
-                    className="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-                    onClick={clearNotifications}
-                  >
-                    <span className="sr-only">View notifications</span>
-                    <BellAlertIcon className="h-6 w-6" aria-hidden="true" />
-                    {notifications > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-xs text-white">
-                        {notifications}
-                      </span>
-                    )}
-                  </button>
+          {/* Mobile menu button */}
+          <div className="sm:hidden">
+            <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
+              <span className="sr-only">Open main menu</span>
+              {open ? (
+                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+              )}
+            </Disclosure.Button>
+          </div>
+        </div>
+      </div>
 
-                  {session && (
-                    <Menu as="div" className="relative">
-                      <Menu.Button className="flex items-center rounded-full">
-                        <span className="sr-only">Open user menu</span>
-                        <Image
-                          src={session.user?.image || "/img/default-profile.png"}
-                          alt="User profile"
-                          width={32}
-                          height={32}
-                          className="h-8 w-8 rounded-full"
-                        />
-                      </Menu.Button>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <div
-                                className={classNames(
-                                  active ? "bg-gray-700" : "",
-                                  "block px-4 py-2 text-sm text-gray-300"
-                                )}
-                              >
-                                {session.user?.email || "email"}
-                              </div>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <div
-                                className={classNames(
-                                  active ? "bg-gray-700" : "",
-                                  "block px-4 py-2 text-sm text-gray-300"
-                                )}
-                              >
-                                {session.user?.name || "User"}
-                              </div>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                onClick={() =>
-                                  signOut({ callbackUrl: "/login" })
-                                }
-                                className={classNames(
-                                  active ? "bg-gray-700" : "",
-                                  "block w-full text-left px-4 py-2 text-sm text-gray-300"
-                                )}
-                              >
-                                ออกจากระบบ
-                              </button>
-                            )}
-                          </Menu.Item>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
-                  )}
-                </div>
-
-                {/* Mobile menu button */}
-                <div className="sm:hidden">
-                  <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
-                    <span className="sr-only">Open main menu</span>
-                    {open ? (
-                      <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                    ) : (
-                      <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                    )}
-                  </Disclosure.Button>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-      </Disclosure>
+      {/* Mobile Menu */}
+      <Disclosure.Panel className="sm:hidden bg-gray-800">
+        <div className="space-y-1 px-2 pb-3 pt-2">
+          {navigation.map((item) => (
+            <button
+              key={item.name}
+              onClick={() => handleNavigation(item.href)}
+              className={classNames(
+                pathname === item.href
+                  ? "bg-orange-900 text-white"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                "block rounded-md px-3 py-2 text-base font-medium flex items-center gap-2"
+              )}
+            >
+              {item.icon}
+              {item.name}
+            </button>
+          ))}
+        </div>
+      </Disclosure.Panel>
+    </>
+  )}
+</Disclosure>
     </>
   );
 }
