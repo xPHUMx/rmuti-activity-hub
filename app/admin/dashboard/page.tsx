@@ -1,401 +1,317 @@
 
 // "use client";
 
-// import { useEffect, useState } from "react";
-// import { useSession } from "next-auth/react";
+// import React, { useEffect, useState } from "react";
 // import { useRouter } from "next/navigation";
-// import Image from "next/image";
+// import { FaClipboardList, FaRegFileAlt } from "react-icons/fa";
+// import { Pie } from "react-chartjs-2";
+// import {
+//   Chart as ChartJS,
+//   Title,
+//   Tooltip,
+//   Legend,
+//   ArcElement,
+//   CategoryScale,
+//   LinearScale,
+// } from "chart.js";
 
-// // กำหนด type ของ Image
-// interface ImageType {
-//   _id: string;
-//   url: string;
-//   title: string;
-// }
+// // Register the components required for Pie Chart
+// ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
 
 // export default function AdminDashboard() {
-//   const { data: session, status } = useSession();
-//   const router = useRouter();
-
-//   const [file, setFile] = useState<File | null>(null);
-//   const [title, setTitle] = useState("");
-//   const [images, setImages] = useState<ImageType[]>([]); // ใช้ ImageType เป็นประเภทของ state
-//   const [loading, setLoading] = useState(false);
+//   const [activities, setActivities] = useState<any[]>([]);
+//   const [newsCount, setNewsCount] = useState(0);
+//   const [onlineUsers, setOnlineUsers] = useState(0);
+//   const [totalUsers, setTotalUsers] = useState(100);
+//   const [loading, setLoading] = useState(true);
 
 //   useEffect(() => {
-//     if (status === "unauthenticated" || (session?.user && session.user.role !== "admin")) {
-//       router.push("/login");
-//     }
-//   }, [status, session, router]);
+//     async function fetchData() {
+//       try {
+//         const activityRes = await fetch("/api/activities");
+//         if (!activityRes.ok) throw new Error(`Error fetching activities: ${activityRes.status}`);
+//         const fetchedActivities = await activityRes.json();
+//         setActivities(fetchedActivities);
 
-//   const fetchImages = async () => {
-//     setLoading(true);
-//     try {
-//       const res = await fetch("/api/upload");
-//       if (res.ok) {
-//         const data: ImageType[] = await res.json();
-//         setImages(data);
-  
-//         if (data.length === 0) {
-//           alert("ไม่มีรูปภาพในระบบ กรุณาอัปโหลดรูปภาพใหม่");
-//         }
-//       } else {
-//         console.error("Error fetching images");
+//         const newsRes = await fetch("/api/news");
+//         if (!newsRes.ok) throw new Error(`Error fetching news: ${newsRes.status}`);
+//         const fetchedNews = await newsRes.json();
+//         setNewsCount(fetchedNews.length);
+
+//         setLoading(false); // Data Loaded
+//       } catch (error) {
+//         console.error(error);
+//         setLoading(false);
 //       }
-//     } catch (error) {
-//       console.error("Error fetching images:", error);
-//     } finally {
-//       setLoading(false);
 //     }
-//   };
-
-//   useEffect(() => {
-//     fetchImages();
+//     fetchData();
 //   }, []);
 
-//   const handleUpload = async () => {
-//     if (!file || !title) {
-//       alert("กรุณาเลือกไฟล์และกรอกชื่อ");
-//       return;
-//     }
-  
-//     if (!file.type.startsWith("image/")) {
-//       alert("ไฟล์ที่อัปโหลดต้องเป็นรูปภาพเท่านั้น");
-//       return;
-//     }
-  
-//     const formData = new FormData();
-//     formData.append("file", file);
-//     formData.append("title", title);
-  
-//     try {
-//       const res = await fetch("/api/upload", {
-//         method: "POST",
-//         body: formData,
-//       });
-  
-//       if (res.ok) {
-//         alert("อัปโหลดสำเร็จ!");
-//         fetchImages();
-//         setFile(null);
-//         setTitle("");
-//       } else {
-//         alert("เกิดข้อผิดพลาดในการอัปโหลด");
+//   useEffect(() => {
+//     async function fetchOnlineUsers() {
+//       try {
+//         const response = await fetch("/api/online-users");
+//         if (!response.ok) throw new Error(`Error fetching online users: ${response.status}`);
+//         const data = await response.json();
+//         setOnlineUsers(data.count || 0);
+//       } catch (error) {
+//         console.error(error);
 //       }
-//     } catch (error) {
-//       console.error("Error uploading file:", error);
-//       alert("เกิดข้อผิดพลาดในการอัปโหลด");
 //     }
-//   };
-  
 
-//   const handleDelete = async (id: string) => {
-//     const confirmDelete = confirm("คุณต้องการลบรูปภาพนี้ใช่หรือไม่?");
-//     if (!confirmDelete) return;
+//     fetchOnlineUsers();
+//     const interval = setInterval(fetchOnlineUsers, 10000);
 
-//     try {
-//       const res = await fetch("/api/upload", {
-//         method: "DELETE",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ id }),
-//       });
+//     return () => clearInterval(interval);
+//   }, []);
 
-//       if (res.ok) {
-//         alert("ลบรูปภาพสำเร็จ!");
-//         setImages((prev) => prev.filter((image) => image._id !== id)); // TypeScript จะเข้าใจ `_id` หลังเพิ่ม type
-//       } else {
-//         alert("เกิดข้อผิดพลาดในการลบรูปภาพ");
-//       }
-//     } catch (error) {
-//       console.error("Error deleting image:", error);
-//       alert("เกิดข้อผิดพลาดในการลบรูปภาพ");
-//     }
+//   // คำนวณเปอร์เซ็นต์ผู้เข้าร่วมกิจกรรม
+//   const calculateParticipationRate = (): number => {
+//     const totalParticipants = activities.reduce(
+//       (sum, activity) => sum + (activity.participants?.length || 0),
+//       0
+//     );
+//     const maxParticipants = activities.reduce(
+//       (sum, activity) => sum + (activity.maxParticipants || 0),
+//       0
+//     );
+//     if (maxParticipants === 0) return 0;
+//     return (totalParticipants / maxParticipants) * 100;
 //   };
 
-//   if (status === "loading" || loading) {
+//   // กราฟวงกลมข้อมูล
+//   const data = {
+//     datasets: [
+//       {
+//         data: [calculateParticipationRate(), 100 - calculateParticipationRate()],
+//         backgroundColor: ["#32e367", "#8c10de"],
+//         hoverBackgroundColor: ["#2C8DFF", "#FF3B6B"],
+//       },
+//     ],
+//   };
+
+//   const newsData = {
+//     datasets: [
+//       {
+//         data: [newsCount, 100 - newsCount],
+//         backgroundColor: ["#FFCD56", "#FF6384"],
+//         hoverBackgroundColor: ["#FFAA33", "#FF3B6B"],
+//       },
+//     ],
+//   };
+
+//   const activitiesData = {
+//     datasets: [
+//       {
+//         data: [activities.length, 100 - activities.length],
+//         backgroundColor: ["#21acde", "#e0be8b"],
+//         hoverBackgroundColor: ["#FF7A33", "#FF3B6B"],
+//       },
+//     ],
+//   };
+
+//   if (loading) {
 //     return (
-//       <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-//         กำลังโหลด...
+//       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+//         กำลังโหลดข้อมูล...
 //       </div>
 //     );
 //   }
 
 //   return (
 //     <div
-//       className="p-8 min-h-screen text-white"
-//       style={{ backgroundImage: "url('/img/PC screen 2.png')", backgroundSize: "cover" }}
+//       className="min-h-screen bg-gray-900 text-white p-8"
+//       style={{
+//         backgroundImage: "url('/img/PC screen 1.png')", // รูปพื้นหลังที่ต้องการ
+//         backgroundSize: "cover",
+//         backgroundPosition: "center",
+//       }}
 //     >
-//       <div className="bg-black bg-opacity-70 p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
-//         <h1 className="text-4xl font-bold mb-6 text-center">จัดการรูปภาพ</h1>
-
-//         <div className="mb-8">
-//           <input
-//             type="text"
-//             placeholder="ชื่อรูปภาพ"
-//             value={title}
-//             onChange={(e) => setTitle(e.target.value)}
-//             className="p-2 mb-4 w-full rounded bg-gray-700 text-white"
-//           />
-//           <input
-//             type="file"
-//             onChange={(e) => setFile(e.target.files?.[0] || null)}
-//             className="p-2 mb-4 w-full text-white file:bg-blue-500 file:text-white file:border-0 file:px-4 file:py-2 file:rounded hover:file:bg-red-400"
-//           />
-//           <button
-//             onClick={handleUpload}
-//             className="bg-orange-700 py-2 px-6 rounded text-white hover:bg-red-500 disabled:opacity-50"
-//             disabled={loading || !file || !title}
-//           >
-//             อัปโหลด
-//           </button>
+//       {/* Summary Cards */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+//         <div className="bg-gray-700 p-6 rounded-lg text-center shadow">
+//           <FaRegFileAlt className="text-4xl text-green-400 mb-3" />
+//           <h2 className="text-lg font-semibold text-white mb-2">เปอร์เซ็นผู้เข้าร่วมกิจกรรม</h2>
+//           <p className="text-3xl font-bold text-green-400">{calculateParticipationRate().toFixed(2)}%</p>
 //         </div>
-
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//           {images.map((image) => (
-//             <div key={image._id} className="bg-gray-800 bg-opacity-80 p-4 rounded-lg shadow-md">
-//               <Image
-//                 src={image.url}
-//                 alt={image.title}
-//                 width={400}
-//                 height={160}
-//                 className="object-cover rounded-lg"
-//               />
-//               <h3 className="mt-2 text-center font-bold text-white">{image.title}</h3>
-//               <button
-//                 onClick={() => handleDelete(image._id)}
-//                 className="mt-4 bg-red-500 py-1 px-4 rounded text-white hover:bg-red-400 w-full"
-//                 disabled={loading}
-//               >
-//                 ลบ
-//               </button>
-//             </div>
-//           ))}
+//         <div className="bg-gray-700 p-6 rounded-lg text-center shadow">
+//           <FaClipboardList className="text-4xl text-blue-400 mb-3" />
+//           <h2 className="text-lg font-semibold text-white mb-2">กิจกรรมทั้งหมด</h2>
+//           <p className="text-3xl font-bold text-blue-400">{activities.length}</p>
+//         </div>
+//         <div className="bg-gray-700 p-6 rounded-lg text-center shadow">
+//           <FaRegFileAlt className="text-4xl text-yellow-400 mb-3" />
+//           <h2 className="text-lg font-semibold text-white mb-2">ข่าวสารทั้งหมด</h2>
+//           <p className="text-3xl font-bold text-yellow-400">{newsCount}</p>
 //         </div>
 //       </div>
+
+//       {/* Pie Charts */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+//         <div className="bg-gray-700 p-6 rounded-lg text-center shadow">
+//           <Pie data={data} />
+//         </div>
+//         <div className="bg-gray-700 p-6 rounded-lg text-center shadow">
+//           <Pie data={activitiesData} />
+//         </div>
+//         <div className="bg-gray-700 p-6 rounded-lg text-center shadow">
+//           <Pie data={newsData} />
+//         </div>
+//       </div>
+
 //     </div>
 //   );
 // }
 
+
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { ArrowUpOnSquareIcon, TrashIcon, PhotoIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
-import Swal from "sweetalert2";
+import React, { useEffect, useState } from "react";
+import { FaClipboardList, FaRegFileAlt } from "react-icons/fa";
+import { Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
 
-// กำหนด type ของ Image
-interface ImageType {
-  _id: string;
-  url: string;
-  title: string;
-}
+// Register the components required for Pie Chart
+ChartJS.register(Title, Tooltip, ArcElement, CategoryScale, LinearScale);
 
 export default function AdminDashboard() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState("");
-  const [images, setImages] = useState<ImageType[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [newsCount, setNewsCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (status === "unauthenticated" || (session?.user && session.user.role !== "admin")) {
-      router.push("/login");
-    }
-  }, [status, session, router]);
+    async function fetchData() {
+      try {
+        const activityRes = await fetch("/api/activities");
+        if (!activityRes.ok) throw new Error(`Error fetching activities: ${activityRes.status}`);
+        const fetchedActivities = await activityRes.json();
+        setActivities(fetchedActivities);
 
-  const fetchImages = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/upload");
-      if (res.ok) {
-        const data: ImageType[] = await res.json();
-        setImages(data);
-        if (data.length === 0) {
-          Swal.fire({
-            icon: "info",
-            title: "ไม่มีรูปภาพ",
-            text: "กรุณาอัปโหลดรูปภาพใหม่",
-          });
-        }
-      } else {
-        console.error("Error fetching images");
+        const newsRes = await fetch("/api/news");
+        if (!newsRes.ok) throw new Error(`Error fetching news: ${newsRes.status}`);
+        const fetchedNews = await newsRes.json();
+        setNewsCount(fetchedNews.length);
+
+        setLoading(false); // Data Loaded
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching images:", error);
-    } finally {
-      setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchImages();
+    fetchData();
   }, []);
 
-  const handleUpload = async () => {
-    if (!file || !title) {
-      Swal.fire({
-        icon: "warning",
-        title: "ข้อมูลไม่ครบ",
-        text: "กรุณาเลือกไฟล์และกรอกชื่อ",
-      });
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      Swal.fire({
-        icon: "error",
-        title: "ไฟล์ไม่ถูกต้อง",
-        text: "ไฟล์ที่อัปโหลดต้องเป็นรูปภาพเท่านั้น",
-      });
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("title", title);
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (res.ok) {
-        Swal.fire({
-          icon: "success",
-          title: "อัปโหลดสำเร็จ!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        fetchImages();
-        setFile(null);
-        setTitle("");
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "เกิดข้อผิดพลาดในการอัปโหลด",
-        });
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "เกิดข้อผิดพลาดในการอัปโหลด",
-      });
-    }
+  // คำนวณเปอร์เซ็นต์ผู้เข้าร่วมกิจกรรม
+  const calculateParticipationRate = (): number => {
+    const totalParticipants = activities.reduce(
+      (sum, activity) => sum + (activity.participants?.length || 0),
+      0
+    );
+    const maxParticipants = activities.reduce(
+      (sum, activity) => sum + (activity.maxParticipants || 0),
+      0
+    );
+    if (maxParticipants === 0) return 0;
+    return (totalParticipants / maxParticipants) * 100;
   };
 
-  const handleDelete = async (id: string) => {
-    const confirmDelete = await Swal.fire({
-      title: "คุณต้องการลบรูปภาพนี้ใช่หรือไม่?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "ลบ",
-      cancelButtonText: "ยกเลิก",
-    });
-
-    if (!confirmDelete.isConfirmed) return;
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-
-      if (res.ok) {
-        Swal.fire({
-          icon: "success",
-          title: "ลบรูปภาพสำเร็จ!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        setImages((prev) => prev.filter((image) => image._id !== id));
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "เกิดข้อผิดพลาดในการลบรูปภาพ",
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting image:", error);
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "เกิดข้อผิดพลาดในการลบรูปภาพ",
-      });
-    }
+  // Minimal Pie Chart Options
+  const pieOptions = {
+    plugins: {
+      legend: {
+        display: false, // ❌ เอา Legend ออก
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: false,
   };
 
-  if (status === "loading" || loading) {
+  // กราฟวงกลมแบบ Minimal
+  const participationData = {
+    datasets: [
+      {
+        data: [calculateParticipationRate(), 100 - calculateParticipationRate()],
+        backgroundColor: ["#3B82F6", "#D1D5DB"],
+        borderWidth: 0, // ❌ เอาเส้นขอบออก
+      },
+    ],
+  };
+
+  const newsData = {
+    datasets: [
+      {
+        data: [newsCount, 100 - newsCount],
+        backgroundColor: ["#FACC15", "#D1D5DB"],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  const activitiesData = {
+    datasets: [
+      {
+        data: [activities.length, 100 - activities.length],
+        backgroundColor: ["#10B981", "#D1D5DB"],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-        กำลังโหลด...
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        กำลังโหลดข้อมูล...
       </div>
     );
   }
 
   return (
-    <div
-      className="p-8 min-h-screen text-white"
-      style={{ backgroundImage: "url('/img/PC screen 2.png')", backgroundSize: "cover" }}
-    >
-      <div className="bg-black bg-opacity-70 p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-10 text-center">จัดการรูปภาพ</h1>
+    <div className="min-h-screen bg-gray-900 text-white p-8">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition">
+          <FaRegFileAlt className="text-4xl text-blue-400 mb-3" />
+          <h2 className="text-lg font-semibold text-white mb-2">เปอร์เซ็นผู้เข้าร่วม</h2>
+          <p className="text-3xl font-bold text-blue-400">{calculateParticipationRate().toFixed(2)}%</p>
+        </div>
+        <div className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition">
+          <FaClipboardList className="text-4xl text-green-400 mb-3" />
+          <h2 className="text-lg font-semibold text-white mb-2">กิจกรรมทั้งหมด</h2>
+          <p className="text-3xl font-bold text-green-400">{activities.length}</p>
+        </div>
+        <div className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition">
+          <FaRegFileAlt className="text-4xl text-yellow-400 mb-3" />
+          <h2 className="text-lg font-semibold text-white mb-2">ข่าวสารทั้งหมด</h2>
+          <p className="text-3xl font-bold text-yellow-400">{newsCount}</p>
+        </div>
+      </div>
 
-        <div className="mb-8">
-          <input
-            type="text"
-            placeholder="ชื่อรูปภาพ"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="p-2 mb-4 w-full rounded bg-gray-700 text-white"
-          />
-          <div className="flex items-center gap-4">
-            <input
-              type="file"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="p-2 w-full text-white file:bg-blue-500 file:text-white file:border-0 file:px-4 file:py-2 file:rounded hover:file:bg-red-600"
-            />
-            <button
-              onClick={handleUpload}
-              className="flex w-full items-center gap-2 bg-orange-700 py-2 px-6 rounded text-white hover:bg-red-900 disabled:opacity-50"
-              disabled={loading || !file || !title}
-            >
-              <ArrowUpOnSquareIcon className="h-5 w-5" /> เพิ่มรูปภาพ
-            </button>
+      {/* Pie Charts - Minimal Style */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition">
+          <h3 className="text-white font-semibold mb-2">เปอร์เซ็นผู้เข้าร่วม</h3>
+          <div className="h-40">
+            <Pie data={participationData} options={pieOptions} />
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {images.map((image) => (
-            <div key={image._id} className="bg-gray-800 bg-opacity-80 p-4 rounded-lg shadow-md">
-              <Image
-                src={image.url}
-                alt={image.title}
-                width={400}
-                height={160}
-                className="object-cover rounded-lg"
-              />
-              <h3 className="mt-2 text-center font-bold text-white flex items-center justify-center gap-2">
-                <PhotoIcon className="h-5 w-5" /> {image.title}
-              </h3>
-              <button
-                onClick={() => handleDelete(image._id)}
-                className="mt-4 flex items-center justify-center gap-2 bg-red-500 py-1 px-4 rounded text-white hover:bg-red-400 w-full"
-                disabled={loading}
-              >
-                <TrashIcon className="h-5 w-5" /> ลบ
-              </button>
-            </div>
-          ))}
+        <div className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition">
+          <h3 className="text-white font-semibold mb-2">กิจกรรมทั้งหมด</h3>
+          <div className="h-40">
+            <Pie data={activitiesData} options={pieOptions} />
+          </div>
+        </div>
+        <div className="bg-gray-800 p-6 rounded-lg text-center hover:bg-gray-700 transition">
+          <h3 className="text-white font-semibold mb-2">ข่าวสารทั้งหมด</h3>
+          <div className="h-40">
+            <Pie data={newsData} options={pieOptions} />
+          </div>
         </div>
       </div>
     </div>

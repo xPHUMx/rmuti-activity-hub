@@ -251,7 +251,7 @@ export default function AdminNewsPage() {
   return (
     <div
       className="min-h-screen bg-cover bg-center text-white"
-      style={{ backgroundImage: "url('/img/PC screen 2.png')" }}
+      style={{ backgroundImage: "url('/img/PC screen 1.png')" }}
     >
       <div className="container mx-auto py-8">
         {/* <h1 className="text-4xl font-bold mb-8 text-center">จัดการข่าวสาร</h1> */}
@@ -281,7 +281,7 @@ export default function AdminNewsPage() {
           />
           <button
             onClick={handleAddNews}
-            className="w-full bg-orange-700 py-2 rounded text-white hover:bg-blue-600 flex items-center justify-center gap-2"
+            className="w-full bg-green-600 py-2 rounded text-white hover:bg-blue-600 flex items-center justify-center gap-2"
           >
             <PlusCircleIcon className="h-5 w-5" /> เพิ่มข่าวสาร
           </button>

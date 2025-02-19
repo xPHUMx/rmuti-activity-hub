@@ -11,6 +11,7 @@
 //   title: string;
 //   content: string;
 //   image: string;
+//   createdAt: string; // เพิ่ม createdAt เพื่อเรียงลำดับข่าว
 // }
 
 // export default function NewsPage() {
@@ -21,23 +22,23 @@
 //     async function fetchNews() {
 //       const res = await fetch("/api/news");
 //       const data: News[] = await res.json(); // กำหนดว่า data เป็น Array ของ News
-//       setNewsList(data);
+
+//       // เรียงข่าวตาม createdAt จากใหม่ไปเก่า
+//       const sortedNews = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+//       setNewsList(sortedNews); // กำหนดค่าข่าวที่เรียงแล้วให้กับ state
 //     }
 //     fetchNews();
 //   }, []);
 
 //   return (
-//     <div
-//       className="min-h-screen bg-cover bg-center p-8"
-//       style={{
-//         backgroundImage: "url('/img/PC screen 1.png')",
-//       }}
-//     >
+//     <div className="min-h-screen bg-gray-900 text-white p-8">
+//       <h1 className="text-4xl font-bold mb-8 text-center">News</h1>
 //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 //         {newsList.map((news) => (
 //           <div
 //             key={news._id}
-//             className="bg-gray-900 bg-opacity-80 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300"
+//             className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300"
 //           >
 //             <div className="relative w-full h-48">
 //               <Image
@@ -49,14 +50,14 @@
 //                 priority
 //               />
 //             </div>
-//             <div className="p-4 text-white">
-//               <h2 className="text-2xl font-bold mb-2 truncate">{news.title}</h2>
+//             <div className="p-4">
+//               <h2 className="text-xl font-bold mb-2 truncate">{news.title}</h2>
 //               <p className="text-gray-400 text-sm mb-4 line-clamp-3">
 //                 {news.content}
 //               </p>
 //               <button
 //                 onClick={() => router.push(`/news/${news._id}`)}
-//                 className="text-blue-400 hover:underline text-sm"
+//                 className="text-blue-400 hover:text-blue-500 font-medium"
 //               >
 //                 อ่านเพิ่มเติม
 //               </button>
@@ -67,6 +68,7 @@
 //     </div>
 //   );
 // }
+
 
 "use client";
 
@@ -80,6 +82,7 @@ interface News {
   title: string;
   content: string;
   image: string;
+  createdAt: string; // เพิ่ม createdAt เพื่อเรียงลำดับข่าว
 }
 
 export default function NewsPage() {
@@ -90,10 +93,24 @@ export default function NewsPage() {
     async function fetchNews() {
       const res = await fetch("/api/news");
       const data: News[] = await res.json(); // กำหนดว่า data เป็น Array ของ News
-      setNewsList(data);
+
+      // เรียงข่าวตาม createdAt จากใหม่ไปเก่า
+      const sortedNews = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      setNewsList(sortedNews); // กำหนดค่าข่าวที่เรียงแล้วให้กับ state
     }
     fetchNews();
   }, []);
+
+  // ฟังก์ชันเพื่อแสดงวันที่ในรูปแบบที่เข้าใจง่าย
+  const formatDate = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    return new Date(date).toLocaleDateString("th-TH", options); // จะแสดงวันที่ในรูปแบบไทย
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
@@ -116,9 +133,11 @@ export default function NewsPage() {
             </div>
             <div className="p-4">
               <h2 className="text-xl font-bold mb-2 truncate">{news.title}</h2>
-              <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-                {news.content}
-              </p>
+              <p className="text-gray-400 text-sm mb-4 line-clamp-3">{news.content}</p>
+              
+              {/* แสดงวันที่ที่อัปโหลด */}
+              <p className="text-xs text-gray-500 mb-4">{formatDate(news.createdAt)}</p>
+
               <button
                 onClick={() => router.push(`/news/${news._id}`)}
                 className="text-blue-400 hover:text-blue-500 font-medium"

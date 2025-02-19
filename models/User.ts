@@ -1,46 +1,3 @@
-// import mongoose from "mongoose";
-
-// const UserSchema = new mongoose.Schema({
-//   name: { type: String, required: true },
-//   email: { type: String, required: true, unique: true },
-//   isOnline: { type: Boolean, default: false },
-//   role: { type: String, default: "user" }, // 'user' หรือ 'admin'
-//   registeredActivities: [
-//     { type: mongoose.Schema.Types.ObjectId, ref: "Activity" },
-//   ],
-// });
-
-// export default mongoose.models.User || mongoose.model("User", UserSchema);
-
-// import mongoose from "mongoose";
-
-// const UserSchema = new mongoose.Schema({
-//   name: { type: String, required: true },
-//   email: { type: String, required: true, unique: true },
-//   image: { type: String, default: "" }, // รูปโปรไฟล์ผู้ใช้
-//   isOnline: { type: Boolean, default: false }, // สถานะออนไลน์
-//   role: {
-//     type: String,
-//     enum: ["user", "admin"], // จำกัดบทบาทให้เป็น 'user' หรือ 'admin'
-//     default: "user",
-//   },
-//   registeredActivities: [
-//     {
-//       activityId: { type: mongoose.Schema.Types.ObjectId, ref: "Activity" }, // กิจกรรมที่ลงทะเบียน
-//       registrationDate: { type: Date, default: Date.now }, // วันที่ลงทะเบียน
-//     },
-//   ],
-//   createdAt: { type: Date, default: Date.now }, // วันที่สร้างบัญชี
-//   updatedAt: { type: Date, default: Date.now }, // วันที่อัปเดตข้อมูล
-// });
-
-// // Hook สำหรับอัปเดตวันที่อัตโนมัติ
-// UserSchema.pre("save", function (next) {
-//   this.updatedAt = Date.now();
-//   next();
-// });
-
-// export default mongoose.models.User || mongoose.model("User", UserSchema);
 
 // import mongoose from "mongoose";
 // import Activity from "./Activity"; // เชื่อมกับโมเดล Activity
@@ -74,12 +31,12 @@
 
 // // Hook สำหรับอัปเดตวันที่อัตโนมัติ
 // UserSchema.pre("save", function (next) {
-//   this.updatedAt = Date.now();
+//   this.updatedAt = new Date(); // แปลงเป็น Date แทนที่จะเป็น timestamp
 //   next();
 // });
 
 // // Static Method สำหรับเพิ่มกิจกรรมที่ลงทะเบียน
-// UserSchema.statics.addRegisteredActivity = async function (userId, activityId) {
+// UserSchema.statics.addRegisteredActivity = async function (userId: string, activityId: mongoose.Types.ObjectId) {
 //   const user = await this.findById(userId);
 //   if (!user) throw new Error("User not found");
 
@@ -87,7 +44,8 @@
 //   if (!activity) throw new Error("Activity not found");
 
 //   const alreadyRegistered = user.registeredActivities.some(
-//     (activity) => activity.activityId.toString() === activityId.toString()
+//     (activity: { activityId: mongoose.Types.ObjectId }) =>
+//       activity.activityId.toString() === activityId.toString()
 //   );
 
 //   if (alreadyRegistered) {
@@ -107,9 +65,12 @@
 // };
 
 // // Instance Method สำหรับตรวจสอบว่าผู้ใช้ลงทะเบียนกิจกรรมนี้หรือยัง
-// UserSchema.methods.hasRegisteredActivity = function (activityId) {
+// UserSchema.methods.hasRegisteredActivity = function (
+//   activityId: mongoose.Types.ObjectId | string
+// ): boolean {
 //   return this.registeredActivities.some(
-//     (activity) => activity.activityId.toString() === activityId.toString()
+//     (activity: { activityId: mongoose.Types.ObjectId }) =>
+//       activity.activityId.toString() === activityId.toString()
 //   );
 // };
 
@@ -129,6 +90,10 @@ const UserSchema = new mongoose.Schema({
     enum: ["user", "admin"], // จำกัดบทบาทให้เป็น 'user' หรือ 'admin'
     default: "user",
   },
+  studentId: { type: String, default: "" }, // ✅ รหัสนักศึกษา
+  department: { type: String, default: null }, // ✅ สาขาวิชา
+  year: { type: String, default: null }, // ✅ ปีการศึกษา
+  phone: { type: String, default: null }, // ✅ เบอร์โทรศัพท์
   registeredActivities: {
     type: [
       {
@@ -148,7 +113,7 @@ const UserSchema = new mongoose.Schema({
 
 // Hook สำหรับอัปเดตวันที่อัตโนมัติ
 UserSchema.pre("save", function (next) {
-  this.updatedAt = new Date(); // แปลงเป็น Date แทนที่จะเป็น timestamp
+  this.updatedAt = new Date(); // อัปเดต timestamp ทุกครั้งที่มีการบันทึก
   next();
 });
 

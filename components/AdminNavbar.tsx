@@ -7,11 +7,14 @@
 // import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 // import { Fragment } from "react";
 // import Image from "next/image";
+// import { FaUserCircle, FaEdit, FaNewspaper, FaCalendarAlt } from "react-icons/fa";
+// import { HomeIcon } from "lucide-react";
 
 // const navigation = [
-//   { name: "แก้ไขหน้าหลัก", href: "/admin/dashboard" },
-//   { name: "แก้ไขข่าวสาร", href: "/admin/news" },
-//   { name: "แก้ไขกิจกรรม", href: "/admin/activities" },
+//   { name: "หน้าหลัก", href: "/admin/dashboard", icon: HomeIcon },
+//   { name: "จัดการผู้ใช้", href: "/admin/users", icon: FaEdit },
+//   { name: "แก้ไขข่าวสาร", href: "/admin/news", icon: FaNewspaper },
+//   { name: "แก้ไขกิจกรรม", href: "/admin/activities", icon: FaCalendarAlt },
 // ];
 
 // function classNames(...classes: any[]) {
@@ -58,9 +61,10 @@
 //                       pathname === item.href
 //                         ? "bg-orange-800 text-white"
 //                         : "text-gray-300 hover:bg-gray-800 hover:text-white",
-//                       "rounded-md px-4 py-2 text-sm font-medium"
+//                       "rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2"
 //                     )}
 //                   >
+//                     <item.icon className="h-5 w-5" />
 //                     {item.name}
 //                   </a>
 //                 ))}
@@ -71,13 +75,7 @@
 //                 <Menu as="div" className="relative">
 //                   <Menu.Button className="flex items-center rounded-full">
 //                     <span className="sr-only">Open admin menu</span>
-//                     <Image
-//                       src="/img/admin-profile.png"
-//                       alt="Admin profile"
-//                       width={32}
-//                       height={32}
-//                       className="h-8 w-8 rounded-full"
-//                     />
+//                     <FaUserCircle className="h-8 w-8 text-gray-300" />
 //                   </Menu.Button>
 //                   <Transition
 //                     as={Fragment}
@@ -132,9 +130,10 @@
 //                     pathname === item.href
 //                       ? "bg-gray-700 text-white"
 //                       : "text-gray-300 hover:bg-gray-800 hover:text-white",
-//                     "block rounded-md px-3 py-2 text-base font-medium"
+//                     "block rounded-md px-3 py-2 text-base font-medium flex items-center gap-2"
 //                   )}
 //                 >
+//                   <item.icon className="h-5 w-5" />
 //                   {item.name}
 //                 </a>
 //               ))}
@@ -154,12 +153,15 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import Image from "next/image";
-import { FaUserCircle, FaEdit, FaNewspaper, FaCalendarAlt } from "react-icons/fa";
+import { FaUserCircle, FaEdit, FaNewspaper, FaCalendarAlt , FaAddressBook} from "react-icons/fa";
+import { HomeIcon } from "lucide-react";
 
 const navigation = [
-  { name: "แก้ไขหน้าหลัก", href: "/admin/dashboard", icon: FaEdit },
+  { name: "หน้าหลัก", href: "/admin/dashboard", icon: HomeIcon },
+  { name: "จัดการผู้ใช้", href: "/admin/users", icon: FaAddressBook },
   { name: "แก้ไขข่าวสาร", href: "/admin/news", icon: FaNewspaper },
-  { name: "แก้ไขกิจกรรม", href: "/admin/activities", icon: FaCalendarAlt },
+  { name: "แก้ไขกิจกรรม", href: "/admin/activities", icon: FaEdit},
+  { name: "ปฏิทินกิจกรรม", href: "/admin/calendar", icon: FaCalendarAlt }
 ];
 
 function classNames(...classes: any[]) {
@@ -176,21 +178,21 @@ export default function AdminNavbar() {
   }
 
   return (
-    <Disclosure as="nav" className="bg-gray-800 shadow-md">
+    <Disclosure as="nav" className="bg-gray-800 shadow-md sticky top-0 z-50">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
               {/* Logo */}
               <div className="flex items-center">
-                 <Image
-                   src="/img/logohaed1.png"
-                   alt="Your Company Logo"
-                   width={80}
-                   height={80}
-                   priority
-                   style={{
-                    objectFit: "contain", // ปรับการแสดงผลของภาพ
+                <Image
+                  src="/img/logohaed1.png"
+                  alt="Your Company Logo"
+                  width={80}
+                  height={80}
+                  priority
+                  style={{
+                    objectFit: "contain",
                     filter: "contrast(1.2)", // เพิ่มความคมชัด (ถ้าจำเป็น)
                   }}
                 />
@@ -275,7 +277,7 @@ export default function AdminNavbar() {
                     pathname === item.href
                       ? "bg-gray-700 text-white"
                       : "text-gray-300 hover:bg-gray-800 hover:text-white",
-                    "block rounded-md px-3 py-2 text-base font-medium flex items-center gap-2"
+                    "block rounded-md px-3 py-2 text-base font-medium flex items-center gap-2 w-full"
                   )}
                 >
                   <item.icon className="h-5 w-5" />
