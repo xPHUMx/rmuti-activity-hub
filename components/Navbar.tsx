@@ -788,93 +788,93 @@ export default function Navbar() {
     return null;
   }
 
-  const handleEditProfile = async () => {
-    if (!session?.user?.id) {
-      Swal.fire("ไม่พบข้อมูลผู้ใช้", "กรุณาล็อกอินใหม่", "error");
+ const handleEditProfile = async () => {
+  if (!session?.user?.id) {
+    Swal.fire("ไม่พบข้อมูลผู้ใช้", "กรุณาล็อกอินใหม่", "error");
+    return;
+  }
+
+  // ดึงข้อมูลผู้ใช้จาก API
+  const res = await fetch(`/api/users/${session.user.id}`);
+  if (!res.ok) {
+    Swal.fire("ไม่สามารถดึงข้อมูลได้", `API ส่งข้อผิดพลาด: ${res.statusText}`, "error");
+    return;
+  }
+
+  try {
+    const user = await res.json();
+    if (!user) {
+      Swal.fire("ไม่พบข้อมูลผู้ใช้", "ไม่สามารถดึงข้อมูลได้", "error");
       return;
     }
-  
-    // ดึงข้อมูลผู้ใช้จาก API
-    const res = await fetch(`/api/users/${session.user.id}`);
-    if (!res.ok) {
-      Swal.fire("ไม่สามารถดึงข้อมูลได้", `API ส่งข้อผิดพลาด: ${res.statusText}`, "error");
-      return;
-    }
-  
-    try {
-      const user = await res.json();
-      if (!user) {
-        Swal.fire("ไม่พบข้อมูลผู้ใช้", "ไม่สามารถดึงข้อมูลได้", "error");
-        return;
+
+    // เปิด SweetAlert2 แบบฟอร์มแก้ไขโปรไฟล์
+    MySwal.fire({
+      title: "แก้ไขโปรไฟล์",
+      html: `
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <!-- รูปโปรไฟล์ (แสดงอย่างเดียว) -->
+          <img src="${user.image || '/img/default-profile.png'}" 
+               alt="Profile Picture" 
+               style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+
+          <!-- อีเมล (แสดงใต้รูปภาพ และเป็นตัวหนา) -->
+          <strong style="margin-bottom: 10px;">${user.email || 'ไม่ระบุ'}</strong>
+        </div>
+
+        <!-- Input Fields -->
+        <input id="swal-input1" class="swal2-input" placeholder="ชื่อ-นามสกุล" value="${user.name || ''}">
+        <input id="swal-input2" class="swal2-input" placeholder="รหัสนักศึกษา" value="${user.studentId || ''}">
+        <input id="swal-input3" class="swal2-input" placeholder="สาขา" value="${user.department || ''}">
+        <input id="swal-input4" class="swal2-input" placeholder="ปีการศึกษา" value="${user.year || ''}">
+        <input id="swal-input5" class="swal2-input" placeholder="เบอร์โทรศัพท์" value="${user.phone || ''}">
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: "อัปเดตโปรไฟล์",
+      preConfirm: () => {
+        const fullName = (document.getElementById("swal-input1") as HTMLInputElement).value;
+        const studentId = (document.getElementById("swal-input2") as HTMLInputElement).value;
+        const department = (document.getElementById("swal-input3") as HTMLInputElement).value;
+        const year = (document.getElementById("swal-input4") as HTMLInputElement).value;
+        const phone = (document.getElementById("swal-input5") as HTMLInputElement).value;
+
+        return { fullName, studentId, department, year, phone };
       }
-  
-      // เปิด SweetAlert2 แบบฟอร์มแก้ไขโปรไฟล์
-      MySwal.fire({
-        title: "แก้ไขโปรไฟล์",
-        html: `
-          <div style="display: flex; flex-direction: column; align-items: center;">
-            <!-- รูปโปรไฟล์ (แสดงอย่างเดียว) -->
-            <img src="${user.image || '/img/default-profile.png'}" 
-                 alt="Profile Picture" 
-                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
-  
-            <!-- อีเมล (แสดงใต้รูปภาพ และเป็นตัวหนา) -->
-            <strong style="margin-bottom: 10px;">${user.email || 'ไม่ระบุ'}</strong>
-          </div>
-  
-          <!-- Input Fields -->
-          <input id="swal-input1" class="swal2-input" placeholder="ชื่อ-นามสกุล" value="${user.name || ''}">
-          <input id="swal-input2" class="swal2-input" placeholder="รหัสนักศึกษา" value="${user.studentId || ''}">
-          <input id="swal-input3" class="swal2-input" placeholder="สาขา" value="${user.department || ''}">
-          <input id="swal-input4" class="swal2-input" placeholder="ปีการศึกษา" value="${user.year || ''}">
-          <input id="swal-input5" class="swal2-input" placeholder="เบอร์โทรศัพท์" value="${user.phone || ''}">
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: "อัปเดตโปรไฟล์",
-        preConfirm: () => {
-          const fullName = (document.getElementById("swal-input1") as HTMLInputElement).value;
-          const studentId = (document.getElementById("swal-input2") as HTMLInputElement).value;
-          const department = (document.getElementById("swal-input3") as HTMLInputElement).value;
-          const year = (document.getElementById("swal-input4") as HTMLInputElement).value;
-          const phone = (document.getElementById("swal-input5") as HTMLInputElement).value;
-  
-          return { fullName, studentId, department, year, phone };
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const { fullName, studentId, department, year, phone } = result.value;
-  
-          // ส่งข้อมูลไปอัปเดตโปรไฟล์
-          fetch("/api/users/update-profile", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: session?.user?.email,
-              fullName,
-              studentId,
-              department,
-              year,
-              phone,
-            }),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { fullName, studentId, department, year, phone } = result.value;
+
+        // ส่งข้อมูลไปอัปเดตโปรไฟล์
+        fetch("/api/users/update-profile", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: session?.user?.email,
+            fullName,
+            studentId,
+            department,
+            year,
+            phone,
+          }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              Swal.fire("สำเร็จ!", "โปรไฟล์ของคุณได้ถูกอัปเดตแล้ว.", "success");
+            } else {
+              Swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถอัปเดตโปรไฟล์ได้.", "error");
+            }
           })
-            .then((response) => {
-              if (response.ok) {
-                Swal.fire("สำเร็จ!", "โปรไฟล์ของคุณได้ถูกอัปเดตแล้ว.", "success");
-              } else {
-                Swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถอัปเดตโปรไฟล์ได้.", "error");
-              }
-            })
-            .catch((error) => {
-              Swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถติดต่อ API ได้.", "error");
-            });
-        }
-      });
-    } catch (error) {
-      Swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถแปลงข้อมูลจาก API ได้.", "error");
-    }
-  };
-  
+          .catch((error) => {
+            Swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถติดต่อ API ได้.", "error");
+          });
+      }
+    });
+  } catch (error) {
+    Swal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถแปลงข้อมูลจาก API ได้.", "error");
+  }
+};
+
 
   return (
     <>
