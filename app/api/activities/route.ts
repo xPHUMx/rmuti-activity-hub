@@ -118,6 +118,8 @@
 //   try {
 //     const { id, participant, userId } = await req.json();
 
+//     console.log("Received data:", { id, participant, userId }); // Debug
+
 //     if (!id || !participant || !userId) {
 //       return new Response(
 //         JSON.stringify({ message: "Missing required fields" }),
@@ -126,6 +128,7 @@
 //     }
 
 //     const activity = await Activity.findById(id);
+//     console.log("Found activity:", activity); // Debug
 
 //     if (!activity) {
 //       return new Response(
@@ -154,6 +157,7 @@
 
 //     activity.participants.push(participant);
 //     const updatedActivity = await activity.save();
+//     console.log("Updated activity:", updatedActivity); // Debug
 
 //     await User.findByIdAndUpdate(
 //       userId,
@@ -212,8 +216,6 @@
 //   }
 // }
 
-
-
 import connectToDatabase from "../../../utils/db";
 import Activity from "../../../models/Activity";
 import User from "../../../models/User";
@@ -235,25 +237,20 @@ export async function GET(req: Request) {
   try {
     const now = new Date();
 
-    // อัปเดตสถานะกิจกรรม (ปิดเมื่อหมดเวลา)
+    // ปิดกิจกรรมอัตโนมัติถ้าเวลาหมด
     await Activity.updateMany(
-      { closeTime: { $lte: now }, status: "open" },
+      { registerEnd: { $lte: now }, status: "open" },
       { $set: { status: "closed" } }
     );
 
-    // ดึงกิจกรรมทั้งหมด
-    const activities = await Activity.find({});
+    const activities = await Activity.find({}).populate("newsId"); // ดึงข่าวมาด้วย
     return new Response(JSON.stringify(activities), { status: 200 });
   } catch (error) {
     console.error("Error fetching activities:", error);
 
-    const errMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+    const errMessage = error instanceof Error ? error.message : "An unknown error occurred";
 
-    return new Response(
-      JSON.stringify({ message: "Failed to fetch activities", error: errMessage }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ message: "Failed to fetch activities", error: errMessage }), { status: 500 });
   }
 }
 
@@ -262,29 +259,45 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
 
-    // ตรวจสอบความสมบูรณ์ของข้อมูล
-    const { title, time, closeTime, location, maxParticipants } = data;
-    if (!title || !time || !closeTime || !location || !maxParticipants) {
+    const {
+      title,
+      newsId,
+      registerStart,
+      registerEnd,
+      activityStart,
+      activityEnd,
+      location,
+      maxParticipants,
+      status,
+    } = data;
+
+    if (!title || !registerStart || !registerEnd || !activityStart || !activityEnd || !location || !maxParticipants) {
       return new Response(
         JSON.stringify({ message: "Missing required fields" }),
         { status: 400 }
       );
     }
 
-    // เพิ่มกิจกรรมใหม่
-    const newActivity = new Activity(data);
+    const newActivity = new Activity({
+      title,
+      newsId: newsId || null,
+      registerStart,
+      registerEnd,
+      activityStart,
+      activityEnd,
+      location,
+      maxParticipants,
+      status: status || "open",
+    });
+
     await newActivity.save();
     return new Response(JSON.stringify(newActivity), { status: 201 });
   } catch (error) {
     console.error("Error creating activity:", error);
 
-    const errMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+    const errMessage = error instanceof Error ? error.message : "An unknown error occurred";
 
-    return new Response(
-      JSON.stringify({ message: "Failed to create activity", error: errMessage }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ message: "Failed to create activity", error: errMessage }), { status: 500 });
   }
 }
 
@@ -315,16 +328,9 @@ export async function PUT(req: Request) {
   } catch (error) {
     console.error("Error updating activity:", error);
 
-    const errMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+    const errMessage = error instanceof Error ? error.message : "An unknown error occurred";
 
-    return new Response(
-      JSON.stringify({
-        message: "Failed to update activity",
-        error: errMessage,
-      }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ message: "Failed to update activity", error: errMessage }), { status: 500 });
   }
 }
 
@@ -332,8 +338,6 @@ export async function PUT(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const { id, participant, userId } = await req.json();
-
-    console.log("Received data:", { id, participant, userId }); // Debug
 
     if (!id || !participant || !userId) {
       return new Response(
@@ -343,7 +347,6 @@ export async function PATCH(req: Request) {
     }
 
     const activity = await Activity.findById(id);
-    console.log("Found activity:", activity); // Debug
 
     if (!activity) {
       return new Response(
@@ -372,7 +375,6 @@ export async function PATCH(req: Request) {
 
     activity.participants.push(participant);
     const updatedActivity = await activity.save();
-    console.log("Updated activity:", updatedActivity); // Debug
 
     await User.findByIdAndUpdate(
       userId,
@@ -384,14 +386,10 @@ export async function PATCH(req: Request) {
   } catch (error) {
     console.error("Error registering participant:", error);
 
-    const errMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+    const errMessage = error instanceof Error ? error.message : "An unknown error occurred";
 
     return new Response(
-      JSON.stringify({
-        message: "Failed to register participant",
-        error: errMessage,
-      }),
+      JSON.stringify({ message: "Failed to register participant", error: errMessage }),
       { status: 500 }
     );
   }
@@ -421,13 +419,8 @@ export async function DELETE(req: Request) {
   } catch (error) {
     console.error("Error deleting activity:", error);
 
-    const errMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+    const errMessage = error instanceof Error ? error.message : "An unknown error occurred";
 
-    return new Response(
-      JSON.stringify({ message: "Failed to delete activity", error: errMessage }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ message: "Failed to delete activity", error: errMessage }), { status: 500 });
   }
 }
-

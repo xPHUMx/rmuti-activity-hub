@@ -102,6 +102,49 @@
 
 
 
+// import mongoose from "mongoose";
+// import connectToDatabase from "../utils/db";
+
+// // ฟังก์ชันเชื่อมต่อฐานข้อมูล
+// const connect = async () => {
+//   if (mongoose.connections[0].readyState) return; // ถ้าเชื่อมต่อแล้วไม่ต้องเชื่อมใหม่
+//   await connectToDatabase();
+// };
+
+// // โครงสร้างของข้อมูลผู้ลงทะเบียน
+// const ParticipantSchema = new mongoose.Schema({
+//   fullName: { type: String, required: false },
+//   studentId: { type: String, required: false },
+//   department: { type: String, required: false },
+//   year: { type: String, required: false },
+//   phone: { type: String, required: false },
+//   registeredAt: { type: Date, default: Date.now },
+// });
+
+// // โครงสร้างของกิจกรรม
+// const ActivitySchema = new mongoose.Schema(
+//   {
+//     title: { type: String, required: true },
+//     description: { type: String, required: false },
+//     image: { type: String, required: false },
+//     time: { type: Date, required: true },
+//     closeTime: { type: Date, required: true },
+//     location: { type: String, required: true },
+//     participants: [ParticipantSchema],
+//     maxParticipants: { type: Number, required: true, min: 1 },
+//     status: { type: String, enum: ["open", "closed"], default: "open" },
+//     updatedBy: { type: String, required: false },
+//   },
+//   { timestamps: true } // เพิ่ม timestamps ให้กับ createdAt และ updatedAt
+// );
+
+// // เช็คว่ามีโมเดลอยู่แล้วหรือไม่
+// const Activity = mongoose.models.Activity || mongoose.model("Activity", ActivitySchema);
+
+// export default Activity;
+
+
+
 import mongoose from "mongoose";
 import connectToDatabase from "../utils/db";
 
@@ -116,6 +159,7 @@ const ParticipantSchema = new mongoose.Schema({
   fullName: { type: String, required: false },
   studentId: { type: String, required: false },
   department: { type: String, required: false },
+  program: { type: String, required: false }, 
   year: { type: String, required: false },
   phone: { type: String, required: false },
   registeredAt: { type: Date, default: Date.now },
@@ -124,18 +168,19 @@ const ParticipantSchema = new mongoose.Schema({
 // โครงสร้างของกิจกรรม
 const ActivitySchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: false },
-    image: { type: String, required: false },
-    time: { type: Date, required: true },
-    closeTime: { type: Date, required: true },
-    location: { type: String, required: true },
-    participants: [ParticipantSchema],
-    maxParticipants: { type: Number, required: true, min: 1 },
-    status: { type: String, enum: ["open", "closed"], default: "open" },
-    updatedBy: { type: String, required: false },
+    title: { type: String, required: true }, // ชื่อกิจกรรม
+    newsId: { type: mongoose.Schema.Types.ObjectId, ref: "News", required: false }, // ข่าวที่เกี่ยวข้อง
+    registerStart: { type: Date, required: true }, // เวลาเปิดลงทะเบียน
+    registerEnd: { type: Date, required: true },   // เวลาปิดลงทะเบียน
+    activityStart: { type: Date, required: true }, // เวลาเริ่มกิจกรรมจริง
+    activityEnd: { type: Date, required: true },   // เวลาสิ้นสุดกิจกรรมจริง
+    location: { type: String, required: true }, // สถานที่
+    participants: [ParticipantSchema], // รายชื่อผู้เข้าร่วม
+    maxParticipants: { type: Number, required: true, min: 1 }, // จำนวนผู้เข้าร่วมสูงสุด
+    status: { type: String, enum: ["open", "closed"], default: "open" }, // สถานะลงทะเบียน
+    updatedBy: { type: String, required: false }, // คนแก้ไขล่าสุด (optional)
   },
-  { timestamps: true } // เพิ่ม timestamps ให้กับ createdAt และ updatedAt
+  { timestamps: true } // มี createdAt และ updatedAt อัตโนมัติ
 );
 
 // เช็คว่ามีโมเดลอยู่แล้วหรือไม่

@@ -3,9 +3,15 @@
     "baseUrl": ".",
     "target": "esnext",
     "strictNullChecks": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "strictPropertyInitialization": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -25,19 +31,27 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
-    "typeRoots": ["./node_modules/@types", "./types"]
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ]
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
     "app/admin/activities/page.jsx",
     "app/admin/dashboard/page.jsx",
+    "next-env.d.ts",
+    "types/global.d.ts",
     "types/next-auth.d.ts",
-    "types/global.d.ts"
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
 }

@@ -1,4 +1,5 @@
 
+
 // "use client";
 
 // import { useEffect, useState } from "react";
@@ -15,21 +16,31 @@
 // const MySwal = withReactContent(Swal);
 
 // export default function AdminUsersPage() {
-//   const [users, setUsers] = useState([]);
+//   const [users, setUsers] = useState<any[]>([]);
+//   const [isLoading, setIsLoading] = useState(true); // สถานะการโหลดข้อมูล
 
+//   // ดึงข้อมูลผู้ใช้
 //   useEffect(() => {
 //     fetch("/api/admin/users")
 //       .then((res) => res.json())
-//       .then((data) => setUsers(data));
+//       .then((data) => {
+//         setUsers(data);
+//         setIsLoading(false); // ตั้งสถานะเป็นโหลดเสร็จแล้ว
+//       })
+//       .catch((error) => {
+//         console.error("Error fetching users:", error);
+//         setIsLoading(false); // ถ้าหากเกิดข้อผิดพลาดให้ตั้งสถานะเป็นโหลดเสร็จ
+//       });
 //   }, []);
 
+//   // ฟังก์ชันแสดงรายละเอียดผู้ใช้
 //   const fetchUserDetails = async (id: string) => {
 //     const res = await fetch(`/api/admin/users/${id}`);
 //     const user = await res.json();
 
-//     // ✅ เปิด SweetAlert2 Popup พร้อมไอคอน
+//     // เปิด SweetAlert2 Popup พร้อมไอคอน
 //     MySwal.fire({
-//       title: `<strong>🔍 รายละเอียดนักศึกษา</strong>`,
+//       title: `<strong>รายละเอียดนักศึกษา</strong>`,
 //       html: `
 //         <div style="text-align: left; font-size: 16px;">
 //           <p><i class="fas fa-user"></i> <strong>ชื่อ:</strong> ${user.name}</p>
@@ -49,6 +60,7 @@
 //     });
 //   };
 
+//   // ฟังก์ชันอัปเดตบทบาทผู้ใช้
 //   const updateUserRole = async (id: string, newRole: string) => {
 //     const result = await MySwal.fire({
 //       title: "ยืนยันการเปลี่ยนบทบาท?",
@@ -76,6 +88,15 @@
 //       }
 //     }
 //   };
+
+//   // กรณีที่กำลังโหลด
+//   if (isLoading) {
+//     return (
+//       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+//         กำลังโหลดข้อมูล...
+//       </div>
+//     );
+//   }
 
 //   return (
 //     <div
@@ -137,6 +158,8 @@
 //   );
 // }
 
+
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -174,16 +197,16 @@ export default function AdminUsersPage() {
   const fetchUserDetails = async (id: string) => {
     const res = await fetch(`/api/admin/users/${id}`);
     const user = await res.json();
-
-    // เปิด SweetAlert2 Popup พร้อมไอคอน
+  
     MySwal.fire({
-      title: `<strong>🔍 รายละเอียดนักศึกษา</strong>`,
+      title: `<strong>รายละเอียดนักศึกษา</strong>`,
       html: `
-        <div style="text-align: left; font-size: 16px;">
+        <div style="text-align: left; font-size: 15px; color: #1E293B;">
           <p><i class="fas fa-user"></i> <strong>ชื่อ:</strong> ${user.name}</p>
           <p><i class="fas fa-envelope"></i> <strong>Email:</strong> ${user.email}</p>
           <p><i class="fas fa-id-card"></i> <strong>รหัสนักศึกษา:</strong> ${user.studentId || "-"}</p>
           <p><i class="fas fa-graduation-cap"></i> <strong>สาขา:</strong> ${user.department || "-"}</p>
+          <p><i class="fas fa-clipboard-list"></i> <strong>ภาค:</strong> ${user.program || "-"}</p>
           <p><i class="fas fa-calendar-alt"></i> <strong>ปีการศึกษา:</strong> ${user.year || "-"}</p>
           <p><i class="fas fa-phone"></i> <strong>เบอร์โทร:</strong> ${user.phone || "-"}</p>
           <p><i class="fas fa-user-shield"></i> <strong>บทบาท:</strong> ${user.role}</p>
@@ -192,8 +215,8 @@ export default function AdminUsersPage() {
       icon: "info",
       confirmButtonText: "ปิด",
       confirmButtonColor: "#3085d6",
-      background: "#1E293B",
-      color: "#ffffff",
+      background: "#ffffff", // พื้นหลังขาว
+      color: "#1E293B",        // ฟ้อนสีเทาเข้ม
     });
   };
 
@@ -244,7 +267,7 @@ export default function AdminUsersPage() {
         backgroundPosition: "center",
       }}
     >
-      <h1 className="text-2xl font-bold mb-6">จัดการผู้ใช้</h1>
+
       <table className="w-full bg-gray-800 rounded-lg overflow-hidden">
         <thead>
           <tr className="bg-gray-700">
@@ -294,3 +317,4 @@ export default function AdminUsersPage() {
     </div>
   );
 }
+
