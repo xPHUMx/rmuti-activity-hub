@@ -1,8 +1,8 @@
 
-
 // import "./globals.css";
 // import { Inter } from "next/font/google";
 // import AuthProvider from "./context/AuthProvider";
+// import Chatbot from "@/components/Chatbot"; // 👈 import chatbot
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -19,18 +19,24 @@
 //   return (
 //     <html lang="en">
 //       <body className={inter.className}>
-//         <AuthProvider>{children}</AuthProvider>
+//         <AuthProvider>
+//           {children}
+//           <Chatbot /> {/* 👈 เพิ่ม chatbot ตรงนี้ */}
+//         </AuthProvider>
 //       </body>
 //     </html>
 //   );
 // }
 
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { IBM_Plex_Sans_Thai } from "next/font/google";
 import AuthProvider from "./context/AuthProvider";
-import Chatbot from "@/components/Chatbot"; // 👈 import chatbot
+import Chatbot from "@/components/Chatbot";
 
-const inter = Inter({ subsets: ["latin"] });
+const ibmPlexThai = IBM_Plex_Sans_Thai({
+  subsets: ["thai", "latin"],
+  weight: ["400", "700"],
+});
 
 export const metadata = {
   title: "หน้าหลัก",
@@ -43,8 +49,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="th">
+      <body className={ibmPlexThai.className}>
         <AuthProvider>
           {children}
           <Chatbot /> {/* 👈 เพิ่ม chatbot ตรงนี้ */}
