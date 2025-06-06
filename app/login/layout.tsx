@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
-import { IBM_Plex_Sans_Thai } from 'next/font/google'
+import { Inter } from 'next/font/google'
 
-const ibmPlexThai = IBM_Plex_Sans_Thai({ subsets: ['thai', 'latin'], weight: ['400', '700'] })
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'เข้าสู่ระบบ...',
@@ -14,8 +14,8 @@ export default function LoginLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="th">
-      <body className={ibmPlexThai.className}>{children}</body>
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }
