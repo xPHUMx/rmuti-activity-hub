@@ -1,10 +1,14 @@
 
 // import "./globals.css";
-// import { Inter } from "next/font/google";
+// import { IBM_Plex_Sans_Thai } from "next/font/google";
 // import AuthProvider from "./context/AuthProvider";
-// import Chatbot from "@/components/Chatbot"; // 👈 import chatbot
+// import Chatbot from "@/components/Chatbot";
 
-// const inter = Inter({ subsets: ["latin"] });
+// const ibmPlexThai = IBM_Plex_Sans_Thai({
+//   subsets: ["thai", "latin"],
+//   weight: ["400", "700"],
+//   display: "swap", // ✅ สำคัญมาก ฟอนต์จะไม่ต้องรอโหลดครบถึงจะแสดง
+// });
 
 // export const metadata = {
 //   title: "หน้าหลัก",
@@ -17,8 +21,8 @@
 //   children: React.ReactNode;
 // }) {
 //   return (
-//     <html lang="en">
-//       <body className={inter.className}>
+//     <html lang="th">
+//       <body className={ibmPlexThai.className}>
 //         <AuthProvider>
 //           {children}
 //           <Chatbot /> {/* 👈 เพิ่ม chatbot ตรงนี้ */}
@@ -32,11 +36,12 @@ import "./globals.css";
 import { IBM_Plex_Sans_Thai } from "next/font/google";
 import AuthProvider from "./context/AuthProvider";
 import Chatbot from "@/components/Chatbot";
+import AdminButton from "@/components/AdminButton"; // เพิ่มตรงนี้
 
 const ibmPlexThai = IBM_Plex_Sans_Thai({
   subsets: ["thai", "latin"],
   weight: ["400", "700"],
-  display: "swap", // ✅ สำคัญมาก ฟอนต์จะไม่ต้องรอโหลดครบถึงจะแสดง
+  display: "swap",
 });
 
 export const metadata = {
@@ -54,9 +59,11 @@ export default function RootLayout({
       <body className={ibmPlexThai.className}>
         <AuthProvider>
           {children}
-          <Chatbot /> {/* 👈 เพิ่ม chatbot ตรงนี้ */}
+          <Chatbot />
+          <AdminButton /> {/* ใส่ปุ่ม admin ไว้ตรงนี้ */}
         </AuthProvider>
       </body>
     </html>
   );
 }
+
