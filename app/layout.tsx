@@ -36,6 +36,7 @@ import Chatbot from "@/components/Chatbot";
 const ibmPlexThai = IBM_Plex_Sans_Thai({
   subsets: ["thai", "latin"],
   weight: ["400", "700"],
+  display: "swap", // ✅ สำคัญมาก ฟอนต์จะไม่ต้องรอโหลดครบถึงจะแสดง
 });
 
 export const metadata = {
