@@ -315,7 +315,6 @@ if (loading) {
       >
         <FaSpinner />
       </motion.div>
-      <span className="ml-4 text-xl">กำลังโหลดข้อมูล...</span>
     </div>
   );
 }
