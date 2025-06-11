@@ -455,7 +455,7 @@ export default function Chatbot() {
         ...msgs,
         {
           sender: "bot",
-          text: "ขออภัย กูเชื่อมต่อข้อมูลกิจกรรมไม่ได้ ลองอีกทีน้า",
+          text: "ขออภัย เชื่อมต่อข้อมูลกิจกรรมไม่ได้ ลองอีกทีน้า",
         },
       ]);
       setLoading(false);

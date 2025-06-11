@@ -151,7 +151,7 @@ const authOptions: AuthOptions = {
             token.hasProfile = !!(
               existingUser.studentId &&
               existingUser.department &&
-              existingUser.year &&
+              // existingUser.year &&
               existingUser.phone
             );
           }

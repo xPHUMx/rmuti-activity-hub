@@ -83,6 +83,9 @@
 // export default mongoose.models.User || mongoose.model("User", UserSchema);
 
 
+
+
+
 import mongoose from "mongoose";
 import Activity from "./Activity"; // เชื่อมกับโมเดล Activity
 
@@ -90,7 +93,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   image: { type: String, default: "" },
-  isOnline: { type: Boolean, default: false },
+  // isOnline: { type: Boolean, default: false },
   role: {
     type: String,
     enum: ["user", "admin"],
@@ -100,11 +103,6 @@ const UserSchema = new mongoose.Schema({
   // ---------------- ข้อมูลนักศึกษา ----------------
   studentId: { type: String, default: "" },
   department: { type: String, default: null },
-  program: {  // ✅ เพิ่มภาค
-    type: String,
-    enum: ["ภาคปกติ", "ภาคสมทบ"],
-    default: "ภาคปกติ",
-  },
   year: { type: String, default: null },
   phone: { type: String, default: null },
 
@@ -176,3 +174,4 @@ UserSchema.methods.hasRegisteredActivity = function (
 };
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);
+
