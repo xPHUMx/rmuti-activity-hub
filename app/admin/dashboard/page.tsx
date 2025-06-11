@@ -375,10 +375,27 @@ import {
   LinearScale,
   ChartOptions,
   ChartData,
+  DoughnutController,
+  Chart,
 } from "chart.js";
 
 // ลงทะเบียนคอมโพเนนต์ Chart.js
-ChartJS.register(Title, Tooltip, ArcElement, CategoryScale, LinearScale);
+ChartJS.register(Title, Tooltip, ArcElement, CategoryScale, LinearScale, DoughnutController);
+
+// Plugin สำหรับเพิ่ม Shadow Effect
+const shadowPlugin = {
+  id: "shadow",
+  beforeDraw(chart: Chart) {
+    const { ctx } = chart;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 5;
+    ctx.shadowOffsetY = 5;
+  },
+};
+
+// ลงทะเบียน Shadow Plugin
+ChartJS.register(shadowPlugin);
 
 // อินเตอร์เฟซสำหรับข้อมูลกิจกรรม
 interface Activity {
@@ -400,7 +417,7 @@ const SummaryCard: React.FC<{
   </div>
 );
 
-// คอมโพเนนต์กราฟ Doughnut (3D-like)
+// คอมโพเนนต์กราฟ Doughnut
 const DoughnutChartCard: React.FC<{
   title: string;
   data: ChartData<"doughnut">;
@@ -487,10 +504,6 @@ export default function AdminDashboard() {
         backgroundColor: ["#3B82F6", "#4B5563"],
         borderWidth: 0,
         hoverOffset: 30,
-        shadowOffsetX: 5,
-        shadowOffsetY: 5,
-        shadowBlur: 10,
-        shadowColor: "rgba(0, 0, 0, 0.3)",
       },
     ],
   };
@@ -502,10 +515,6 @@ export default function AdminDashboard() {
         backgroundColor: ["#10B981", "#4B5563"],
         borderWidth: 0,
         hoverOffset: 30,
-        shadowOffsetX: 5,
-        shadowOffsetY: 5,
-        shadowBlur: 10,
-        shadowColor: "rgba(0, 0, 0, 0.3)",
       },
     ],
   };
@@ -517,10 +526,6 @@ export default function AdminDashboard() {
         backgroundColor: ["#FACC15", "#4B5563"],
         borderWidth: 0,
         hoverOffset: 30,
-        shadowOffsetX: 5,
-        shadowOffsetY: 5,
-        shadowBlur: 10,
-        shadowColor: "rgba(0, 0, 0, 0.3)",
       },
     ],
   };

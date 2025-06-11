@@ -304,7 +304,6 @@
 //   );
 // }
 
-
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -351,6 +350,7 @@ export default function Navbar() {
         setNotifications(data.length);
       } catch (error) {
         console.error("ข้อผิดพลาดในการดึงข้อมูลการลงทะเบียน:", error);
+        MySwal.fire("ข้อผิดพลาด", "ไม่สามารถดึงข้อมูลการแจ้งเตือนได้", "error");
       }
     };
 
@@ -465,12 +465,12 @@ export default function Navbar() {
   return (
     <>
       {loading && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
         </div>
       )}
 
-      <Disclosure as="nav" className="bg-gray-800/50 backdrop-blur-md shadow-xl sticky top-0 z-50 border-b border-gray-700/50">
+      <Disclosure as="nav" className="bg-gray-900/80 backdrop-blur-lg shadow-xl sticky top-0 z-50 border-b border-gray-800/50 font-sarabun">
         {({ open }) => (
           <>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -495,10 +495,11 @@ export default function Navbar() {
                       onClick={() => handleNavigation(item.href)}
                       className={classNames(
                         pathname === item.href
-                          ? "bg-blue-600 text-white"
-                          : "text-gray-300 hover:bg-gray-700/50 hover:text-white",
+                          ? "bg-orange-800/80 text-white"
+                          : "text-gray-200 hover:bg-gray-700/50 hover:text-white",
                         "rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-2 transition-all duration-300"
                       )}
+                      aria-label={`ไปที่${item.name}`}
                     >
                       {item.icon}
                       {item.name}
@@ -510,10 +511,10 @@ export default function Navbar() {
                 <div className="flex items-center space-x-4">
                   <button
                     type="button"
-                    className="relative rounded-full p-2 text-gray-400 hover:text-white hover:bg-gray-700/50 transition-all duration-300"
+                    className="relative rounded-full p-2 text-gray-300 hover:text-white hover:bg-gray-700/50 transition-all duration-300"
                     onClick={clearNotifications}
+                    aria-label="ดูการแจ้งเตือน"
                   >
-                    <span className="sr-only">ดูการแจ้งเตือน</span>
                     <BellAlertIcon className="h-6 w-6" aria-hidden="true" />
                     {notifications > 0 && (
                       <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">
@@ -543,7 +544,7 @@ export default function Navbar() {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-gray-800/50 backdrop-blur-md shadow-lg border border-gray-700/50 focus:outline-none">
+                        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-gray-900/80 backdrop-blur-lg shadow-lg border border-gray-800/50 focus:outline-none">
                           <div className="p-4">
                             <div className="text-sm text-center">
                               <p className="font-medium text-white">{session.user.name || "ผู้ใช้"}</p>
@@ -556,7 +557,7 @@ export default function Navbar() {
                                 <button
                                   onClick={handleEditProfile}
                                   className={classNames(
-                                    active ? "bg-gray-700/50 text-white" : "text-gray-300",
+                                    active ? "bg-gray-700/50 text-white" : "text-gray-200",
                                     "flex items-center gap-2 w-full px-4 py-2 text-sm"
                                   )}
                                 >
@@ -570,7 +571,7 @@ export default function Navbar() {
                                 <button
                                   onClick={() => signOut()}
                                   className={classNames(
-                                    active ? "bg-gray-700/50 text-white" : "text-gray-300",
+                                    active ? "bg-gray-700/50 text-white" : "text-gray-200",
                                     "flex items-center gap-2 w-full px-4 py-2 text-sm"
                                   )}
                                 >
@@ -586,14 +587,15 @@ export default function Navbar() {
                   ) : (
                     <button
                       onClick={() => router.push("/login")}
-                      className="text-gray-300 hover:bg-blue-600 hover:text-white rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300"
+                      className="text-gray-200 hover:bg-blue-700/80 hover:text-white rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300"
+                      aria-label="เข้าสู่ระบบ"
                     >
                       เข้าสู่ระบบ
                     </button>
                   )}
 
                   {/* ปุ่ม Hamburger สำหรับมือถือ */}
-                  <Disclosure.Button className="md:hidden rounded-lg p-2 text-gray-400 hover:text-white hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <Disclosure.Button className="md:hidden rounded-lg p-2 text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <span className="sr-only">เปิดเมนูหลัก</span>
                     {open ? (
                       <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -607,7 +609,7 @@ export default function Navbar() {
 
             {/* เมนูมือถือ */}
             <Disclosure.Panel className="md:hidden">
-              <div className="space-y-1 px-2 pb-3 pt-2 bg-gray-800/50 backdrop-blur-md border-t border-gray-700/50">
+              <div className="space-y-1 px-2 pb-3 pt-2 bg-gray-900/80 backdrop-blur-lg border-t border-gray-800/50">
                 {navigation.map((item) => (
                   <Disclosure.Button
                     key={item.name}
@@ -615,10 +617,11 @@ export default function Navbar() {
                     onClick={() => handleNavigation(item.href)}
                     className={classNames(
                       pathname === item.href
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-300 hover:bg-gray-700/50 hover:text-white",
+                        ? "bg-blue-700/80 text-white"
+                        : "text-gray-200 hover:bg-gray-700/50 hover:text-white",
                       "flex items-center gap-2 w-full px-3 py-2 rounded-md text-base font-medium transition-all duration-300"
                     )}
+                    aria-label={`ไปที่${item.name}`}
                   >
                     {item.icon}
                     {item.name}
