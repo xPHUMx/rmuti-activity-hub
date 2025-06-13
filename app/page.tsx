@@ -434,7 +434,7 @@ import { useRouter } from "next/navigation";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Image from "next/image";
+import Image from "next/image.js";
 import Link from "next/link";
 import { FaUser, FaChartBar, FaPercentage, FaSpinner, FaBullhorn } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
@@ -458,7 +458,7 @@ const sliderSettings = {
   infinite: true,
   speed: 800,
   slidesToShow: 1,
-  slidesToScroll: 1,
+  slidesTo: 1,
   autoplay: true,
   autoplaySpeed: 5000,
   cssEase: "ease-in-out",
@@ -538,20 +538,7 @@ export default function HomePage() {
     return ((activity.participants?.length || 0) / activity.maxParticipants) * 100;
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center gap-3"
-        >
-          <FaSpinner className="text-orange-400 text-4xl animate-spin" />
-        </motion.div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white px-4 py-12">
@@ -608,7 +595,7 @@ export default function HomePage() {
                 className="flex justify-center mt-6"
               >
                 <Link href="/news">
-                  <button className="bg-orange-900 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 shadow-md">
+                  <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 shadow-md">
                     ดูข่าวทั้งหมด
                   </button>
                 </Link>
@@ -705,7 +692,6 @@ export default function HomePage() {
         </section>
       </motion.div>
 
-  
     </div>
   );
 }

@@ -34,9 +34,11 @@
 
 import "./globals.css";
 import { IBM_Plex_Sans_Thai } from "next/font/google";
+import { usePathname } from "next/navigation";
 import AuthProvider from "./context/AuthProvider";
 import Chatbot from "@/components/Chatbot";
-import AdminButton from "@/components/AdminButton"; // เพิ่มตรงนี้
+import AdminButton from "@/components/AdminButton";
+import VersionBadge from "@/components/VersionBadge";
 
 const ibmPlexThai = IBM_Plex_Sans_Thai({
   subsets: ["thai", "latin"],
@@ -54,16 +56,22 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+
   return (
     <html lang="th">
       <body className={ibmPlexThai.className}>
         <AuthProvider>
           {children}
-          <Chatbot />
-          <AdminButton /> {/* ใส่ปุ่ม admin ไว้ตรงนี้ */}
+          {pathname !== "/login" && (
+            <>
+              <VersionBadge />
+              <Chatbot />
+            </>
+          )}
+          <AdminButton />
         </AuthProvider>
       </body>
     </html>
   );
 }
-
