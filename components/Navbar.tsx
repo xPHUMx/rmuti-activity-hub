@@ -322,7 +322,7 @@ const navigation = [
   { name: "หน้าหลัก", href: "/", icon: <HomeIcon className="h-5 w-5" /> },
   { name: "ข่าวสารกิจกรรม", href: "/news", icon: <NewspaperIcon className="h-5 w-5" /> },
   { name: "ลงทะเบียนกิจกรรม", href: "/register", icon: <ClipboardDocumentListIcon className="h-5 w-5" /> },
-  { name: "ปฏิทิน", href: "/calendar", icon: <Calendar1Icon className="h-5 w-5" /> },
+  // { name: "ปฏิทิน", href: "/calendar", icon: <Calendar1Icon className="h-5 w-5" /> },
 ];
 
 function classNames(...classes: any[]) {

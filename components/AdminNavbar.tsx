@@ -161,7 +161,7 @@ const navigation = [
   { name: "จัดการผู้ใช้", href: "/admin/users", icon: FaAddressBook },
   { name: "แก้ไขข่าวสาร", href: "/admin/news", icon: FaNewspaper },
   { name: "แก้ไขกิจกรรม", href: "/admin/activities", icon: FaEdit},
-  { name: "ปฏิทินกิจกรรม", href: "/admin/calendar", icon: FaCalendarAlt }
+  // { name: "ปฏิทินกิจกรรม", href: "/admin/calendar", icon: FaCalendarAlt }
 ];
 
 function classNames(...classes: any[]) {
