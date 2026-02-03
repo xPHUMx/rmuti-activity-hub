@@ -29,7 +29,7 @@
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.8",
     "autoprefixer": "^10.4.15",
-    "aws-sdk": "^1.18.0",
+    "aws-sdk": "^2.1693.0",
     "chart.js": "^4.4.9",
     "date-fns": "^4.1.0",
     "eslint": "^9.39.2",
