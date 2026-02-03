@@ -7,8 +7,8 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
-      role: string; // เพิ่ม role
-      id: string;   // เพิ่ม id
+      role: string; 
+      id: string;   
     };
   }
 
