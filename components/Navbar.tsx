@@ -1,18 +1,11 @@
-
-
 "use client";
 
 import RegistrationDropdown from "./RegistrationDropdown"; 
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Menu, Transition } from "@headlessui/react";
 import {
-  XMarkIcon,
-  Bars3Icon,
-  HomeIcon,
   BellAlertIcon,
-  NewspaperIcon,
-  ClipboardDocumentListIcon,
   PencilSquareIcon,
   ArrowLeftStartOnRectangleIcon,
 } from "@heroicons/react/24/outline";
@@ -21,14 +14,37 @@ import Image from "next/image";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { TextField, Avatar, Typography, Box } from "@mui/material";
+import { Home, Newspaper, ClipboardList } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const MySwal = withReactContent(Swal);
 
 const navigation = [
-  { name: "หน้าหลัก", href: "/", icon: <HomeIcon className="h-5 w-5" /> },
-  { name: "ข่าวสารกิจกรรม", href: "/news", icon: <NewspaperIcon className="h-5 w-5" /> },
-  { name: "ลงทะเบียนกิจกรรม", href: "/register", icon: <ClipboardDocumentListIcon className="h-5 w-5" /> },
+  { name: "หน้าหลัก", href: "/", icon: Home },
+  { name: "ข่าวสารกิจกรรม", href: "/news", icon: Newspaper },
+  { name: "ลงทะเบียนกิจกรรม", href: "/register", icon: ClipboardList },
 ];
+
+const tabVariants = {
+  initial: {
+    gap: 0,
+    paddingLeft: "1rem",
+    paddingRight: "1rem",
+  },
+  animate: (isActive: boolean) => ({
+    gap: isActive ? "0.5rem" : 0,
+    paddingLeft: isActive ? "1.25rem" : "1rem",
+    paddingRight: isActive ? "1.25rem" : "1rem",
+  }),
+};
+
+const labelVariants = {
+  initial: { width: 0, opacity: 0 },
+  animate: { width: "auto", opacity: 1 },
+  exit: { width: 0, opacity: 0 },
+};
+
+const springTransition = { type: "spring" as const, stiffness: 350, damping: 35 };
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
@@ -273,172 +289,246 @@ export default function Navbar() {
         </div>
       )}
 
-      <Disclosure as="nav" className="bg-black/40 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] sticky top-0 z-50 border-b border-white/[0.04]">
-        {({ open }) => (
-          <>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex h-16 items-center justify-between">
-                <div className="flex items-center">
-                  <Image
-                    src="/img/logohaed1.png"
-                    alt="โลโก้"
-                    width={120}
-                    height={120}
-                    priority
-                    className="object-contain transition-transform duration-300 hover:scale-105"
-                  />
-                </div>
-
-                <div className="hidden md:flex items-center space-x-4">
-                  {navigation.map((item) => (
-                    <button
-                      key={item.name}
-                      onClick={() => handleNavigation(item.href)}
-                      className={classNames(
-                        pathname === item.href
-                          ? "bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20"
-                          : "text-gray-400 hover:text-white hover:bg-white/[0.03] border border-transparent",
-                        "rounded-full px-4 py-1.5 text-xs font-light tracking-wider flex items-center gap-2 transition-all duration-500"
-                      )}
-                      aria-label={`ไปที่${item.name}`}
-                    >
-                      {item.icon}
-                      {item.name}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="relative flex items-center space-x-4" ref={dropdownRef}>
-                  <button
-                    type="button"
-                    className="relative rounded-full p-2 text-gray-400 hover:text-white hover:bg-white/[0.03] transition-all duration-300"
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                    aria-label="ดูการแจ้งเตือน"
-                    aria-haspopup="true"
-                    aria-expanded={dropdownOpen}
-                  >
-                    <BellAlertIcon className="h-5 w-5" aria-hidden="true" />
-                    {notifications > 0 && (
-                      <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[9px] font-semibold text-black bg-[#d4af37] rounded-full">
-                        {notifications}
-                      </span>
-                    )}
-                  </button>
-
-                  {dropdownOpen && (
-                    <RegistrationDropdown
-                      registrations={registrations}
-                      onClose={() => setDropdownOpen(false)}
-                    />
-                  )}
-
-                  {session ? (
-                    <Menu as="div" className="relative">
-                      <Menu.Button className="flex rounded-full bg-white/[0.02] text-sm focus:outline-none focus:ring-1 focus:ring-[#d4af37]/50 focus:ring-offset-1 focus:ring-offset-black transition-all duration-300">
-                        <span className="sr-only">เปิดเมนูผู้ใช้</span>
-                        <Image
-                          className="rounded-full border border-white/[0.08]"
-                          src={session.user.image || "/img/default-profile.png"}
-                          alt="ภาพโปรไฟล์"
-                          width={32}
-                          height={32}
-                        />
-                      </Menu.Button>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-200"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-150"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-0 mt-3 w-56 origin-top-right rounded-xl bg-black/90 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/[0.05] focus:outline-none overflow-hidden">
-                          <div className="p-4 border-b border-white/[0.05] bg-white/[0.01]">
-                            <div className="text-center">
-                              <p className="text-xs font-light tracking-wider text-white mb-0.5">{session.user.name || "ผู้ใช้"}</p>
-                              <p className="text-[10px] text-gray-500 truncate">{session.user.email || "ไม่ระบุอีเมล"}</p>
-                            </div>
-                          </div>
-                          <div className="py-1">
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  onClick={handleEditProfile}
-                                  className={classNames(
-                                    active ? "bg-white/[0.04] text-[#d4af37]" : "text-gray-300",
-                                    "flex items-center gap-2 w-full px-4 py-3 text-xs font-light tracking-wide transition-colors"
-                                  )}
-                                >
-                                  <PencilSquareIcon className="h-4 w-4" />
-                                  แก้ไขโปรไฟล์
-                                </button>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                  onClick={() => signOut()}
-                                  className={classNames(
-                                    active ? "bg-white/[0.04] text-red-400" : "text-gray-300",
-                                    "flex items-center gap-2 w-full px-4 py-3 text-xs font-light tracking-wide transition-colors border-t border-white/[0.02]"
-                                  )}
-                                >
-                                  <ArrowLeftStartOnRectangleIcon className="h-4 w-4" />
-                                  ออกจากระบบ
-                                </button>
-                              )}
-                            </Menu.Item>
-                          </div>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
-                  ) : (
-                    <button
-                      onClick={() => router.push("/login")}
-                      className="border border-[#d4af37]/30 hover:border-[#d4af37] text-gray-300 hover:text-black hover:bg-[#d4af37] rounded-full px-5 py-1.5 text-xs font-light tracking-wider transition-all duration-500"
-                      aria-label="เข้าสู่ระบบ"
-                    >
-                      เข้าสู่ระบบ
-                    </button>
-                  )}
-
-                  <Disclosure.Button className="md:hidden rounded-lg p-2 text-gray-400 hover:text-white hover:bg-white/[0.03] focus:outline-none">
-                    <span className="sr-only">เปิดเมนูหลัก</span>
-                    {open ? (
-                      <XMarkIcon className="h-5 w-5" aria-hidden="true" />
-                    ) : (
-                      <Bars3Icon className="h-5 w-5" aria-hidden="true" />
-                    )}
-                  </Disclosure.Button>
-                </div>
-              </div>
+      <nav className="bg-[#0c0a09]/95 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] sticky top-0 z-50 border-b border-white/[0.04]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center">
+              <Image
+                src="/img/logohaed1.png"
+                alt="โลโก้"
+                width={120}
+                height={120}
+                priority
+                className="object-contain transition-transform duration-300 hover:scale-105"
+              />
             </div>
 
-            <Disclosure.Panel className="md:hidden">
-              <div className="space-y-2 px-3 pb-4 pt-2 bg-black/90 backdrop-blur-xl border-t border-white/[0.04]">
-                {navigation.map((item) => (
-                  <Disclosure.Button
+            {/* Desktop Navigation (Center) */}
+            <div className="hidden md:flex items-center bg-white/[0.01] border border-white/[0.03] p-1 rounded-full relative">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+
+                return (
+                  <button
                     key={item.name}
-                    as="button"
                     onClick={() => handleNavigation(item.href)}
-                    className={classNames(
-                      pathname === item.href
-                        ? "bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20"
-                        : "text-gray-400 hover:text-white hover:bg-white/[0.02] border border-transparent",
-                      "flex items-center gap-3 w-full px-4 py-2.5 rounded-full text-xs font-light tracking-wider transition-all duration-300"
-                    )}
-                    aria-label={`ไปที่${item.name}`}
+                    className="no-underline relative"
                   >
-                    {item.icon}
-                    {item.name}
-                  </Disclosure.Button>
-                ))}
-              </div>
-            </Disclosure.Panel>
-          </>
-        )}
-      </Disclosure>
+                    <motion.div
+                      variants={tabVariants}
+                      initial={false}
+                      animate="animate"
+                      custom={isActive}
+                      transition={springTransition}
+                      className={classNames(
+                        "relative flex items-center rounded-full py-1.5 cursor-pointer text-xs font-light tracking-wider transition-colors",
+                        isActive
+                          ? "bg-orange-500/10 text-orange-500 border border-orange-500/20"
+                          : "text-gray-400 hover:text-white hover:bg-white/[0.02] border border-transparent"
+                      )}
+                    >
+                      <Icon size={14} strokeWidth={2} />
+                      <AnimatePresence initial={false}>
+                        {isActive && (
+                          <motion.span
+                            variants={labelVariants}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            transition={springTransition}
+                            className="overflow-hidden whitespace-nowrap"
+                          >
+                            {item.name}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Tubelight Lamp active indicator */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="lamp-desktop"
+                          className="absolute -top-[1px] left-1/2 -translate-x-1/2 w-8 h-[2px] bg-orange-500 rounded-b-full z-10"
+                          initial={false}
+                          transition={{
+                            type: "spring" as const,
+                            stiffness: 350,
+                            damping: 30,
+                          }}
+                        >
+                          <div className="absolute w-10 h-4 bg-orange-500/30 rounded-full blur-sm -top-1 -left-1" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Notifications & Profile (Right) */}
+            <div className="relative flex items-center space-x-4" ref={dropdownRef}>
+              <button
+                type="button"
+                className="relative rounded-full p-2 text-gray-400 hover:text-white hover:bg-white/[0.03] transition-all duration-300"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                aria-label="ดูการแจ้งเตือน"
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen}
+              >
+                <BellAlertIcon className="h-5 w-5" aria-hidden="true" />
+                {notifications > 0 && (
+                  <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[9px] font-semibold text-black bg-orange-500 rounded-full">
+                    {notifications}
+                  </span>
+                )}
+              </button>
+
+              {dropdownOpen && (
+                <RegistrationDropdown
+                  registrations={registrations}
+                  onClose={() => setDropdownOpen(false)}
+                />
+              )}
+
+              {session ? (
+                <Menu as="div" className="relative">
+                  <Menu.Button className="flex rounded-full bg-white/[0.02] text-sm focus:outline-none focus:ring-1 focus:ring-orange-500/50 focus:ring-offset-1 focus:ring-offset-black transition-all duration-300">
+                    <span className="sr-only">เปิดเมนูผู้ใช้</span>
+                    <Image
+                      className="rounded-full border border-white/[0.08]"
+                      src={session.user.image || "/img/default-profile.png"}
+                      alt="ภาพโปรไฟล์"
+                      width={32}
+                      height={32}
+                    />
+                  </Menu.Button>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-200"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute right-0 mt-3 w-56 origin-top-right rounded-xl bg-black/90 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/[0.05] focus:outline-none overflow-hidden">
+                      <div className="p-4 border-b border-white/[0.05] bg-white/[0.01]">
+                        <div className="text-center">
+                          <p className="text-xs font-light tracking-wider text-white mb-0.5">{session.user.name || "ผู้ใช้"}</p>
+                          <p className="text-[10px] text-gray-500 truncate">{session.user.email || "ไม่ระบุอีเมล"}</p>
+                        </div>
+                      </div>
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={handleEditProfile}
+                              className={classNames(
+                                active ? "bg-white/[0.04] text-orange-500" : "text-gray-300",
+                                "flex items-center gap-2 w-full px-4 py-3 text-xs font-light tracking-wide transition-colors"
+                              )}
+                            >
+                              <PencilSquareIcon className="h-4 w-4" />
+                              แก้ไขโปรไฟล์
+                            </button>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => signOut()}
+                              className={classNames(
+                                active ? "bg-white/[0.04] text-red-400" : "text-gray-300",
+                                "flex items-center gap-2 w-full px-4 py-3 text-xs font-light tracking-wide transition-colors border-t border-white/[0.02]"
+                              )}
+                            >
+                              <ArrowLeftStartOnRectangleIcon className="h-4 w-4" />
+                              ออกจากระบบ
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              ) : (
+                <button
+                  onClick={() => router.push("/login")}
+                  className="border border-orange-500/30 hover:border-orange-500 text-gray-300 hover:text-black hover:bg-orange-500 rounded-full px-5 py-1.5 text-xs font-light tracking-wider transition-all duration-500"
+                  aria-label="เข้าสู่ระบบ"
+                >
+                  เข้าสู่ระบบ
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Floating Bottom Bar */}
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-sm">
+        <div className="flex justify-center items-center gap-2 bg-black/80 border border-white/[0.06] backdrop-blur-xl py-2 px-3 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.8)] relative">
+          {navigation.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+
+            return (
+              <button
+                key={item.name}
+                onClick={() => handleNavigation(item.href)}
+                className="relative flex items-center justify-center flex-1"
+              >
+                <motion.div
+                  variants={tabVariants}
+                  initial={false}
+                  animate="animate"
+                  custom={isActive}
+                  transition={springTransition}
+                  className={classNames(
+                    "relative flex items-center justify-center rounded-full py-2 px-3.5 cursor-pointer text-xs font-light tracking-wider transition-all",
+                    isActive
+                      ? "bg-orange-500/10 text-orange-500 border border-orange-500/20 gap-2"
+                      : "text-gray-400 hover:text-white gap-0"
+                  )}
+                >
+                  <Icon size={16} strokeWidth={2} />
+                  <AnimatePresence initial={false}>
+                    {isActive && (
+                      <motion.span
+                        variants={labelVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        transition={springTransition}
+                        className="overflow-hidden whitespace-nowrap text-[10px]"
+                      >
+                        {item.name}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Tubelight Lamp active indicator */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="lamp-mobile"
+                      className="absolute -top-[2px] left-1/2 -translate-x-1/2 w-8 h-[2px] bg-orange-500 rounded-b-full z-10"
+                      initial={false}
+                      transition={{
+                        type: "spring" as const,
+                        stiffness: 350,
+                        damping: 30,
+                      }}
+                    >
+                      <div className="absolute w-10 h-4 bg-orange-500/30 rounded-full blur-sm -top-1 -left-1" />
+                    </motion.div>
+                  )}
+                </motion.div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </>
   );
 }

@@ -76,12 +76,12 @@ import mongoose from "mongoose";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   await connectToDatabase();
 
   try {
-    const { id } = params; // ❌ ไม่ต้อง await
+    const { id } = await context.params;
 
     console.log("🟡 API received request for News ID:", id);
 

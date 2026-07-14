@@ -114,7 +114,7 @@ html, body {
   font-family: 'IBM Plex Sans Thai', 'Noto Sans Thai', sans-serif;
 }
 
-/* Custom Dots for react-slick in Luxury style */
+/* Custom Dots for react-slick in Minimal style */
 .custom-dots.slick-dots {
   bottom: 20px !important;
 }
@@ -126,35 +126,35 @@ html, body {
 }
 
 .custom-dots.slick-dots li.slick-active button:before {
-  color: #d4af37 !important; /* Gold */
+  color: #f97316 !important; /* Orange */
   font-size: 12px !important;
   opacity: 1 !important;
 }
 
-/* Luxury gold glow animation */
-@keyframes gold-pulse {
+/* Minimal orange glow animation */
+@keyframes orange-pulse {
   0%, 100% {
     opacity: 0.8;
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.15);
   }
   50% {
     opacity: 1;
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
   }
 }
 
-.gold-glow {
+.orange-glow {
   transition: all 0.3s ease;
 }
-.gold-glow:hover {
-  animation: gold-pulse 2s infinite ease-in-out;
-  border-color: rgba(212, 175, 55, 0.5) !important;
+.orange-glow:hover {
+  animation: orange-pulse 2s infinite ease-in-out;
+  border-color: rgba(249, 115, 22, 0.4) !important;
 }
 
-/* Custom gold loader */
+/* Custom orange loader */
 .luxury-loader {
   border: 2px solid rgba(255, 255, 255, 0.05);
-  border-top: 2px solid #d4af37;
+  border-top: 2px solid #f97316;
   border-radius: 50%;
   width: 50px;
   height: 50px;

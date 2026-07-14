@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="th">
-      <body className={ibmPlexThai.className}>
+      <body className={`${ibmPlexThai.className} bg-[#0a0a0a] text-white min-h-screen`}>
         <AuthProvider>
           <ClientLayout>{children}</ClientLayout>
         </AuthProvider>

@@ -120,69 +120,77 @@ export default function NewsDetailPage() {
 
   if (!news) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-        กำลังโหลด...
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white">
+        <div className="luxury-loader" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      {/* ปุ่มด้านบน */}
-      <div className="flex justify-between items-center mb-6">
-        <button
-          onClick={() => router.push("/news")}
-          className="flex items-center space-x-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition duration-300"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="w-5 h-5"
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+      <div className="container mx-auto max-w-4xl">
+        {/* Top Bar Action Buttons */}
+        <div className="flex justify-between items-center mb-10 select-none">
+          <button
+            onClick={() => router.push("/news")}
+            className="flex items-center space-x-2 px-4 py-2.5 border border-white/[0.08] hover:bg-white/[0.03] text-gray-300 rounded-xl transition duration-300 text-xs font-light tracking-wider"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 19.5L8.25 12l7.5-7.5"
-            />
-          </svg>
-          <span>ย้อนกลับ</span>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-4 h-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
+            <span>ย้อนกลับ</span>
+          </button>
 
-        {/* ✅ ปุ่มลงทะเบียนกิจกรรม */}
-        <button
-          onClick={() => router.push("/register")}
-          className="px-6 py-2 bg-green-600 hover:bg-red-700 text-white rounded-lg font-semibold transition duration-300"
-        >
-          ลงทะเบียนกิจกรรม
-        </button>
-      </div>
-
-      {/* กล่องข่าวสาร */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className="bg-white text-black rounded-lg p-6 shadow-lg"
-      >
-        <h1 className="text-3xl font-bold mb-6 text-gray-900">{news.title}</h1>
-
-        <div className="w-full h-auto mb-6 overflow-hidden rounded-lg">
-          <Image
-            src={news.image}
-            alt={news.title}
-            width={1200}
-            height={800}
-            objectFit="cover"
-            className="rounded"
-            priority
-          />
+          {/* ✅ ปุ่มลงทะเบียนกิจกรรม */}
+          <button
+            onClick={() => router.push("/register")}
+            className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-black text-xs font-medium tracking-wider rounded-xl shadow-[0_5px_15px_rgba(249,115,22,0.15)] hover:shadow-[0_8px_20px_rgba(249,115,22,0.3)] transition duration-300"
+          >
+            ลงทะเบียนกิจกรรม
+          </button>
         </div>
 
-        <p className="text-gray-700 leading-relaxed">{news.content}</p>
-      </motion.div>
+        {/* กล่องข่าวสาร */}
+        <motion.article
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-white"
+        >
+          {/* Title */}
+          <h1 className="text-2xl md:text-3xl font-light text-gray-100 tracking-wide leading-tight mb-8">
+            {news.title}
+          </h1>
+
+          {/* Image */}
+          <div className="w-full relative h-[450px] mb-8 overflow-hidden rounded-2xl bg-white/[0.01]">
+            <Image
+              src={news.image}
+              alt={news.title}
+              layout="fill"
+              objectFit="cover"
+              className="rounded-2xl"
+              priority
+            />
+          </div>
+
+          {/* Content text */}
+          <div className="text-gray-300 font-light leading-relaxed text-sm md:text-base whitespace-pre-line space-y-4 select-text">
+            {news.content}
+          </div>
+        </motion.article>
+      </div>
     </div>
   );
 }

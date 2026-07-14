@@ -364,7 +364,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { FaClipboardList, FaRegFileAlt, FaUsers } from "react-icons/fa";
 import { Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -378,6 +377,8 @@ import {
   DoughnutController,
   Chart,
 } from "chart.js";
+import { Users, CalendarRange, Newspaper } from "lucide-react";
+import { motion } from "framer-motion";
 
 // ลงทะเบียนคอมโพเนนต์ Chart.js
 ChartJS.register(Title, Tooltip, ArcElement, CategoryScale, LinearScale, DoughnutController);
@@ -409,12 +410,21 @@ const SummaryCard: React.FC<{
   value: string | number;
   icon: React.ReactNode;
   color: string;
-}> = ({ title, value, icon, color }) => (
-  <div className="relative bg-gray-800/50 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-gray-700/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-    <div className="flex items-center justify-center mb-4 text-4xl">{icon}</div>
-    <h2 className="text-lg font-medium text-gray-300 text-center">{title}</h2>
-    <p className={`text-4xl font-bold text-center ${color}`}>{value}</p>
-  </div>
+  delay: number;
+}> = ({ title, value, icon, color, delay }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay }}
+    whileHover={{ y: -4 }}
+    className="relative bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/30 transition-all duration-300 flex flex-col items-center"
+  >
+    <div className="flex items-center justify-center mb-4 text-3xl p-3 bg-white/[0.02] rounded-2xl border border-white/[0.04]">
+      {icon}
+    </div>
+    <h2 className="text-xs font-light text-gray-400 tracking-wider text-center uppercase mb-2">{title}</h2>
+    <p className={`text-4xl font-extralight tracking-tight text-center ${color}`}>{value}</p>
+  </motion.div>
 );
 
 // คอมโพเนนต์กราฟ Doughnut
@@ -422,13 +432,20 @@ const DoughnutChartCard: React.FC<{
   title: string;
   data: ChartData<"doughnut">;
   options: ChartOptions<"doughnut">;
-}> = ({ title, data, options }) => (
-  <div className="relative bg-gray-800/50 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-gray-700/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-    <h3 className="text-lg font-medium text-gray-300 text-center mb-4">{title}</h3>
-    <div className="h-56">
+  delay: number;
+}> = ({ title, data, options, delay }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay }}
+    whileHover={{ y: -4 }}
+    className="relative bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/30 transition-all duration-300 flex flex-col items-center justify-between"
+  >
+    <h3 className="text-xs font-light text-gray-400 tracking-wider text-center uppercase mb-6">{title}</h3>
+    <div className="h-48 w-full max-w-[200px] flex items-center justify-center relative">
       <Doughnut data={data} options={options} />
     </div>
-  </div>
+  </motion.div>
 );
 
 export default function AdminDashboard() {
@@ -478,21 +495,25 @@ export default function AdminDashboard() {
       legend: { display: false },
       tooltip: {
         enabled: true,
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
-        titleFont: { family: "'Sarabun', sans-serif", size: 14 },
-        bodyFont: { family: "'Sarabun', sans-serif", size: 14 },
+        backgroundColor: "rgba(0, 0, 0, 0.9)",
+        titleFont: { family: "'IBM Plex Sans Thai', sans-serif", size: 12, weight: "normal" },
+        bodyFont: { family: "'IBM Plex Sans Thai', sans-serif", size: 12, weight: "normal" },
+        borderColor: "rgba(255, 255, 255, 0.05)",
+        borderWidth: 1,
+        padding: 10,
+        cornerRadius: 8,
         callbacks: {
-          label: (context) => `${context.parsed.toFixed(2)}%`,
+          label: (context) => ` ${context.parsed.toFixed(2)}%`,
         },
       },
     },
     responsive: true,
     maintainAspectRatio: false,
-    cutout: "70%", // ทำให้เป็น Doughnut
+    cutout: "82%", // Thinner doughnut cutout looks extremely premium
     animation: {
       animateScale: true,
       animateRotate: true,
-      duration: 1000,
+      duration: 1200,
     },
   };
 
@@ -501,9 +522,9 @@ export default function AdminDashboard() {
     datasets: [
       {
         data: [calculateParticipationRate(), 100 - calculateParticipationRate()],
-        backgroundColor: ["#3B82F6", "#4B5563"],
+        backgroundColor: ["#f97316", "rgba(255,255,255,0.03)"],
         borderWidth: 0,
-        hoverOffset: 30,
+        hoverOffset: 15,
       },
     ],
   };
@@ -511,10 +532,10 @@ export default function AdminDashboard() {
   const activitiesData: ChartData<"doughnut"> = {
     datasets: [
       {
-        data: [activities.length, 100 - activities.length],
-        backgroundColor: ["#10B981", "#4B5563"],
+        data: [activities.length, Math.max(100 - activities.length, 0)],
+        backgroundColor: ["#fb923c", "rgba(255,255,255,0.03)"],
         borderWidth: 0,
-        hoverOffset: 30,
+        hoverOffset: 15,
       },
     ],
   };
@@ -522,71 +543,81 @@ export default function AdminDashboard() {
   const newsData: ChartData<"doughnut"> = {
     datasets: [
       {
-        data: [newsCount, 100 - newsCount],
-        backgroundColor: ["#FACC15", "#4B5563"],
+        data: [newsCount, Math.max(100 - newsCount, 0)],
+        backgroundColor: ["#ea580c", "rgba(255,255,255,0.03)"],
         borderWidth: 0,
-        hoverOffset: 30,
+        hoverOffset: 15,
       },
     ],
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-        <div className="flex flex-col items-center gap-4 animate-pulse">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-          <p className="text-xl font-medium">กำลังโหลดข้อมูลแดชบอร์ด...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white">
+        <div className="luxury-loader" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white p-4 sm:p-8">
-      {/* หัวข้อแดชบอร์ด */}
-      <h1 className="text-4xl font-bold text-center mb-10 animate-fade-in">
-        แดชบอร์ดผู้ดูแลระบบ
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+      <div className="container mx-auto max-w-7xl">
+        {/* หัวข้อแดชบอร์ด */}
+        <div className="text-center mb-16 space-y-3 select-none">
+          <h2 className="text-[10px] tracking-[0.3em] font-light text-orange-500 uppercase">
+            ADMINISTRATION
+          </h2>
+          <h1 className="text-3xl font-extralight text-gray-200 tracking-wide">
+            แผงควบคุมและข้อมูลสถิติ
+          </h1>
+        </div>
 
-      {/* การ์ดสรุป */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        <SummaryCard
-          title="เปอร์เซ็นต์ผู้เข้าร่วม"
-          value={`${calculateParticipationRate().toFixed(2)}%`}
-          icon={<FaUsers className="text-blue-400" />}
-          color="text-blue-400"
-        />
-        <SummaryCard
-          title="จำนวนกิจกรรมทั้งหมด"
-          value={activities.length}
-          icon={<FaClipboardList className="text-green-400" />}
-          color="text-green-400"
-        />
-        <SummaryCard
-          title="จำนวนข่าวสารทั้งหมด"
-          value={newsCount}
-          icon={<FaRegFileAlt className="text-yellow-400" />}
-          color="text-yellow-400"
-        />
-      </div>
+        {/* การ์ดสรุป */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          <SummaryCard
+            title="เปอร์เซ็นต์ผู้เข้าร่วม"
+            value={`${calculateParticipationRate().toFixed(2)}%`}
+            icon={<Users className="h-6 w-6 text-orange-500/80" />}
+            color="text-white"
+            delay={0.05}
+          />
+          <SummaryCard
+            title="จำนวนกิจกรรมทั้งหมด"
+            value={activities.length}
+            icon={<CalendarRange className="h-6 w-6 text-orange-500/80" />}
+            color="text-white"
+            delay={0.1}
+          />
+          <SummaryCard
+            title="จำนวนข่าวสารทั้งหมด"
+            value={newsCount}
+            icon={<Newspaper className="h-6 w-6 text-orange-500/80" />}
+            color="text-white"
+            delay={0.15}
+          />
+        </div>
 
-      {/* กราฟ Doughnut */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <DoughnutChartCard
-          title="เปอร์เซ็นต์ผู้เข้าร่วม"
-          data={participationData}
-          options={doughnutOptions}
-        />
-        <DoughnutChartCard
-          title="จำนวนกิจกรรมทั้งหมด"
-          data={activitiesData}
-          options={doughnutOptions}
-        />
-        <DoughnutChartCard
-          title="จำนวนข่าวสารทั้งหมด"
-          data={newsData}
-          options={doughnutOptions}
-        />
+        {/* กราฟ Doughnut */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <DoughnutChartCard
+            title="เปอร์เซ็นต์ผู้เข้าร่วม"
+            data={participationData}
+            options={doughnutOptions}
+            delay={0.2}
+          />
+          <DoughnutChartCard
+            title="จำนวนกิจกรรมทั้งหมด"
+            data={activitiesData}
+            options={doughnutOptions}
+            delay={0.25}
+          />
+          <DoughnutChartCard
+            title="จำนวนข่าวสารทั้งหมด"
+            data={newsData}
+            options={doughnutOptions}
+            delay={0.3}
+          />
+        </div>
       </div>
     </div>
   );

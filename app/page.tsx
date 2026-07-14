@@ -119,7 +119,7 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-xs font-light tracking-[0.25em] text-[#d4af37]"
+          className="text-xs font-light tracking-[0.25em] text-[#f97316]"
         >
           RMUTI ACTIVITY HUB
         </motion.p>
@@ -182,7 +182,7 @@ export default function HomePage() {
                 className="flex justify-center mt-8"
               >
                 <Link href="/news">
-                  <button className="border border-[#d4af37]/40 hover:border-[#d4af37] text-white hover:text-black hover:bg-[#d4af37] px-10 py-3 rounded-full text-xs font-light tracking-widest transition-all duration-500 shadow-[0_0_15px_rgba(212,175,55,0.03)] hover:shadow-[0_0_25px_rgba(212,175,55,0.2)]">
+                  <button className="border border-orange-500/40 hover:border-orange-500 text-white hover:text-black hover:bg-orange-500 px-10 py-3 rounded-full text-xs font-light tracking-widest transition-all duration-500 shadow-[0_0_15px_rgba(249,115,22,0.03)] hover:shadow-[0_0_25px_rgba(249,115,22,0.2)]">
                     ดูข่าวสารทั้งหมด
                   </button>
                 </Link>
@@ -212,10 +212,10 @@ export default function HomePage() {
               initial="hidden"
               animate="visible"
               whileHover="hover"
-              className="bg-white/[0.02] backdrop-blur-xl p-8 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.3)] border border-white/[0.04] flex flex-col items-center gold-glow"
+              className="bg-white/[0.02] backdrop-blur-xl p-8 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.3)] border border-white/[0.04] flex flex-col items-center orange-glow"
             >
-              <item.icon className="text-2xl text-[#d4af37]/80 mb-4" />
-              <span className="text-[10px] tracking-[0.25em] font-light text-[#d4af37] mb-1">{item.unit}</span>
+              <item.icon className="text-2xl text-[#f97316]/80 mb-4" />
+              <span className="text-[10px] tracking-[0.25em] font-light text-[#f97316] mb-1">{item.unit}</span>
               <h2 className="text-xs font-light text-gray-400 mb-3">{item.label}</h2>
               <p className="text-4xl font-extralight tracking-tight text-white">{item.value}</p>
             </motion.div>
@@ -225,14 +225,14 @@ export default function HomePage() {
         {/* Activities Table */}
         <section className="bg-white/[0.02] backdrop-blur-xl rounded-2xl shadow-[0_20px_45px_rgba(0,0,0,0.4)] border border-white/[0.04] overflow-hidden">
           <div className="p-6 border-b border-white/[0.04] flex items-center gap-3">
-            <FaBullhorn className="text-[#d4af37] text-lg" />
+            <FaBullhorn className="text-orange-500 text-lg" />
             <h3 className="text-sm font-light tracking-[0.1em] text-gray-200 uppercase">กิจกรรมล่าสุด / Recent Activities</h3>
           </div>
           <table className="w-full text-left">
             <thead className="bg-white/[0.01] border-b border-white/[0.04]">
               <tr>
-                <th className="p-4 text-[10px] tracking-[0.2em] font-light text-[#d4af37] uppercase pl-6">ชื่อกิจกรรม (Activity Title)</th>
-                <th className="p-4 text-[10px] tracking-[0.2em] font-light text-[#d4af37] uppercase pr-6 text-right sm:text-left">ผู้เข้าร่วม (Participation)</th>
+                <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase pl-6">ชื่อกิจกรรม (Activity Title)</th>
+                <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase pr-6 text-right sm:text-left">ผู้เข้าร่วม (Participation)</th>
               </tr>
             </thead>
             <tbody>
@@ -265,7 +265,7 @@ export default function HomePage() {
                               initial={{ width: 0 }}
                               animate={{ width: `${calculateParticipationRate(activity)}%` }}
                               transition={{ duration: 1, ease: "easeOut" }}
-                              className="bg-[#d4af37] h-full rounded-full"
+                              className="bg-orange-500 h-full rounded-full"
                             />
                           </div>
                           <span className="text-xs font-light text-gray-400 w-12 text-right">

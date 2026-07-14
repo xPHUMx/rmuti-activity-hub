@@ -70,7 +70,7 @@ export default function LoginPage() {
 
         {/* Title */}
         <div className="text-center mb-10 space-y-2">
-          <h2 className="text-[10px] tracking-[0.3em] font-light text-[#d4af37] uppercase">
+          <h2 className="text-[10px] tracking-[0.3em] font-light text-orange-500 uppercase">
             RMUTI Activity Hub
           </h2>
           <p className="text-xl font-extralight text-gray-300 tracking-wide">
@@ -82,7 +82,7 @@ export default function LoginPage() {
         <button
           onClick={handleLogin}
           disabled={loggingIn}
-          className="bg-white text-black hover:bg-[#d4af37] hover:text-black w-full rounded-full flex justify-center items-center text-xs font-light tracking-[0.15em] py-3.5 px-6 transition duration-500 transform hover:scale-[1.02] border border-white/[0.1] hover:border-[#d4af37] shadow-[0_5px_15px_rgba(255,255,255,0.05)] hover:shadow-[0_10px_25px_rgba(212,175,55,0.2)] disabled:opacity-50"
+          className="bg-white text-black hover:bg-orange-500 hover:text-black w-full rounded-full flex justify-center items-center text-xs font-light tracking-[0.15em] py-3.5 px-6 transition duration-500 transform hover:scale-[1.02] border border-white/[0.1] hover:border-orange-500 shadow-[0_5px_15px_rgba(255,255,255,0.05)] hover:shadow-[0_10px_25px_rgba(249,115,22,0.2)] disabled:opacity-50"
         >
           {loggingIn ? (
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent" />
@@ -105,7 +105,7 @@ export default function LoginPage() {
           <p className="text-[10px] tracking-wide font-light text-gray-500 uppercase">
             โปรดใช้บัญชีอีเมลมหาวิทยาลัยในการเข้าสู่ระบบ
           </p>
-          <p className="text-[9px] text-[#d4af37]/60 font-light mt-1">
+          <p className="text-[9px] text-orange-500/60 font-light mt-1">
             (@mail.rmuti.ac.th)
           </p>
         </div>
