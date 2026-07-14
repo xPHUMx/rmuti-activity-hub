@@ -161,4 +161,22 @@ html, body {
   animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 
+/* Scanner line keyframe animation */
+@keyframes scanner-line {
+  0% {
+    top: 0%;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: 0%;
+  }
+}
+
+.animate-scanner-line {
+  animation: scanner-line 3s linear infinite;
+}
+
+
 

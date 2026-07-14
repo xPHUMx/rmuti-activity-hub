@@ -15,7 +15,8 @@ import {
   ChevronDown, 
   Menu, 
   X,
-  User
+  User,
+  QrCode
 } from "lucide-react";
 
 const navigation = [
@@ -23,6 +24,7 @@ const navigation = [
   { name: "จัดการผู้ใช้", href: "/admin/users", icon: Users },
   { name: "แก้ไขข่าวสาร", href: "/admin/news", icon: Newspaper },
   { name: "แก้ไขกิจกรรม", href: "/admin/activities", icon: CalendarRange },
+  { name: "สแกนเช็คชื่อ", href: "/admin/scan", icon: QrCode },
 ];
 
 export default function AdminNavbar() {
