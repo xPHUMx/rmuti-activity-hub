@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,13 +8,25 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Image from "next/image";
 import Link from "next/link";
-import { FaUser, FaChartBar, FaPercentage, FaSpinner, FaBullhorn } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Users, 
+  CalendarRange, 
+  Clock, 
+  X, 
+  ArrowUpRight, 
+  Calendar, 
+  QrCode, 
+  MapPin, 
+  BookOpen,
+  Award
+} from "lucide-react";
 
 type Activity = {
   _id: string;
   title: string;
-  time: string;
+  activityStart?: string;
+  time?: string;
   participants?: { _id: string }[];
   maxParticipants?: number;
 };
@@ -24,6 +35,19 @@ type News = {
   _id: string;
   title: string;
   image: string;
+};
+
+type Registration = {
+  _id: string;
+  activityId: {
+    _id: string;
+    title: string;
+    description?: string;
+    activityStart?: string;
+    time?: string;
+    location: string;
+  };
+  registrationDate: string;
 };
 
 const sliderSettings = {
@@ -42,22 +66,16 @@ const sliderSettings = {
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  hover: { scale: 1.03, transition: { duration: 0.3 } },
-};
-
-const tableRowVariants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
+  hover: { scale: 1.02, transition: { duration: 0.3 } },
 };
 
 export default function HomePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activities, setActivities] = useState<Activity[]>([]);
   const [news, setNews] = useState<News[]>([]);
-  const [onlineUsers, setOnlineUsers] = useState(0);
-  const [totalUsers, setTotalUsers] = useState(100);
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showQRModal, setShowQRModal] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -68,23 +86,14 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [activityRes, newsRes] = await Promise.all([
-          fetch("/api/activities"),
-          fetch("/api/news"),
-        ]);
-        const [fetchedActivities, fetchedNews]: [Activity[], News[]] = await Promise.all([
-          activityRes.json(),
-          newsRes.json(),
-        ]);
-        setActivities(
-          fetchedActivities
-            .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-            .slice(0, 5)
-        );
-        setNews(fetchedNews);
+        const newsRes = await fetch("/api/news");
+        if (newsRes.ok) {
+          const fetchedNews = await newsRes.json();
+          setNews(fetchedNews);
+        }
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching news:", error);
         setLoading(false);
       }
     }
@@ -92,28 +101,29 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    async function fetchOnlineUsers() {
-      try {
-        const response = await fetch("/api/online-users", { cache: "no-store" });
-        const data = await response.json();
-        setOnlineUsers(data.count || 0);
-      } catch (error) {
-        console.error("Error fetching online users:", error);
+    if (session?.user?.id) {
+      async function fetchRegistrations() {
+        try {
+          const res = await fetch(`/api/users/registrations?userId=${session?.user?.id}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data)) {
+              setRegistrations(data);
+            } else {
+              setRegistrations([]);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching registrations:", error);
+        }
       }
+      fetchRegistrations();
     }
-    fetchOnlineUsers();
-    const interval = setInterval(fetchOnlineUsers, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const calculateParticipationRate = (activity: Activity): number => {
-    if (!activity.maxParticipants) return 0;
-    return ((activity.participants?.length || 0) / activity.maxParticipants) * 100;
-  };
+  }, [session]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0a0a0a] to-[#121212] text-white">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white">
         <div className="luxury-loader mb-4" />
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -127,8 +137,23 @@ export default function HomePage() {
     );
   }
 
+  // Calculate Student Stats
+  const targetHours = 40;
+  const completedHours = registrations.length * 6; // Assume 6 hours per activity
+  const hoursProgress = Math.min((completedHours / targetHours) * 100, 100);
+
+  // Find next upcoming activity location
+  const nextActivity = registrations
+    .map(r => r.activityId)
+    .filter(act => act && (act.activityStart || act.time))
+    .find(act => {
+      const dateStr = act.activityStart || act.time;
+      return dateStr ? new Date(dateStr).getTime() > Date.now() : false;
+    });
+  const nextLocation = nextActivity ? nextActivity.location : "ไม่มีกิจกรรมถัดไป";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -152,7 +177,7 @@ export default function HomePage() {
                   <Link key={newsItem._id} href={`/news/${newsItem._id}`}>
                     <motion.div
                       whileHover={{ scale: 1.01 }}
-                      className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/[0.03] cursor-pointer"
+                      className="relative w-full h-[320px] md:h-[450px] rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/[0.03] cursor-pointer"
                     >
                       <Image
                         src={newsItem.image}
@@ -161,12 +186,12 @@ export default function HomePage() {
                         style={{ objectFit: "cover" }}
                         className="transition-transform duration-700 ease-out hover:scale-105"
                       />
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent p-8">
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#050505] via-black/30 to-transparent p-6 md:p-10">
                         <motion.h2
                           initial={{ y: 20, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.2 }}
-                          className="text-lg md:text-2xl font-light tracking-wide text-white"
+                          className="text-base md:text-xl font-light tracking-wide text-white"
                         >
                           {newsItem.title}
                         </motion.h2>
@@ -182,7 +207,7 @@ export default function HomePage() {
                 className="flex justify-center mt-8"
               >
                 <Link href="/news">
-                  <button className="border border-orange-500/40 hover:border-orange-500 text-white hover:text-black hover:bg-orange-500 px-10 py-3 rounded-full text-xs font-light tracking-widest transition-all duration-500 shadow-[0_0_15px_rgba(249,115,22,0.03)] hover:shadow-[0_0_25px_rgba(249,115,22,0.2)]">
+                  <button className="border border-orange-500/30 hover:border-orange-500 text-white hover:text-black hover:bg-orange-500 px-8 py-2.5 rounded-xl text-xs font-light tracking-widest transition-all duration-500 shadow-[0_0_15px_rgba(249,115,22,0.03)] hover:shadow-[0_0_25px_rgba(249,115,22,0.2)]">
                     ดูข่าวสารทั้งหมด
                   </button>
                 </Link>
@@ -191,96 +216,259 @@ export default function HomePage() {
           )}
         </section>
 
-        {/* Stats Cards */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            { icon: FaUser, label: "ผู้ใช้ออนไลน์", value: onlineUsers, unit: "ONLINE" },
-            { icon: FaChartBar, label: "กิจกรรมทั้งหมด", value: activities.length, unit: "ACTIVITIES" },
-            {
-              icon: FaPercentage,
-              label: "เปอร์เซ็นผู้เข้าร่วม",
-              value: `${(
-                (activities.reduce((sum, a) => sum + (a.participants?.length || 0), 0) / totalUsers) *
-                100
-              ).toFixed(2)}%`,
-              unit: "PARTICIPATION"
-            },
-          ].map((item, index) => (
-            <motion.div
-              key={index}
-              variants={cardVariants}
-              initial="hidden"
-              animate="visible"
-              whileHover="hover"
-              className="bg-white/[0.02] backdrop-blur-xl p-8 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.3)] border border-white/[0.04] flex flex-col items-center orange-glow"
-            >
-              <item.icon className="text-2xl text-[#f97316]/80 mb-4" />
-              <span className="text-[10px] tracking-[0.25em] font-light text-[#f97316] mb-1">{item.unit}</span>
-              <h2 className="text-xs font-light text-gray-400 mb-3">{item.label}</h2>
-              <p className="text-4xl font-extralight tracking-tight text-white">{item.value}</p>
-            </motion.div>
-          ))}
+        {/* Personalized Student Stats Cards */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 select-none">
+          {/* Hour Tracker */}
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover="hover"
+            className="bg-white/[0.02] border border-white/[0.04] p-8 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <Award className="h-7 w-7 text-orange-500/80 p-1.5 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
+              <span className="text-[9px] font-light text-orange-500 tracking-[0.2em]">MY HOURS</span>
+            </div>
+            <div>
+              <h3 className="text-xs font-light text-gray-400 mb-1">ชั่วโมงกิจกรรมสะสม</h3>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-extralight text-white">{completedHours}</span>
+                <span className="text-xs text-gray-500">/ {targetHours} ชม.</span>
+              </div>
+              {/* Progress bar */}
+              <div className="w-full bg-white/[0.04] rounded-full h-1 mt-4 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${hoursProgress}%` }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full"
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Registered Activities Count */}
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover="hover"
+            className="bg-white/[0.02] border border-white/[0.04] p-8 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <CalendarRange className="h-7 w-7 text-orange-500/80 p-1.5 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
+              <span className="text-[9px] font-light text-orange-500 tracking-[0.2em]">REGISTERED</span>
+            </div>
+            <div>
+              <h3 className="text-xs font-light text-gray-400 mb-1">กิจกรรมที่ลงทะเบียนไว้</h3>
+              <p className="text-4xl font-extralight text-white">{registrations.length}</p>
+              <p className="text-[10px] text-gray-500 mt-4">รวมกิจกรรมทั้งหมดทุกสถานะ</p>
+            </div>
+          </motion.div>
+
+          {/* Next Location */}
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover="hover"
+            className="bg-white/[0.02] border border-white/[0.04] p-8 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <MapPin className="h-7 w-7 text-orange-500/80 p-1.5 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
+              <span className="text-[9px] font-light text-orange-500 tracking-[0.2em]">NEXT LOCATION</span>
+            </div>
+            <div>
+              <h3 className="text-xs font-light text-gray-400 mb-1">สถานที่จัดกิจกรรมถัดไป</h3>
+              <p className="text-base font-light text-white truncate">{nextLocation}</p>
+              <p className="text-[10px] text-gray-500 mt-4">
+                {nextActivity ? "จากกิจกรรมถัดไปในตารางเรียน" : "ไม่มีตารางกิจกรรมถัดไปในขณะนี้"}
+              </p>
+            </div>
+          </motion.div>
         </section>
 
-        {/* Activities Table */}
-        <section className="bg-white/[0.02] backdrop-blur-xl rounded-2xl shadow-[0_20px_45px_rgba(0,0,0,0.4)] border border-white/[0.04] overflow-hidden">
-          <div className="p-6 border-b border-white/[0.04] flex items-center gap-3">
-            <FaBullhorn className="text-orange-500 text-lg" />
-            <h3 className="text-sm font-light tracking-[0.1em] text-gray-200 uppercase">กิจกรรมล่าสุด / Recent Activities</h3>
+        {/* Quick Actions Bar */}
+        <section className="space-y-6">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-3.5 bg-orange-500 rounded-full" />
+            <h2 className="text-xs font-light tracking-[0.2em] text-gray-400 uppercase">ทางลัดกิจกรรม / Quick Actions</h2>
           </div>
-          <table className="w-full text-left">
-            <thead className="bg-white/[0.01] border-b border-white/[0.04]">
-              <tr>
-                <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase pl-6">ชื่อกิจกรรม (Activity Title)</th>
-                <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase pr-6 text-right sm:text-left">ผู้เข้าร่วม (Participation)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <AnimatePresence>
-                {activities.length === 0 ? (
-                  <motion.tr
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <td colSpan={2} className="p-12 text-center text-gray-500 font-light text-sm">
-                      ไม่มีข้อมูลกิจกรรมในขณะนี้
-                    </td>
-                  </motion.tr>
-                ) : (
-                  activities.map((activity, index) => (
-                    <motion.tr
-                      key={activity._id}
-                      variants={tableRowVariants}
-                      initial="hidden"
-                      animate="visible"
-                      transition={{ delay: index * 0.08 }}
-                      className="border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors duration-300"
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 select-none">
+            {/* Quick Register */}
+            <Link href="/register" className="group">
+              <div className="bg-white/[0.01] border border-white/[0.04] group-hover:border-orange-500/20 p-6 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer shadow-sm">
+                <div className="flex items-center gap-4">
+                  <BookOpen className="h-5 w-5 text-gray-400 group-hover:text-orange-500 transition-colors" />
+                  <span className="text-xs font-light text-gray-300 group-hover:text-white transition-colors">ลงทะเบียนกิจกรรมใหม่</span>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
+              </div>
+            </Link>
+
+            {/* Quick Calendar */}
+            <Link href="/calendar" className="group">
+              <div className="bg-white/[0.01] border border-white/[0.04] group-hover:border-orange-500/20 p-6 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer shadow-sm">
+                <div className="flex items-center gap-4">
+                  <Calendar className="h-5 w-5 text-gray-400 group-hover:text-orange-500 transition-colors" />
+                  <span className="text-xs font-light text-gray-300 group-hover:text-white transition-colors">ปฏิทินตารางกิจกรรม</span>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
+              </div>
+            </Link>
+
+            {/* Personal QR Check-in */}
+            <div 
+              onClick={() => setShowQRModal(true)}
+              className="group bg-white/[0.01] border border-white/[0.04] hover:border-orange-500/20 p-6 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer shadow-sm"
+            >
+              <div className="flex items-center gap-4">
+                <QrCode className="h-5 w-5 text-gray-400 group-hover:text-orange-500 transition-colors" />
+                <span className="text-xs font-light text-gray-300 group-hover:text-white transition-colors">แสดง QR Code เช็คอิน</span>
+              </div>
+              <ArrowUpRight className="h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
+            </div>
+          </div>
+        </section>
+
+        {/* My Registered Activities Schedule */}
+        <section className="bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <div className="p-6 md:p-8 border-b border-white/[0.04] flex items-center gap-3">
+            <Clock className="text-orange-500 text-base" />
+            <h3 className="text-xs font-light tracking-[0.15em] text-gray-300 uppercase">ตารางกิจกรรมของฉัน / My Activities</h3>
+          </div>
+          <div className="p-6 md:p-8">
+            {registrations.length === 0 ? (
+              <div className="text-center py-16 space-y-4">
+                <p className="text-sm font-light text-gray-500">คุณยังไม่มีกิจกรรมที่ลงทะเบียนไว้</p>
+                <Link href="/register">
+                  <button className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-black text-xs font-light tracking-widest rounded-xl transition duration-300">
+                    ไปหน้าลงทะเบียนกิจกรรม
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {registrations.map((reg, index) => {
+                  const act = reg.activityId;
+                  if (!act) return null;
+                  const dateStr = act.activityStart || act.time;
+                  const formattedDate = dateStr 
+                    ? new Date(dateStr).toLocaleDateString("th-TH", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "ไม่ระบุวันเวลา";
+
+                  return (
+                    <motion.div
+                      key={reg._id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      className="group bg-white/[0.01] border border-white/[0.03] hover:border-orange-500/10 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition duration-300"
                     >
-                      <td className="p-4 pl-6 text-sm font-light text-gray-200">{activity.title}</td>
-                      <td className="p-4 pr-6">
-                        <div className="flex items-center justify-end sm:justify-start gap-4">
-                          <div className="w-24 sm:w-36 bg-white/[0.05] rounded-full h-1.5 overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${calculateParticipationRate(activity)}%` }}
-                              transition={{ duration: 1, ease: "easeOut" }}
-                              className="bg-orange-500 h-full rounded-full"
-                            />
-                          </div>
-                          <span className="text-xs font-light text-gray-400 w-12 text-right">
-                            {calculateParticipationRate(activity).toFixed(1)}%
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-light text-gray-200 group-hover:text-white transition-colors">
+                          {act.title}
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-light text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {formattedDate} น.
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {act.location}
                           </span>
                         </div>
-                      </td>
-                    </motion.tr>
-                  ))
-                )}
-              </AnimatePresence>
-            </tbody>
-          </table>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="text-[10px] tracking-wider font-light text-orange-500 border border-orange-500/20 px-3 py-1 rounded-full bg-orange-500/5">
+                          +6 ชม.
+                        </span>
+                        <span className="text-[10px] tracking-wider font-light text-gray-400 bg-white/[0.03] px-3 py-1 rounded-full border border-white/[0.04]">
+                          ลงทะเบียนแล้ว
+                        </span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </section>
       </motion.div>
+
+      {/* Personal QR Code Modal */}
+      <AnimatePresence>
+        {showQRModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md px-4"
+            onClick={() => setShowQRModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-[#0b0b0b] border border-white/[0.08] p-8 rounded-3xl max-w-sm w-full text-center relative shadow-[0_20px_50px_rgba(249,115,22,0.15)] flex flex-col items-center select-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowQRModal(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-white transition"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <h2 className="text-[10px] tracking-[0.25em] font-light text-orange-500 uppercase mb-2">STUDENT ID PASS</h2>
+              <p className="text-base font-light text-gray-200 mb-6">{session?.user?.name || "STUDENT"}</p>
+              
+              {/* SVG QR Code Simulation */}
+              <div className="w-48 h-48 bg-white p-3 rounded-2xl flex items-center justify-center relative shadow-inner overflow-hidden">
+                <svg viewBox="0 0 100 100" className="w-full h-full text-black" fill="currentColor">
+                  <rect x="0" y="0" width="25" height="25" />
+                  <rect x="5" y="5" width="15" height="15" fill="white" />
+                  <rect x="8" y="8" width="9" height="9" />
+                  
+                  <rect x="75" y="0" width="25" height="25" />
+                  <rect x="80" y="5" width="15" height="15" fill="white" />
+                  <rect x="83" y="8" width="9" height="9" />
+                  
+                  <rect x="0" y="75" width="25" height="25" />
+                  <rect x="5" y="80" width="15" height="15" fill="white" />
+                  <rect x="8" y="83" width="9" height="9" />
+                  
+                  <rect x="35" y="5" width="10" height="15" />
+                  <rect x="55" y="0" width="15" height="10" />
+                  <rect x="30" y="25" width="20" height="5" />
+                  <rect x="60" y="20" width="10" height="20" />
+                  <rect x="10" y="35" width="15" height="15" />
+                  <rect x="30" y="45" width="10" height="15" />
+                  <rect x="50" y="50" width="25" height="10" />
+                  <rect x="85" y="40" width="10" height="20" />
+                  <rect x="80" y="70" width="15" height="10" />
+                  <rect x="40" y="75" width="15" height="15" />
+                  <rect x="65" y="80" width="10" height="10" />
+                </svg>
+              </div>
+              
+              <p className="text-[11px] font-light text-orange-500/70 tracking-widest mt-6 select-all font-mono">
+                {session?.user?.email?.split("@")[0]?.toUpperCase() || "STUDENT_ID"}
+              </p>
+              <p className="text-[9px] font-light text-gray-500 mt-2 uppercase">
+                ใช้สำหรับแสดงตัว ณ จุดเช็คอินกิจกรรม
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
