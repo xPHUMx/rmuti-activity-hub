@@ -36,6 +36,12 @@ export async function askGemini(prompt: string) {
 
     const data = await res.json();
 
+    // เพิ่มการเช็ค Error จาก API (เช่น โมเดลผิด, คีย์ผิด)
+    if (data.error) {
+      console.error("Gemini API Error Response:", JSON.stringify(data.error, null, 2));
+      return "ขออภัย เกิดข้อผิดพลาดจากระบบ AI";
+    }
+
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || "ขออภัย ตอบไม่ได้";
   } catch (error) {
     console.error("Gemini API Error:", error);

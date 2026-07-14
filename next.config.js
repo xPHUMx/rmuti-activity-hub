@@ -38,6 +38,7 @@ const nextConfig = {
       },
     ],
   },
+  turbopack: {},
   webpack: (config) => {
     // เพิ่มการตั้งค่า Webpack หากจำเป็น
     config.resolve.fallback = { fs: false };

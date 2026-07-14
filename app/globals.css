@@ -114,3 +114,51 @@ html, body {
   font-family: 'IBM Plex Sans Thai', 'Noto Sans Thai', sans-serif;
 }
 
+/* Custom Dots for react-slick in Luxury style */
+.custom-dots.slick-dots {
+  bottom: 20px !important;
+}
+
+.custom-dots.slick-dots li button:before {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-size: 8px !important;
+  transition: all 0.3s ease;
+}
+
+.custom-dots.slick-dots li.slick-active button:before {
+  color: #d4af37 !important; /* Gold */
+  font-size: 12px !important;
+  opacity: 1 !important;
+}
+
+/* Luxury gold glow animation */
+@keyframes gold-pulse {
+  0%, 100% {
+    opacity: 0.8;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  }
+}
+
+.gold-glow {
+  transition: all 0.3s ease;
+}
+.gold-glow:hover {
+  animation: gold-pulse 2s infinite ease-in-out;
+  border-color: rgba(212, 175, 55, 0.5) !important;
+}
+
+/* Custom gold loader */
+.luxury-loader {
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  border-top: 2px solid #d4af37;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+

@@ -90,19 +90,19 @@ export default function RegistrationDropdown({ registrations, onClose }: Props) 
   };
 
   return (
-    <div className="absolute right-0 top-full w-80 max-h-80 overflow-auto rounded-lg bg-black/50 shadow-lg border border-gray-700 backdrop-blur-md z-50">
-      <div className="p-3 text-white font-semibold border-b border-gray-700 select-none">
+    <div className="absolute right-0 top-full mt-3 w-80 max-h-80 overflow-auto rounded-xl bg-black/90 shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/[0.05] backdrop-blur-xl z-50">
+      <div className="p-4 text-[#d4af37] font-light text-xs tracking-wider uppercase border-b border-white/[0.05] select-none">
         กิจกรรมที่ลงทะเบียน
       </div>
       {registrations.length === 0 ? (
-        <div className="p-3 text-gray-300 text-center select-none">ไม่มีการลงทะเบียน</div>
+        <div className="p-6 text-gray-500 text-xs font-light text-center select-none">ไม่มีการลงทะเบียน</div>
       ) : (
         <ul>
           {registrations.map((reg, idx) => (
             <li
               key={idx}
               onClick={() => handleClick(reg.activityId)}
-              className="px-3 py-3 hover:bg-gray-700/50 border-b border-gray-700 last:border-none cursor-pointer transition-colors duration-200"
+              className="px-4 py-4 hover:bg-white/[0.03] border-b border-white/[0.03] last:border-none cursor-pointer transition-colors duration-200"
               tabIndex={0}
               role="button"
               onKeyDown={(e) => {
@@ -111,19 +111,15 @@ export default function RegistrationDropdown({ registrations, onClose }: Props) 
                 }
               }}
             >
-              <div className="font-semibold text-white mb-1">{reg.activityName}</div>
-              <div className="text-sm text-gray-300 space-y-1 select-text">
-                {/* <div className="flex items-center gap-1">
-                  <ClockIcon className="h-4 w-4 text-gray-400" />
-                  <span>เวลา: {reg.startTime} - {reg.endTime}</span>
-                </div> */}
-                <div className="flex items-center gap-1">
-                  <MapPinIcon className="h-4 w-4 text-gray-400" />
-                  <span>สถานที่: {reg.location}</span>
+              <div className="font-light text-sm text-gray-200 mb-2">{reg.activityName}</div>
+              <div className="text-xs text-gray-400 space-y-1.5 select-text">
+                <div className="flex items-center gap-2">
+                  <MapPinIcon className="h-3.5 w-3.5 text-[#d4af37]/70" />
+                  <span className="font-light truncate">{reg.location}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <CalendarIcon className="h-4 w-4 text-gray-400" />
-                  <span>วันที่ลงทะเบียน: {reg.registerDate}</span>
+                <div className="flex items-center gap-2">
+                  <CalendarIcon className="h-3.5 w-3.5 text-gray-500" />
+                  <span className="font-light text-[10px] text-gray-500">ลงทะเบียนเมื่อ: {reg.registerDate}</span>
                 </div>
               </div>
             </li>

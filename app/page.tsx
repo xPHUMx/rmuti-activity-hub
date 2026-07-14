@@ -1,431 +1,4 @@
 
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { useSession } from "next-auth/react";
-// import { useRouter } from "next/navigation";
-// import Slider from "react-slick";
-// import "slick-carousel/slick/slick.css";
-// import "slick-carousel/slick/slick-theme.css";
-// import Image from "next/image";
-// import Link from "next/link";
-// import { FaUser, FaChartBar, FaPercentage, FaSpinner, FaBullhorn } from "react-icons/fa";
-// import { motion } from "framer-motion";
-
-// type Activity = {
-//   _id: string;
-//   title: string;
-//   time: string;
-//   participants?: { _id: string }[];
-//   maxParticipants?: number;
-// };
-
-// type News = {
-//   _id: string;
-//   title: string;
-//   image: string;
-//   content: string;
-// };
-
-// export default function HomePage() {
-//   const { data: session, status } = useSession();
-//   const router = useRouter();
-
-//   const [activities, setActivities] = useState<Activity[]>([]);
-//   const [news, setNews] = useState<News[]>([]);
-//   const [onlineUsers, setOnlineUsers] = useState(0);
-//   const [totalUsers, setTotalUsers] = useState(100);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     if (status === "unauthenticated") {
-//       router.push("/login");
-//     }
-//   }, [status, router]);
-
-//   useEffect(() => {
-//     async function fetchData() {
-//       try {
-//         const activityRes = await fetch("/api/activities");
-//         const fetchedActivities: Activity[] = await activityRes.json();
-//         setActivities(
-//           fetchedActivities.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 5)
-//         );
-
-//         const newsRes = await fetch("/api/news");
-//         const fetchedNews: News[] = await newsRes.json();
-//         setNews(fetchedNews);
-
-//         setLoading(false);
-//       } catch (error) {
-//         console.error(error);
-//         setLoading(false);
-//       }
-//     }
-//     fetchData();
-//   }, []);
-
-//   useEffect(() => {
-//     async function fetchOnlineUsers() {
-//       try {
-//         const response = await fetch("/api/online-users", { cache: "no-store" });
-//         const data = await response.json();
-//         setOnlineUsers(data.count || 0);
-//       } catch (error) {
-//         console.error("Error fetching online users:", error);
-//       }
-//     }
-//     fetchOnlineUsers();
-//     const interval = setInterval(fetchOnlineUsers, 10000);
-//     return () => clearInterval(interval);
-//   }, []);
-
-//   const calculateParticipationRate = (activity: Activity): number => {
-//     if (!activity.maxParticipants) return 0;
-//     return ((activity.participants?.length || 0) / activity.maxParticipants) * 100;
-//   };
-
-//   const sliderSettings = {
-//     dots: true,
-//     infinite: true,
-//     speed: 800,
-//     slidesToShow: 1,
-//     slidesToScroll: 1,
-//     autoplay: true,
-//     autoplaySpeed: 4000,
-//     cssEase: "ease-in-out",
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white animate-pulse">
-//         <FaSpinner className="animate-spin text-4xl text-orange-400 mb-4" />
-//         กำลังโหลดข้อมูล...
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gray-900 text-white px-4 py-8 animate-fade-in">
-//       <div className="w-full max-w-6xl px-6 py-8 bg-gray-800 rounded-lg shadow-lg mx-auto">
-//         {/* Slider - Display news images */}
-//         <div className="mb-8">
-//           {news.length === 0 ? (
-//             <div className="text-center">ไม่มีข่าวสารให้แสดง</div>
-//           ) : (
-//             <>
-//               <Slider {...sliderSettings}>
-//                 {news.slice(0, 5).map((newsItem) => (
-//                   <Link key={newsItem._id} href={`/news/${newsItem._id}`}>
-//                     <div className="relative w-full h-[450px] overflow-hidden rounded-lg group cursor-pointer">
-//                       <Image
-//                         src={newsItem.image}
-//                         alt={newsItem.title}
-//                         layout="fill"
-//                         objectFit="cover"
-//                         className="group-hover:scale-105 transition-transform duration-300"
-//                       />
-//                       <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-sm text-center">
-//                         {newsItem.title}
-//                       </div>
-//                     </div>
-//                   </Link>
-//                 ))}
-//               </Slider>
-//               <div className="flex justify-center mt-4">
-//                 <Link href="/news">
-//                   <button className="bg-orange-900 hover:bg-blue-500 text-white px-6 py-2 rounded-full text-sm">ดูข่าวทั้งหมด</button>
-//                 </Link>
-//               </div>
-//             </>
-//           )}
-//         </div>
-
-//         {/* Cards */}
-//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-//           {[
-//             { icon: FaUser, label: "ผู้ใช้ออนไลน์", value: onlineUsers },
-//             { icon: FaChartBar, label: "กิจกรรมทั้งหมด", value: activities.length },
-//             { icon: FaPercentage, label: "เปอร์เซ็นผู้เข้าร่วมกิจกรรม", value: `${(
-//                 (activities.reduce((sum, a) => sum + (a.participants?.length || 0), 0) / totalUsers) * 100
-//               ).toFixed(2)}%` },
-//           ].map((item, index) => (
-//             <motion.div
-//               key={index}
-//               whileHover={{ scale: 1.05 }}
-//               className="bg-gray-700 p-6 rounded-lg text-center shadow-md"
-//             >
-//               <item.icon className="text-4xl text-orange-400 mb-3" />
-//               <h2 className="text-lg font-semibold mb-2">{item.label}</h2>
-//               <p className="text-3xl font-bold text-orange-400">{item.value}</p>
-//             </motion.div>
-//           ))}
-//         </div>
-
-//         {/* ตารางกิจกรรม */}
-//         <table className="w-full bg-gray-700 rounded-lg overflow-hidden text-white">
-//           <thead className="bg-gray-600">
-//             <tr>
-//               <th className="p-4 text-left flex items-center gap-2"><FaBullhorn />กิจก รรม</th>
-//               <th className="p-4 text-left"> ผู้เข้าร่วมกิจกรรม</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {activities.length === 0 ? (
-//               <tr>
-//                 <td colSpan={2} className="p-4 text-center">
-//                   ไม่มีข้อมูลกิจกรรม
-//                 </td>
-//               </tr>
-//             ) : (
-//               activities.map((activity) => (
-//                 <tr key={activity._id} className="hover:bg-gray-600 transition">
-//                   <td className="p-4">{activity.title}</td>
-//                   <td className="p-4">
-//                     <div className="flex items-center">
-//                       <div className="w-full bg-gray-500 rounded-full h-2">
-//                         <div
-//                           className="bg-orange-400 h-2 rounded-full"
-//                           style={{ width: `${calculateParticipationRate(activity)}%` }}
-//                         ></div>
-//                       </div>
-//                       <span className="ml-2">{calculateParticipationRate(activity).toFixed(2)}%</span>
-//                     </div>
-//                   </td>
-//                 </tr>
-//               ))
-//             )}
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
-
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { useSession } from "next-auth/react";
-// import { useRouter } from "next/navigation";
-// import Slider from "react-slick";
-// import "slick-carousel/slick/slick.css";
-// import "slick-carousel/slick/slick-theme.css";
-// import Image from "next/image";
-// import Link from "next/link";
-// import { FaUser, FaChartBar, FaPercentage, FaSpinner, FaBullhorn } from "react-icons/fa";
-// import { motion } from "framer-motion";
-
-// type Activity = {
-//   _id: string;
-//   title: string;
-//   time: string;
-//   participants?: { _id: string }[];
-//   maxParticipants?: number;
-// };
-
-// type News = {
-//   _id: string;
-//   title: string;
-//   image: string;
-//   content: string;
-// };
-
-// export default function HomePage() {
-//   const { data: session, status } = useSession();
-//   const router = useRouter();
-
-//   const [activities, setActivities] = useState<Activity[]>([]);
-//   const [news, setNews] = useState<News[]>([]);
-//   const [onlineUsers, setOnlineUsers] = useState(0);
-//   const [totalUsers, setTotalUsers] = useState(100);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     if (status === "unauthenticated") {
-//       router.push("/login");
-//     }
-//   }, [status, router]);
-
-//   useEffect(() => {
-//     async function fetchData() {
-//       try {
-//         const activityRes = await fetch("/api/activities");
-//         const fetchedActivities: Activity[] = await activityRes.json();
-//         setActivities(
-//           fetchedActivities
-//             .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-//             .slice(0, 5)
-//         );
-
-//         const newsRes = await fetch("/api/news");
-//         const fetchedNews: News[] = await newsRes.json();
-//         setNews(fetchedNews);
-
-//         setLoading(false);
-//       } catch (error) {
-//         console.error(error);
-//         setLoading(false);
-//       }
-//     }
-//     fetchData();
-//   }, []);
-
-//   useEffect(() => {
-//     async function fetchOnlineUsers() {
-//       try {
-//         const response = await fetch("/api/online-users", { cache: "no-store" });
-//         const data = await response.json();
-//         setOnlineUsers(data.count || 0);
-//       } catch (error) {
-//         console.error("Error fetching online users:", error);
-//       }
-//     }
-//     fetchOnlineUsers();
-//     const interval = setInterval(fetchOnlineUsers, 10000);
-//     return () => clearInterval(interval);
-//   }, []);
-
-//   const calculateParticipationRate = (activity: Activity): number => {
-//     if (!activity.maxParticipants) return 0;
-//     return ((activity.participants?.length || 0) / activity.maxParticipants) * 100;
-//   };
-
-//   const sliderSettings = {
-//     dots: true,
-//     infinite: true,
-//     speed: 800,
-//     slidesToShow: 1,
-//     slidesToScroll: 1,
-//     autoplay: true,
-//     autoplaySpeed: 4000,
-//     cssEase: "ease-in-out",
-//   };
-
-// if (loading) {
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-//       <motion.div
-//         animate={{ rotate: 360 }}
-//         transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-//         className="text-orange-400 text-6xl"
-//       >
-//         <FaSpinner />
-//       </motion.div>
-//     </div>
-//   );
-// }
-
-
-//   return (
-//     <div className="min-h-screen bg-gray-900 text-white px-4 py-8 animate-fade-in">
-//       <div className="w-full max-w-6xl px-6 py-8 bg-gray-800 rounded-lg shadow-lg mx-auto">
-//         {/* Slider - Display news images */}
-//         <div className="mb-8">
-//           {news.length === 0 ? (
-//             <div className="text-center">ไม่มีข่าวสารให้แสดง</div>
-//           ) : (
-//             <>
-//               <Slider {...sliderSettings}>
-//                 {news.slice(0, 5).map((newsItem) => (
-//                   <Link key={newsItem._id} href={`/news/${newsItem._id}`}>
-//                     <div className="relative w-full h-[450px] overflow-hidden rounded-lg group cursor-pointer">
-//                       <Image
-//                         src={newsItem.image}
-//                         alt={newsItem.title}
-//                         fill
-//                         style={{ objectFit: "cover" }}
-//                         className="group-hover:scale-105 transition-transform duration-300"
-//                       />
-//                       <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-sm text-center">
-//                         {newsItem.title}
-//                       </div>
-//                     </div>
-//                   </Link>
-//                 ))}
-//               </Slider>
-//               <div className="flex justify-center mt-4">
-//                 <Link href="/news">
-//                   <button className="bg-orange-900 hover:bg-blue-500 text-white px-6 py-2 rounded-full text-sm">ดูข่าวทั้งหมด</button>
-//                 </Link>
-//               </div>
-//             </>
-//           )}
-//         </div>
-
-//         {/* Cards */}
-//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-//           {[
-//             { icon: FaUser, label: "ผู้ใช้ออนไลน์", value: onlineUsers },
-//             { icon: FaChartBar, label: "กิจกรรมทั้งหมด", value: activities.length },
-//             {
-//               icon: FaPercentage,
-//               label: "เปอร์เซ็นผู้เข้าร่วมกิจกรรม",
-//               value: `${(
-//                 (activities.reduce((sum, a) => sum + (a.participants?.length || 0), 0) / totalUsers) *
-//                 100
-//               ).toFixed(2)}%`,
-//             },
-//           ].map((item, index) => (
-//             <motion.div
-//               key={index}
-//               whileHover={{ scale: 1.05 }}
-//               className="bg-gray-700 p-6 rounded-lg text-center shadow-md"
-//             >
-//               <item.icon className="text-4xl text-orange-400 mb-3" />
-//               <h2 className="text-lg font-semibold mb-2">{item.label}</h2>
-//               <p className="text-3xl font-bold text-orange-400">{item.value}</p>
-//             </motion.div>
-//           ))}
-//         </div>
-
-//         {/* ตารางกิจกรรม */}
-//         <table className="w-full bg-gray-700 rounded-lg overflow-hidden text-white">
-//           <thead className="bg-gray-600">
-//             <tr>
-//               <th className="p-4 text-left flex items-center gap-2">
-//                 <FaBullhorn />
-//                 กิจกรรม
-//               </th>
-//               <th className="p-4 text-left">ผู้เข้าร่วมกิจกรรม</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {activities.length === 0 ? (
-//               <tr>
-//                 <td colSpan={2} className="p-4 text-center">
-//                   ไม่มีข้อมูลกิจกรรม
-//                 </td>
-//               </tr>
-//             ) : (
-//               activities.map((activity) => (
-//                 <tr key={activity._id} className="hover:bg-gray-600 transition">
-//                   <td className="p-4">{activity.title}</td>
-//                   <td className="p-4">
-//                     <div className="flex items-center">
-//                       <div className="w-full bg-gray-500 rounded-full h-2">
-//                         <div
-//                           className="bg-orange-400 h-2 rounded-full"
-//                           style={{ width: `${calculateParticipationRate(activity)}%` }}
-//                         ></div>
-//                       </div>
-//                       <span className="ml-2">{calculateParticipationRate(activity).toFixed(2)}%</span>
-//                     </div>
-//                   </td>
-//                 </tr>
-//               ))
-//             )}
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   );
-// }
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -434,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Image from "next/image.js";
+import Image from "next/image";
 import Link from "next/link";
 import { FaUser, FaChartBar, FaPercentage, FaSpinner, FaBullhorn } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
@@ -458,7 +31,7 @@ const sliderSettings = {
   infinite: true,
   speed: 800,
   slidesToShow: 1,
-  slidesTo: 1,
+  slidesToScroll: 1,
   autoplay: true,
   autoplaySpeed: 5000,
   cssEase: "ease-in-out",
@@ -538,15 +111,29 @@ export default function HomePage() {
     return ((activity.participants?.length || 0) / activity.maxParticipants) * 100;
   };
 
-
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0a0a0a] to-[#121212] text-white">
+        <div className="luxury-loader mb-4" />
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-xs font-light tracking-[0.25em] text-[#d4af37]"
+        >
+          RMUTI ACTIVITY HUB
+        </motion.p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto space-y-12"
+        className="max-w-7xl mx-auto space-y-16"
       >
         {/* News Slider */}
         <section className="relative">
@@ -554,9 +141,9 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center text-gray-400 text-lg"
+              className="text-center text-gray-500 font-light text-lg py-20"
             >
-              ไม่มีข่าวสารให้แสดง
+              ไม่มีข่าวสารให้แสดงในขณะนี้
             </motion.div>
           ) : (
             <>
@@ -564,22 +151,22 @@ export default function HomePage() {
                 {news.slice(0, 5).map((newsItem) => (
                   <Link key={newsItem._id} href={`/news/${newsItem._id}`}>
                     <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className="relative w-full h-[500px] rounded-2xl overflow-hidden shadow-2xl cursor-pointer"
+                      whileHover={{ scale: 1.01 }}
+                      className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/[0.03] cursor-pointer"
                     >
                       <Image
                         src={newsItem.image}
                         alt={newsItem.title}
                         fill
                         style={{ objectFit: "cover" }}
-                        className="transition-transform duration-500 hover:scale-110"
+                        className="transition-transform duration-700 ease-out hover:scale-105"
                       />
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent p-8">
                         <motion.h2
                           initial={{ y: 20, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.2 }}
-                          className="text-xl font-semibold"
+                          className="text-lg md:text-2xl font-light tracking-wide text-white"
                         >
                           {newsItem.title}
                         </motion.h2>
@@ -592,11 +179,11 @@ export default function HomePage() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="flex justify-center mt-6"
+                className="flex justify-center mt-8"
               >
                 <Link href="/news">
-                  <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 shadow-md">
-                    ดูข่าวทั้งหมด
+                  <button className="border border-[#d4af37]/40 hover:border-[#d4af37] text-white hover:text-black hover:bg-[#d4af37] px-10 py-3 rounded-full text-xs font-light tracking-widest transition-all duration-500 shadow-[0_0_15px_rgba(212,175,55,0.03)] hover:shadow-[0_0_25px_rgba(212,175,55,0.2)]">
+                    ดูข่าวสารทั้งหมด
                   </button>
                 </Link>
               </motion.div>
@@ -605,10 +192,10 @@ export default function HomePage() {
         </section>
 
         {/* Stats Cards */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
-            { icon: FaUser, label: "ผู้ใช้ออนไลน์", value: onlineUsers },
-            { icon: FaChartBar, label: "กิจกรรมทั้งหมด", value: activities.length },
+            { icon: FaUser, label: "ผู้ใช้ออนไลน์", value: onlineUsers, unit: "ONLINE" },
+            { icon: FaChartBar, label: "กิจกรรมทั้งหมด", value: activities.length, unit: "ACTIVITIES" },
             {
               icon: FaPercentage,
               label: "เปอร์เซ็นผู้เข้าร่วม",
@@ -616,6 +203,7 @@ export default function HomePage() {
                 (activities.reduce((sum, a) => sum + (a.participants?.length || 0), 0) / totalUsers) *
                 100
               ).toFixed(2)}%`,
+              unit: "PARTICIPATION"
             },
           ].map((item, index) => (
             <motion.div
@@ -624,25 +212,27 @@ export default function HomePage() {
               initial="hidden"
               animate="visible"
               whileHover="hover"
-              className="bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col items-center"
+              className="bg-white/[0.02] backdrop-blur-xl p-8 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.3)] border border-white/[0.04] flex flex-col items-center gold-glow"
             >
-              <item.icon className="text-4xl text-orange-400 mb-4" />
-              <h2 className="text-lg font-medium text-gray-200">{item.label}</h2>
-              <p className="text-3xl font-bold text-orange-400">{item.value}</p>
+              <item.icon className="text-2xl text-[#d4af37]/80 mb-4" />
+              <span className="text-[10px] tracking-[0.25em] font-light text-[#d4af37] mb-1">{item.unit}</span>
+              <h2 className="text-xs font-light text-gray-400 mb-3">{item.label}</h2>
+              <p className="text-4xl font-extralight tracking-tight text-white">{item.value}</p>
             </motion.div>
           ))}
         </section>
 
         {/* Activities Table */}
-        <section className="bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+        <section className="bg-white/[0.02] backdrop-blur-xl rounded-2xl shadow-[0_20px_45px_rgba(0,0,0,0.4)] border border-white/[0.04] overflow-hidden">
+          <div className="p-6 border-b border-white/[0.04] flex items-center gap-3">
+            <FaBullhorn className="text-[#d4af37] text-lg" />
+            <h3 className="text-sm font-light tracking-[0.1em] text-gray-200 uppercase">กิจกรรมล่าสุด / Recent Activities</h3>
+          </div>
           <table className="w-full text-left">
-            <thead className="bg-gray-700">
+            <thead className="bg-white/[0.01] border-b border-white/[0.04]">
               <tr>
-                <th className="p-4 flex items-center gap-2 font-medium">
-                  <FaBullhorn className="text-orange-400" />
-                  กิจกรรม
-                </th>
-                <th className="p-4 font-medium">ผู้เข้าร่วม</th>
+                <th className="p-4 text-[10px] tracking-[0.2em] font-light text-[#d4af37] uppercase pl-6">ชื่อกิจกรรม (Activity Title)</th>
+                <th className="p-4 text-[10px] tracking-[0.2em] font-light text-[#d4af37] uppercase pr-6 text-right sm:text-left">ผู้เข้าร่วม (Participation)</th>
               </tr>
             </thead>
             <tbody>
@@ -653,8 +243,8 @@ export default function HomePage() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    <td colSpan={2} className="p-4 text-center text-gray-400">
-                      ไม่มีข้อมูลกิจกรรม
+                    <td colSpan={2} className="p-12 text-center text-gray-500 font-light text-sm">
+                      ไม่มีข้อมูลกิจกรรมในขณะนี้
                     </td>
                   </motion.tr>
                 ) : (
@@ -664,22 +254,22 @@ export default function HomePage() {
                       variants={tableRowVariants}
                       initial="hidden"
                       animate="visible"
-                      transition={{ delay: index * 0.1 }}
-                      className="hover:bg-gray-700 transition-colors"
+                      transition={{ delay: index * 0.08 }}
+                      className="border-b border-white/[0.02] hover:bg-white/[0.02] transition-colors duration-300"
                     >
-                      <td className="p-4">{activity.title}</td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-32 bg-gray-600 rounded-full h-2.5 overflow-hidden">
+                      <td className="p-4 pl-6 text-sm font-light text-gray-200">{activity.title}</td>
+                      <td className="p-4 pr-6">
+                        <div className="flex items-center justify-end sm:justify-start gap-4">
+                          <div className="w-24 sm:w-36 bg-white/[0.05] rounded-full h-1.5 overflow-hidden">
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${calculateParticipationRate(activity)}%` }}
-                              transition={{ duration: 0.8, ease: "easeOut" }}
-                              className="bg-orange-400 h-full rounded-full"
+                              transition={{ duration: 1, ease: "easeOut" }}
+                              className="bg-[#d4af37] h-full rounded-full"
                             />
                           </div>
-                          <span className="text-sm text-gray-300">
-                            {calculateParticipationRate(activity).toFixed(2)}%
+                          <span className="text-xs font-light text-gray-400 w-12 text-right">
+                            {calculateParticipationRate(activity).toFixed(1)}%
                           </span>
                         </div>
                       </td>
@@ -691,7 +281,6 @@ export default function HomePage() {
           </table>
         </section>
       </motion.div>
-
     </div>
   );
 }

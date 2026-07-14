@@ -268,12 +268,12 @@ export default function Navbar() {
   return (
     <>
       {loading && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+          <div className="luxury-loader mb-4" />
         </div>
       )}
 
-      <Disclosure as="nav" className="bg-gray-900/80 backdrop-blur-lg shadow-xl sticky top-0 z-50 border-b border-gray-800/50 font-sarabun">
+      <Disclosure as="nav" className="bg-black/40 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] sticky top-0 z-50 border-b border-white/[0.04]">
         {({ open }) => (
           <>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -296,9 +296,9 @@ export default function Navbar() {
                       onClick={() => handleNavigation(item.href)}
                       className={classNames(
                         pathname === item.href
-                          ? "bg-orange-800/80 text-white"
-                          : "text-gray-200 hover:bg-gray-700/50 hover:text-white",
-                        "rounded-lg px-4 py-2 text-sm font-medium flex items-center gap-2 transition-all duration-300"
+                          ? "bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20"
+                          : "text-gray-400 hover:text-white hover:bg-white/[0.03] border border-transparent",
+                        "rounded-full px-4 py-1.5 text-xs font-light tracking-wider flex items-center gap-2 transition-all duration-500"
                       )}
                       aria-label={`ไปที่${item.name}`}
                     >
@@ -311,15 +311,15 @@ export default function Navbar() {
                 <div className="relative flex items-center space-x-4" ref={dropdownRef}>
                   <button
                     type="button"
-                    className="relative rounded-full p-2 text-gray-300 hover:text-white hover:bg-gray-700/50 transition-all duration-300"
+                    className="relative rounded-full p-2 text-gray-400 hover:text-white hover:bg-white/[0.03] transition-all duration-300"
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                     aria-label="ดูการแจ้งเตือน"
                     aria-haspopup="true"
                     aria-expanded={dropdownOpen}
                   >
-                    <BellAlertIcon className="h-6 w-6" aria-hidden="true" />
+                    <BellAlertIcon className="h-5 w-5" aria-hidden="true" />
                     {notifications > 0 && (
-                      <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">
+                      <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[9px] font-semibold text-black bg-[#d4af37] rounded-full">
                         {notifications}
                       </span>
                     )}
@@ -334,10 +334,10 @@ export default function Navbar() {
 
                   {session ? (
                     <Menu as="div" className="relative">
-                      <Menu.Button className="flex rounded-full bg-gray-800/50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300">
+                      <Menu.Button className="flex rounded-full bg-white/[0.02] text-sm focus:outline-none focus:ring-1 focus:ring-[#d4af37]/50 focus:ring-offset-1 focus:ring-offset-black transition-all duration-300">
                         <span className="sr-only">เปิดเมนูผู้ใช้</span>
                         <Image
-                          className="rounded-full border border-gray-700"
+                          className="rounded-full border border-white/[0.08]"
                           src={session.user.image || "/img/default-profile.png"}
                           alt="ภาพโปรไฟล์"
                           width={32}
@@ -353,11 +353,11 @@ export default function Navbar() {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-gray-900/80 backdrop-blur-lg shadow-lg border border-gray-800/50 focus:outline-none">
-                          <div className="p-4">
-                            <div className="text-sm text-center">
-                              <p className="font-medium text-white">{session.user.name || "ผู้ใช้"}</p>
-                              <p className="text-gray-400">{session.user.email || "ไม่ระบุอีเมล"}</p>
+                        <Menu.Items className="absolute right-0 mt-3 w-56 origin-top-right rounded-xl bg-black/90 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/[0.05] focus:outline-none overflow-hidden">
+                          <div className="p-4 border-b border-white/[0.05] bg-white/[0.01]">
+                            <div className="text-center">
+                              <p className="text-xs font-light tracking-wider text-white mb-0.5">{session.user.name || "ผู้ใช้"}</p>
+                              <p className="text-[10px] text-gray-500 truncate">{session.user.email || "ไม่ระบุอีเมล"}</p>
                             </div>
                           </div>
                           <div className="py-1">
@@ -366,11 +366,11 @@ export default function Navbar() {
                                 <button
                                   onClick={handleEditProfile}
                                   className={classNames(
-                                    active ? "bg-gray-700/50 text-white" : "text-gray-200",
-                                    "flex items-center gap-2 w-full px-4 py-2 text-sm"
+                                    active ? "bg-white/[0.04] text-[#d4af37]" : "text-gray-300",
+                                    "flex items-center gap-2 w-full px-4 py-3 text-xs font-light tracking-wide transition-colors"
                                   )}
                                 >
-                                  <PencilSquareIcon className="h-5 w-5" />
+                                  <PencilSquareIcon className="h-4 w-4" />
                                   แก้ไขโปรไฟล์
                                 </button>
                               )}
@@ -380,11 +380,11 @@ export default function Navbar() {
                                 <button
                                   onClick={() => signOut()}
                                   className={classNames(
-                                    active ? "bg-gray-700/50 text-white" : "text-gray-200",
-                                    "flex items-center gap-2 w-full px-4 py-2 text-sm"
+                                    active ? "bg-white/[0.04] text-red-400" : "text-gray-300",
+                                    "flex items-center gap-2 w-full px-4 py-3 text-xs font-light tracking-wide transition-colors border-t border-white/[0.02]"
                                   )}
                                 >
-                                  <ArrowLeftStartOnRectangleIcon className="h-5 w-5" />
+                                  <ArrowLeftStartOnRectangleIcon className="h-4 w-4" />
                                   ออกจากระบบ
                                 </button>
                               )}
@@ -396,19 +396,19 @@ export default function Navbar() {
                   ) : (
                     <button
                       onClick={() => router.push("/login")}
-                      className="text-gray-200 hover:bg-blue-700/80 hover:text-white rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300"
+                      className="border border-[#d4af37]/30 hover:border-[#d4af37] text-gray-300 hover:text-black hover:bg-[#d4af37] rounded-full px-5 py-1.5 text-xs font-light tracking-wider transition-all duration-500"
                       aria-label="เข้าสู่ระบบ"
                     >
                       เข้าสู่ระบบ
                     </button>
                   )}
 
-                  <Disclosure.Button className="md:hidden rounded-lg p-2 text-gray-300 hover:text-white hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <Disclosure.Button className="md:hidden rounded-lg p-2 text-gray-400 hover:text-white hover:bg-white/[0.03] focus:outline-none">
                     <span className="sr-only">เปิดเมนูหลัก</span>
                     {open ? (
-                      <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                      <XMarkIcon className="h-5 w-5" aria-hidden="true" />
                     ) : (
-                      <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                      <Bars3Icon className="h-5 w-5" aria-hidden="true" />
                     )}
                   </Disclosure.Button>
                 </div>
@@ -416,7 +416,7 @@ export default function Navbar() {
             </div>
 
             <Disclosure.Panel className="md:hidden">
-              <div className="space-y-1 px-2 pb-3 pt-2 bg-gray-900/80 backdrop-blur-lg border-t border-gray-800/50">
+              <div className="space-y-2 px-3 pb-4 pt-2 bg-black/90 backdrop-blur-xl border-t border-white/[0.04]">
                 {navigation.map((item) => (
                   <Disclosure.Button
                     key={item.name}
@@ -424,9 +424,9 @@ export default function Navbar() {
                     onClick={() => handleNavigation(item.href)}
                     className={classNames(
                       pathname === item.href
-                        ? "bg-orange-900/80 text-white"
-                        : "text-gray-200 hover:bg-gray-700/50 hover:text-white",
-                      "flex items-center gap-2 w-full px-3 py-2 rounded-md text-base font-medium transition-all duration-300"
+                        ? "bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/20"
+                        : "text-gray-400 hover:text-white hover:bg-white/[0.02] border border-transparent",
+                      "flex items-center gap-3 w-full px-4 py-2.5 rounded-full text-xs font-light tracking-wider transition-all duration-300"
                     )}
                     aria-label={`ไปที่${item.name}`}
                   >
