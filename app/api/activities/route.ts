@@ -1,4 +1,5 @@
 
+import fs from "fs";
 import connectToDatabase from "../../../utils/db";
 import Activity from "../../../models/Activity";
 import User from "../../../models/User";
@@ -41,6 +42,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const data = await req.json();
+    console.log("POST /api/activities received:", data);
 
     const {
       title,
@@ -55,6 +57,25 @@ export async function POST(req: Request) {
     } = data;
 
     if (!title || !registerStart || !registerEnd || !activityStart || !activityEnd || !location || !maxParticipants) {
+      const missingDetails = {
+        title: !title,
+        registerStart: !registerStart,
+        registerEnd: !registerEnd,
+        activityStart: !activityStart,
+        activityEnd: !activityEnd,
+        location: !location,
+        maxParticipants: !maxParticipants,
+        receivedData: data
+      };
+      console.warn("Validation failed. Missing required fields in POST /api/activities:", missingDetails);
+      try {
+        fs.appendFileSync(
+          "C:\\Users\\Phums\\.gemini\\antigravity-ide\\scratch\\debug.log",
+          JSON.stringify({ timestamp: new Date().toISOString(), ...missingDetails }) + "\n"
+        );
+      } catch (err) {
+        console.error("Failed to write check-in debug log:", err);
+      }
       return new Response(
         JSON.stringify({ message: "Missing required fields" }),
         { status: 400 }

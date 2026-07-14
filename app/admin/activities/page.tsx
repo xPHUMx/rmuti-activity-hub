@@ -104,6 +104,28 @@ export default function AdminActivities() {
   async function handleCreateOrEditActivity() {
     if (isLoading) return;
 
+    // ตรวจสอบฟิลด์ที่จำเป็นก่อนส่ง
+    const missingFields: string[] = [];
+    if (!formData.title?.trim()) missingFields.push("ชื่อกิจกรรม");
+    if (!formData.registerStart) missingFields.push("วันเปิดลงทะเบียน");
+    if (!formData.registerEnd) missingFields.push("วันปิดลงทะเบียน");
+    if (!formData.activityStart) missingFields.push("เวลาเริ่มกิจกรรม");
+    if (!formData.activityEnd) missingFields.push("เวลาสิ้นสุดกิจกรรม");
+    if (!formData.location?.trim()) missingFields.push("สถานที่จัดกิจกรรม");
+    if (!formData.maxParticipants || formData.maxParticipants < 1) missingFields.push("จำนวนผู้เข้าร่วมสูงสุด");
+
+    if (missingFields.length > 0) {
+      Swal.fire({
+        title: "กรุณากรอกข้อมูลให้ครบ",
+        html: `<p style="text-align:left; font-size:13px; color:#d1d5db;">ฟิลด์ที่ยังไม่ได้กรอก:</p><ul style="text-align:left; font-size:13px; color:#f97316; margin-top:8px;">${missingFields.map(f => `<li>• ${f}</li>`).join("")}</ul>`,
+        icon: "warning",
+        confirmButtonColor: "#f97316",
+        background: "#0c0c0e",
+        color: "#ffffff"
+      });
+      return;
+    }
+
     setIsLoading(true);
     Swal.fire({
       title: "กำลังบันทึก...",
@@ -179,11 +201,11 @@ export default function AdminActivities() {
 
     const method = editId ? "PUT" : "POST";
     const url = "/api/activities";
-    const body = JSON.stringify(
-      editId
-        ? { id: editId, updates: formData }
-        : { ...formData, status: formData.status || "open" }
-    );
+    const payload = editId
+      ? { id: editId, updates: formData }
+      : { ...formData, status: formData.status || "open" };
+    console.log("Submitting activity payload:", payload);
+    const body = JSON.stringify(payload);
 
     try {
       const res = await fetch(url, {
