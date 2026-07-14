@@ -13,7 +13,6 @@ import { Fragment, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { TextField, Avatar, Typography, Box } from "@mui/material";
 import { Home, Newspaper, ClipboardList } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -125,127 +124,123 @@ export default function Navbar() {
     setLoading(false);
   };
 
-  const hideNavbarRoutes = [
-    "/login",
-    "/admin/dashboard",
-    "/admin/activities",
-    "/admin/news",
-    "/admin/manager-user",
-    "/admin/users",
-    "/admin/calendar",
-  ];
-
-  if (hideNavbarRoutes.includes(pathname)) {
+  // ซ่อน navbar ในทุกหน้า admin และหน้า login/profile-setup
+  if (pathname.startsWith("/admin") || pathname === "/login" || pathname === "/profile-setup") {
     return null;
   }
 
   const handleEditProfile = async () => {
     if (!session?.user?.id) {
-      MySwal.fire("ไม่พบข้อมูลผู้ใช้", "กรุณาล็อกอินใหม่", "error");
+      MySwal.fire({ title: "ไม่พบข้อมูลผู้ใช้", text: "กรุณาล็อกอินใหม่", icon: "error", background: "#0c0c0e", color: "#fff", confirmButtonColor: "#f97316" });
       return;
     }
+
+    // Show loading
+    MySwal.fire({
+      title: "กำลังโหลดข้อมูล...",
+      html: '<div style="display:flex;justify-content:center;padding:20px;"><div style="width:36px;height:36px;border:3px solid rgba(249,115,22,0.2);border-top:3px solid #f97316;border-radius:50%;animation:spin 0.8s linear infinite;"></div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>',
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      background: "#0c0c0e",
+      color: "#fff",
+    });
 
     try {
       const res = await fetch(`/api/users/${session.user.id}`);
       if (!res.ok) {
-        MySwal.fire("ไม่สามารถดึงข้อมูลได้", `API ส่งข้อผิดพลาด: ${res.statusText}`, "error");
+        MySwal.fire({ title: "ไม่สามารถดึงข้อมูลได้", text: `API Error: ${res.statusText}`, icon: "error", background: "#0c0c0e", color: "#fff", confirmButtonColor: "#f97316" });
         return;
       }
 
       const user = await res.json();
       if (!user) {
-        MySwal.fire("ไม่พบข้อมูลผู้ใช้", "ไม่สามารถดึงข้อมูลได้", "error");
+        MySwal.fire({ title: "ไม่พบข้อมูลผู้ใช้", text: "ไม่สามารถดึงข้อมูลได้", icon: "error", background: "#0c0c0e", color: "#fff", confirmButtonColor: "#f97316" });
         return;
       }
 
-      const formatPhoneNumber = (value: string) => {
-        const cleaned = value.replace(/\D/g, "");
-        if (cleaned.length > 10) return value;
-        const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
-        if (!match) return cleaned;
-        return [match[1], match[2], match[3]].filter(Boolean).join("-");
-      };
-
-      const ProfileForm = () => {
-        const [phone, setPhone] = useState(user.phone || "");
-        const [error, setError] = useState("");
-
-        const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          const value = e.target.value.replace(/\D/g, "");
-          if (value.length <= 10) {
-            setPhone(formatPhoneNumber(value));
-            setError(value.length === 10 ? "" : "เบอร์โทรศัพท์ต้องมี 10 ตัวเลข");
-          }
-        };
-
-        return (
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, padding: 2, width: "100%", maxWidth: 400 }}>
-            <Avatar
-              src={user.image || "/img/default-profile.png"}
-              alt="ภาพโปรไฟล์"
-              sx={{ width: 100, height: 100, mb: 1 }}
-            />
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-              {user.email || "ไม่ระบุ"}
-            </Typography>
-            <TextField
-              label="ชื่อ-นามสกุล"
-              value={user.name || ""}
-              disabled
-              fullWidth
-              variant="outlined"
-              sx={{ bgcolor: "#e5e7eb", "& .MuiInputBase-input": { color: "#6b7280" } }}
-            />
-            <TextField
-              label="รหัสนักศึกษา"
-              value={user.studentId || ""}
-              disabled
-              fullWidth
-              variant="outlined"
-              sx={{ bgcolor: "#e5e7eb", "& .MuiInputBase-input": { color: "#6b7280" } }}
-            />
-            <TextField
-              label="สาขา"
-              value={user.department || ""}
-              disabled
-              fullWidth
-              variant="outlined"
-              sx={{ bgcolor: "#e5e7eb", "& .MuiInputBase-input": { color: "#6b7280" } }}
-            />
-            <TextField
-              label="ชั้นปี/กลุ่มเรียน"
-              value={user.year || ""}
-              disabled
-              fullWidth
-              variant="outlined"
-              sx={{ bgcolor: "#e5e7eb", "& .MuiInputBase-input": { color: "#6b7280" } }}
-            />
-            <TextField
-              label="เบอร์โทรศัพท์"
-              value={phone}
-              onChange={handlePhoneChange}
-              fullWidth
-              variant="outlined"
-              error={!!error}
-              helperText={error}
-              sx={{ bgcolor: "#ffffff", "& .MuiInputBase-input": { color: "#000000" } }}
-              inputProps={{ id: "swal-input5", maxLength: 12 }}
-            />
-          </Box>
-        );
-      };
+      const currentPhone = user.phone || "";
 
       MySwal.fire({
-        title: "แก้ไขโปรไฟล์",
-        html: <ProfileForm />,
-        focusConfirm: false,
+        html: `
+          <div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:8px 0;">
+            <!-- Profile Avatar -->
+            <div style="position:relative;">
+              <div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ea580c);padding:3px;">
+                <img src="${user.image || '/img/default-profile.png'}" alt="profile" style="width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid #0c0c0e;" />
+              </div>
+              <div style="position:absolute;bottom:2px;right:2px;width:20px;height:20px;background:#22c55e;border:3px solid #0c0c0e;border-radius:50%;"></div>
+            </div>
+
+            <!-- Name & Email -->
+            <div style="text-align:center;">
+              <p style="font-size:16px;font-weight:700;color:#fff;margin:0 0 4px 0;">${user.name || 'ผู้ใช้'}</p>
+              <p style="font-size:11px;color:#9ca3af;margin:0;letter-spacing:0.5px;">${user.email || 'ไม่ระบุอีเมล'}</p>
+            </div>
+
+            <!-- Info Cards -->
+            <div style="width:100%;display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+              <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px 16px;">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(249,115,22,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                </div>
+                <div style="text-align:left;">
+                  <p style="font-size:10px;color:#6b7280;margin:0;text-transform:uppercase;letter-spacing:1px;">รหัสนักศึกษา</p>
+                  <p style="font-size:13px;color:#e5e7eb;margin:2px 0 0;font-weight:500;">${user.studentId || '—'}</p>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px 16px;">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(249,115,22,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 10 3 12 0v-5"/></svg>
+                </div>
+                <div style="text-align:left;">
+                  <p style="font-size:10px;color:#6b7280;margin:0;text-transform:uppercase;letter-spacing:1px;">สาขา</p>
+                  <p style="font-size:13px;color:#e5e7eb;margin:2px 0 0;font-weight:500;">${user.department || '—'}</p>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px 16px;">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(249,115,22,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                </div>
+                <div style="text-align:left;">
+                  <p style="font-size:10px;color:#6b7280;margin:0;text-transform:uppercase;letter-spacing:1px;">ชั้นปี / กลุ่มเรียน</p>
+                  <p style="font-size:13px;color:#e5e7eb;margin:2px 0 0;font-weight:500;">${user.year || '—'}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Editable Phone -->
+            <div style="width:100%;margin-top:4px;">
+              <label style="display:block;font-size:11px;color:#9ca3af;margin-bottom:6px;text-align:left;font-weight:500;letter-spacing:0.5px;">เบอร์โทรศัพท์ (แก้ไขได้)</label>
+              <div style="position:relative;">
+                <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:10px;background:rgba(34,197,94,0.1);display:flex;align-items:center;justify-content:center;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <input id="swal-input-phone" type="tel" maxlength="12" value="${currentPhone}" placeholder="0XX-XXX-XXXX" style="width:100%;padding:14px 16px 14px 62px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#fff;font-size:14px;font-weight:500;outline:none;transition:border-color 0.3s;box-sizing:border-box;" onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'" oninput="let v=this.value.replace(/\\D/g,'');if(v.length>10)v=v.slice(0,10);let f=v;if(v.length>6)f=v.slice(0,3)+'-'+v.slice(3,6)+'-'+v.slice(6);else if(v.length>3)f=v.slice(0,3)+'-'+v.slice(3);this.value=f;" />
+              </div>
+            </div>
+          </div>
+        `,
         showCancelButton: true,
-        confirmButtonText: "อัปเดตโปรไฟล์",
-        cancelButtonText: "ยกเลิก",
+        confirmButtonText: '<span style="display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>อัปเดตโปรไฟล์</span>',
+        cancelButtonText: 'ยกเลิก',
+        background: "#0c0c0e",
+        color: "#ffffff",
+        confirmButtonColor: "#f97316",
+        cancelButtonColor: "#374151",
+        showCloseButton: true,
+        customClass: {
+          popup: 'profile-edit-popup',
+          confirmButton: 'profile-edit-confirm',
+          cancelButton: 'profile-edit-cancel',
+        },
+        focusConfirm: false,
         preConfirm: () => {
-          const phone = (document.getElementById("swal-input5") as HTMLInputElement).value;
-          const cleanedPhone = phone.replace(/\D/g, "");
-          if (cleanedPhone.length !== 10) {
+          const phoneInput = document.getElementById("swal-input-phone") as HTMLInputElement;
+          const phone = phoneInput?.value || "";
+          const cleaned = phone.replace(/\D/g, "");
+          if (cleaned.length !== 10) {
             MySwal.showValidationMessage("เบอร์โทรศัพท์ต้องมี 10 ตัวเลข");
             return false;
           }
@@ -255,29 +250,45 @@ export default function Navbar() {
         if (result.isConfirmed) {
           const { phone } = result.value;
 
+          // Show saving indicator
+          MySwal.fire({
+            title: "กำลังบันทึก...",
+            html: '<div style="display:flex;justify-content:center;padding:20px;"><div style="width:36px;height:36px;border:3px solid rgba(249,115,22,0.2);border-top:3px solid #f97316;border-radius:50%;animation:spin 0.8s linear infinite;"></div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            background: "#0c0c0e",
+            color: "#fff",
+          });
+
           fetch("/api/users/update-profile", {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: session?.user?.email,
-              phone,
-            }),
+            body: JSON.stringify({ email: session?.user?.email, phone }),
           })
             .then((response) => {
               if (response.ok) {
-                MySwal.fire("สำเร็จ!", "โปรไฟล์ของคุณได้รับการอัปเดตแล้ว", "success");
+                MySwal.fire({
+                  title: "สำเร็จ!",
+                  text: "โปรไฟล์ของคุณได้รับการอัปเดตแล้ว",
+                  icon: "success",
+                  background: "#0c0c0e",
+                  color: "#fff",
+                  confirmButtonColor: "#f97316",
+                  timer: 2000,
+                  timerProgressBar: true,
+                });
               } else {
-                MySwal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถอัปเดตโปรไฟล์ได้", "error");
+                MySwal.fire({ title: "เกิดข้อผิดพลาด!", text: "ไม่สามารถอัปเดตโปรไฟล์ได้", icon: "error", background: "#0c0c0e", color: "#fff", confirmButtonColor: "#f97316" });
               }
             })
             .catch(() => {
-              MySwal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถติดต่อ API ได้", "error");
+              MySwal.fire({ title: "เกิดข้อผิดพลาด!", text: "ไม่สามารถติดต่อ API ได้", icon: "error", background: "#0c0c0e", color: "#fff", confirmButtonColor: "#f97316" });
             });
         }
       });
     } catch (error) {
       console.error("Edit profile error:", error);
-      MySwal.fire("เกิดข้อผิดพลาด!", "ไม่สามารถดึงข้อมูลผู้ใช้ได้ กรุณาลองใหม่", "error");
+      MySwal.fire({ title: "เกิดข้อผิดพลาด!", text: "ไม่สามารถดึงข้อมูลผู้ใช้ได้ กรุณาลองใหม่", icon: "error", background: "#0c0c0e", color: "#fff", confirmButtonColor: "#f97316" });
     }
   };
 
