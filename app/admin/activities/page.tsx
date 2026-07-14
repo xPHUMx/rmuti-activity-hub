@@ -1,824 +1,6 @@
-
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { PencilIcon, TrashIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
-// import Swal from "sweetalert2";
-// import {
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogActions,
-//   Button,
-//   TextField,
-//   Select,
-//   MenuItem,
-//   FormControl,
-//   InputLabel,
-// } from "@mui/material";
-// import { LocalizationProvider } from "@mui/x-date-pickers";
-// import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-// import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-
-// interface Activity {
-//   _id: string;
-//   title: string;
-//   registerStart: string;
-//   registerEnd: string;
-//   activityStart: string;
-//   activityEnd: string;
-//   location: string;
-//   maxParticipants: number;
-//   status: string;
-//   participants: Participant[];
-//   newsId?: string;
-// }
-
-// interface Participant {
-//   fullName: string;
-//   studentId: string;
-//   year: string;
-//   phone: string;
-//   department?: string;
-//   program?: string;
-// }
-
-// interface News {
-//   _id: string;
-//   title: string;
-//   image: string;
-// }
-
-// export default function AdminActivities() {
-//   const [activities, setActivities] = useState<Activity[]>([]);
-//   const [editId, setEditId] = useState<string | null>(null);
-//   const [openDialog, setOpenDialog] = useState(false);
-//   const [formData, setFormData] = useState<any>({});
-//   const [newsList, setNewsList] = useState<News[]>([]);
-
-//   useEffect(() => {
-//     fetchActivities();
-//     fetchNews();
-//   }, []);
-
-//   async function fetchActivities() {
-//     try {
-//       const res = await fetch("/api/activities");
-//       if (!res.ok) throw new Error("Failed to fetch activities");
-//       const data: Activity[] = await res.json();
-//       setActivities(data);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   }
-
-//   async function fetchNews() {
-//     try {
-//       const res = await fetch("/api/news");
-//       if (!res.ok) throw new Error("Failed to fetch news");
-//       const data: News[] = await res.json();
-//       setNewsList(data);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   }
-
-//   async function handleCreateOrEditActivity() {
-//     const method = editId ? "PUT" : "POST";
-//     const url = "/api/activities";
-//     const body = JSON.stringify(editId ? { id: editId, updates: formData } : formData);
-
-//     try {
-//       const res = await fetch(url, {
-//         method,
-//         headers: { "Content-Type": "application/json" },
-//         body,
-//       });
-//       if (res.ok) {
-//         Swal.fire("Success", editId ? "แก้ไขกิจกรรมแล้ว" : "สร้างกิจกรรมแล้ว", "success");
-//         fetchActivities();
-//         setOpenDialog(false);
-//         setEditId(null);
-//       } else {
-//         const errorData = await res.json();
-//         Swal.fire("Error", errorData.message || "Operation failed", "error");
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       Swal.fire("Error", "Server error", "error");
-//     }
-//   }
-
-//   async function deleteActivity(id: string) {
-//     const confirm = await Swal.fire({ title: "ยืนยันลบกิจกรรม", icon: "warning", showCancelButton: true });
-//     if (!confirm.isConfirmed) return;
-
-//     try {
-//       const res = await fetch("/api/activities", {
-//         method: "DELETE",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ id }),
-//       });
-//       if (res.ok) {
-//         Swal.fire("Deleted", "ลบกิจกรรมแล้ว", "success");
-//         fetchActivities();
-//       } else {
-//         Swal.fire("Error", "ลบไม่สำเร็จ", "error");
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       Swal.fire("Error", "Server error", "error");
-//     }
-//   }
-
-//   function showParticipants(participants: Participant[]) {
-//     if (participants.length === 0) {
-//       Swal.fire("ไม่มีผู้ลงทะเบียน", "", "info");
-//       return;
-//     }
-//     const text = participants.map((p, i) => `${i + 1}. ${p.fullName} (${p.studentId}) ปี${p.year} เบอร์: ${p.phone} สาขา: ${p.department || "-"} ภาค: ${p.program || "-"}`).join("\n");
-//     Swal.fire({ title: "รายชื่อผู้ลงทะเบียน", text, icon: "info", customClass: { popup: "text-left" } });
-//   }
-
-//   function downloadParticipants(participants: Participant[], activity: Activity) {
-//     if (participants.length === 0) {
-//       Swal.fire("ไม่มีผู้ลงทะเบียน", "", "info");
-//       return;
-//     }
-//     const csv = "ลำดับ,ชื่อ,รหัส,ปี,เบอร์โทร,สาขา,ภาค\n" +
-//       participants.map((p, i) => `${i + 1},${p.fullName},${p.studentId},${p.year},${p.phone},${p.department || "-"},${p.program || "-"}`).join("\n");
-//     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-//     const link = document.createElement("a");
-//     link.href = URL.createObjectURL(blob);
-//     link.download = `${activity.title}_รายชื่อ.csv`.replace(/\s+/g, "_");
-//     link.click();
-//   }
-
-//   function openCreateDialog() {
-//     setFormData({
-//       title: "",
-//       newsId: "",
-//       registerStart: new Date(),
-//       registerEnd: new Date(),
-//       activityStart: new Date(),
-//       activityEnd: new Date(),
-//       location: "",
-//       maxParticipants: 1,
-//       status: "open",
-//     });
-//     setEditId(null);
-//     setOpenDialog(true);
-//   }
-
-//   function openEditDialog(activity: Activity) {
-//     setFormData({
-//       title: activity.title,
-//       newsId: activity.newsId || "",
-//       registerStart: new Date(activity.registerStart || activity.registerStart),
-//       registerEnd: new Date(activity.registerEnd || activity.registerEnd),
-//       activityStart: new Date(activity.activityStart || activity.activityStart),
-//       activityEnd: new Date(activity.activityEnd || activity.activityEnd),
-//       location: activity.location,
-//       maxParticipants: activity.maxParticipants,
-//       status: activity.status,
-//     });
-//     setEditId(activity._id);
-//     setOpenDialog(true);
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gray-900 text-white p-8">
-//       <div className="flex justify-between mb-6">
-//         <h1 className="text-2xl font-bold">จัดการกิจกรรม</h1>
-//         <button onClick={openCreateDialog} className="bg-green-500 px-4 py-2 rounded hover:bg-green-700">เพิ่มกิจกรรม</button>
-//       </div>
-
-//       <table className="w-full bg-gray-800 rounded">
-//         <thead>
-//           <tr className="bg-gray-700">
-//             <th className="p-2">ชื่อกิจกรรม</th>
-//             <th>เปิดลงทะเบียน</th>
-//             <th>ปิดลงทะเบียน</th>
-//             <th>เริ่มกิจกรรม</th>
-//             <th>สิ้นสุดกิจกรรม</th>
-//             <th>สถานที่</th>
-//             <th>สถานะ</th>
-//             <th>การจัดการ</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {activities.map((a) => (
-//             <tr key={a._id} className="border-t border-gray-700 hover:bg-gray-600">
-//               <td className="text-center p-2">{a.title}</td>
-//               <td className="text-center">{new Date(a.registerStart).toLocaleString()}</td>
-//               <td className="text-center">{new Date(a.registerEnd).toLocaleString()}</td>
-//               <td className="text-center">{new Date(a.activityStart).toLocaleString()}</td>
-//               <td className="text-center">{new Date(a.activityEnd).toLocaleString()}</td>
-//               <td className="text-center">{a.location}</td>
-//               <td className="text-center">
-//                 <span className={`px-2 py-1 rounded-full ${a.status === "open" ? "bg-green-500" : "bg-red-500"}`}>{a.status === "open" ? "เปิด" : "ปิด"}</span>
-//               </td>
-//               <td className="flex justify-center gap-2 p-2">
-//                 <button onClick={() => openEditDialog(a)}><PencilIcon className="w-5 h-5 text-blue-400 hover:text-blue-600" /></button>
-//                 <button onClick={() => deleteActivity(a._id)}><TrashIcon className="w-5 h-5 text-red-400 hover:text-red-600" /></button>
-//                 <button onClick={() => showParticipants(a.participants)}><CheckCircleIcon className="w-5 h-5 text-green-400 hover:text-green-600" /></button>
-//                 <button onClick={() => downloadParticipants(a.participants, a)}>ดาวน์โหลด</button>
-//               </td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-
-//       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="md">
-//         <DialogTitle>{editId ? "แก้ไขกิจกรรม" : "เพิ่มกิจกรรม"}</DialogTitle>
-//         <DialogContent>
-//   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-//     {/* ชื่อกิจกรรม */}
-//     <TextField
-//       label="ชื่อกิจกรรม"
-//       fullWidth
-//       value={formData.title}
-//       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-//     />
-
-//     {/* ข่าวสาร */}
-//     <FormControl fullWidth>
-//       <InputLabel>เลือกข่าวสาร</InputLabel>
-//       <Select
-//         value={formData.newsId}
-//         onChange={(e) => setFormData({ ...formData, newsId: e.target.value })}
-//       >
-//         <MenuItem value="">— ไม่เลือก —</MenuItem>
-//         {newsList.map((n) => (
-//           <MenuItem key={n._id} value={n._id}>
-//             <img src={n.image} alt={n.title} className="w-8 h-8 inline mr-2 rounded" />
-//             {n.title}
-//           </MenuItem>
-//         ))}
-//       </Select>
-//     </FormControl>
-
-//     {/* เวลา */}
-//   <LocalizationProvider dateAdapter={AdapterDateFns}>
-//   <DateTimePicker
-//     label="เปิดลงทะเบียน"
-//     value={formData.registerStart}
-//     onChange={(value) => setFormData({ ...formData, registerStart: value })}
-//     slotProps={{ textField: { fullWidth: true } }}
-//   />
-//   <DateTimePicker
-//     label="ปิดลงทะเบียน"
-//     value={formData.registerEnd}
-//     onChange={(value) => setFormData({ ...formData, registerEnd: value })}
-//     slotProps={{ textField: { fullWidth: true } }}
-//   />
-//   <DateTimePicker
-//     label="เริ่มกิจกรรม"
-//     value={formData.activityStart}
-//     onChange={(value) => setFormData({ ...formData, activityStart: value })}
-//     slotProps={{ textField: { fullWidth: true } }}
-//   />
-//   <DateTimePicker
-//     label="สิ้นสุดกิจกรรม"
-//     value={formData.activityEnd}
-//     onChange={(value) => setFormData({ ...formData, activityEnd: value })}
-//     slotProps={{ textField: { fullWidth: true } }}
-//   />
-// </LocalizationProvider>
-
-
-//     {/* สถานที่ */}
-//     <TextField
-//       label="สถานที่จัดกิจกรรม"
-//       fullWidth
-//       value={formData.location}
-//       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-//     />
-
-//     {/* จำนวน */}
-//     <TextField
-//       label="จำนวนผู้เข้าร่วมสูงสุด"
-//       type="number"
-//       fullWidth
-//       value={formData.maxParticipants}
-//       onChange={(e) => setFormData({ ...formData, maxParticipants: parseInt(e.target.value) })}
-//     />
-
-//     {/* สถานะ */}
-//     <FormControl fullWidth>
-//       <InputLabel>สถานะ</InputLabel>
-//       <Select
-//         value={formData.status}
-//         onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-//       >
-//         <MenuItem value="open">เปิดลงทะเบียน</MenuItem>
-//         <MenuItem value="closed">ปิดลงทะเบียน</MenuItem>
-//       </Select>
-//     </FormControl>
-//   </div>
-// </DialogContent>
-
-//         <DialogActions>
-//           <Button onClick={() => setOpenDialog(false)}>ยกเลิก</Button>
-//           <Button variant="contained" onClick={handleCreateOrEditActivity}>บันทึก</Button>
-//         </DialogActions>
-//       </Dialog>
-//     </div>
-//   );
-// }
-
-
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { PencilIcon, TrashIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
-// import Swal from "sweetalert2";
-// import {
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogActions,
-//   Button,
-//   TextField,
-//   Select,
-//   MenuItem,
-//   FormControl,
-//   InputLabel,
-//   Typography,
-// } from "@mui/material";
-// import { LocalizationProvider } from "@mui/x-date-pickers";
-// import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-// import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-// import { th } from "date-fns/locale";
-
-// interface Activity {
-//   _id: string;
-//   title: string;
-//   registerStart: string;
-//   registerEnd: string;
-//   activityStart: string;
-//   activityEnd: string;
-//   location: string;
-//   maxParticipants: number;
-//   status: string;
-//   participants: Participant[];
-//   newsId?: string;
-// }
-
-// interface Participant {
-//   fullName: string;
-//   studentId: string;
-//   year: string;
-//   phone: string;
-//   department?: string;
-// }
-
-// interface News {
-//   _id: string;
-//   title: string;
-//   image: string;
-// }
-
-// export default function AdminActivities() {
-//   const [activities, setActivities] = useState<Activity[]>([]);
-//   const [editId, setEditId] = useState<string | null>(null);
-//   const [openDialog, setOpenDialog] = useState(false);
-//   const [formData, setFormData] = useState<any>({});
-//   const [newsList, setNewsList] = useState<News[]>([]);
-
-//   useEffect(() => {
-//     fetchActivities();
-//     fetchNews();
-//   }, []);
-
-//   async function fetchActivities() {
-//     try {
-//       const res = await fetch("/api/activities");
-//       if (!res.ok) throw new Error("Failed to fetch activities");
-//       const data: Activity[] = await res.json();
-//       setActivities(data);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   }
-
-//   async function fetchNews() {
-//     try {
-//       const res = await fetch("/api/news");
-//       if (!res.ok) throw new Error("Failed to fetch news");
-//       const data: News[] = await res.json();
-//       setNewsList(data);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   }
-
-//   async function handleCreateOrEditActivity() {
-//     const method = editId ? "PUT" : "POST";
-//     const url = "/api/activities";
-//     const body = JSON.stringify(
-//       editId
-//         ? { id: editId, updates: formData }
-//         : { ...formData, status: formData.status || "open" }
-//     );
-
-//     try {
-//       const res = await fetch(url, {
-//         method,
-//         headers: { "Content-Type": "application/json" },
-//         body,
-//       });
-//       if (res.ok) {
-//         Swal.fire("สำเร็จ", editId ? "แก้ไขกิจกรรมเรียบร้อย" : "สร้างกิจกรรมเรียบร้อย", "success");
-//         fetchActivities();
-//         setOpenDialog(false);
-//         setEditId(null);
-//       } else {
-//         const errorData = await res.json();
-//         Swal.fire("ข้อผิดพลาด", errorData.message || "ไม่สามารถดำเนินการได้", "error");
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       Swal.fire("ข้อผิดพลาด", "เกิดข้อผิดพลาดที่เซิร์ฟเวอร์", "error");
-//     }
-//   }
-
-//   async function deleteActivity(id: string) {
-//     const confirm = await Swal.fire({
-//       title: "ยืนยันการลบ",
-//       text: "คุณต้องการลบกิจกรรมนี้หรือไม่?",
-//       icon: "warning",
-//       showCancelButton: true,
-//       confirmButtonText: "ลบ",
-//       cancelButtonText: "ยกเลิก",
-//     });
-//     if (!confirm.isConfirmed) return;
-
-//     try {
-//       const res = await fetch("/api/activities", {
-//         method: "DELETE",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ id }),
-//       });
-//       if (res.ok) {
-//         Swal.fire("ลบสำเร็จ", "กิจกรรมถูกลบเรียบร้อย", "success");
-//         fetchActivities();
-//       } else {
-//         Swal.fire("ข้อผิดพลาด", "ไม่สามารถลบกิจกรรมได้", "error");
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       Swal.fire("ข้อผิดพลาด", "เกิดข้อผิดพลาดที่เซิร์ฟเวอร์", "error");
-//     }
-//   }
-
-//   function showParticipants(participants: Participant[]) {
-//     if (participants.length === 0) {
-//       Swal.fire("ไม่มีผู้ลงทะเบียน", "ยังไม่มีผู้ลงทะเบียนในกิจกรรมนี้", "info");
-//       return;
-//     }
-//     const text = participants
-//       .map(
-//         (p, i) =>
-//           `${i + 1}. ${p.fullName} (${p.studentId}) ชั้นปี/กลุ่ม: ${p.year} เบอร์: ${p.phone} สาขา: ${p.department || "-"}`
-//       )
-//       .join("\n");
-//     Swal.fire({
-//       title: "รายชื่อผู้ลงทะเบียน",
-//       text,
-//       icon: "info",
-//       customClass: { popup: "text-left whitespace-pre-line" },
-//     });
-//   }
-
-//   function downloadParticipants(participants: Participant[], activity: Activity) {
-//     if (participants.length === 0) {
-//       Swal.fire("ไม่มีผู้ลงทะเบียน", "ยังไม่มีผู้ลงทะเบียนในกิจกรรมนี้", "info");
-//       return;
-//     }
-//     const csv =
-//       "ลำดับ,ชื่อ-นามสกุล,รหัสนักศึกษา,ชั้นปี/กลุ่มเรียน,เบอร์โทร,สาขา\n" +
-//       participants
-//         .map(
-//           (p, i) =>
-//             `${i + 1},${p.fullName},${p.studentId},${p.year},${p.phone},${p.department || "-"}`
-//         )
-//         .join("\n");
-//     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-//     const link = document.createElement("a");
-//     link.href = URL.createObjectURL(blob);
-//     link.download = `${activity.title}_รายชื่อ.csv`.replace(/\s+/g, "_");
-//     link.click();
-//   }
-
-//   function openCreateDialog() {
-//     setFormData({
-//       title: "",
-//       newsId: "",
-//       registerStart: new Date(),
-//       registerEnd: new Date(),
-//       activityStart: new Date(),
-//       activityEnd: new Date(),
-//       location: "",
-//       maxParticipants: 1,
-//       status: "open",
-//     });
-//     setEditId(null);
-//     setOpenDialog(true);
-//   }
-
-//   function openEditDialog(activity: Activity) {
-//     setFormData({
-//       title: activity.title,
-//       newsId: activity.newsId || "",
-//       registerStart: new Date(activity.registerStart),
-//       registerEnd: new Date(activity.registerEnd),
-//       activityStart: new Date(activity.activityStart),
-//       activityEnd: new Date(activity.activityEnd),
-//       location: activity.location,
-//       maxParticipants: activity.maxParticipants,
-//       status: activity.status,
-//     });
-//     setEditId(activity._id);
-//     setOpenDialog(true);
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gray-900 text-white p-6">
-//       <div className="max-w-7xl mx-auto">
-//         <div className="flex justify-between items-center mb-8">
-//           <h1 className="text-3xl font-bold">จัดการกิจกรรม</h1>
-//           <button
-//             onClick={openCreateDialog}
-//             className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition"
-//           >
-//             + เพิ่มกิจกรรมใหม่
-//           </button>
-//         </div>
-
-//         <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-//           <table className="w-full text-left">
-//             <thead className="bg-gray-700">
-//               <tr>
-//                 <th className="p-4">ชื่อกิจกรรม</th>
-//                 <th className="p-4">เปิดลงทะเบียน</th>
-//                 <th className="p-4">ปิดลงทะเบียน</th>
-//                 <th className="p-4">เริ่มกิจกรรม</th>
-//                 <th className="p-4">สิ้นสุดกิจกรรม</th>
-//                 <th className="p-4">สถานที่</th>
-//                 <th className="p-4">สถานะ</th>
-//                 <th className="p-4 text-center">การจัดการ</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {activities.map((a) => (
-//                 <tr
-//                   key={a._id}
-//                   className="border-t border-gray-700 hover:bg-gray-600 transition"
-//                 >
-//                   <td className="p-4">{a.title}</td>
-//                   <td className="p-4">{new Date(a.registerStart).toLocaleString("th-TH")}</td>
-//                   <td className="p-4">{new Date(a.registerEnd).toLocaleString("th-TH")}</td>
-//                   <td className="p-4">{new Date(a.activityStart).toLocaleString("th-TH")}</td>
-//                   <td className="p-4">{new Date(a.activityEnd).toLocaleString("th-TH")}</td>
-//                   <td className="p-4">{a.location}</td>
-//                   <td className="p-4">
-//                     <span
-//                       className={`px-3 py-1 rounded-full text-sm font-medium ${
-//                         a.status === "open"
-//                           ? "bg-green-600 text-white"
-//                           : "bg-red-600 text-white"
-//                       }`}
-//                     >
-//                       {a.status === "open" ? "เปิด" : "ปิด"}
-//                     </span>
-//                   </td>
-//                   <td className="p-4 flex justify-center gap-3">
-//                     <button
-//                       onClick={() => openEditDialog(a)}
-//                       title="แก้ไข"
-//                       className="text-blue-400 hover:text-blue-600"
-//                     >
-//                       <PencilIcon className="w-5 h-5" />
-//                     </button>
-//                     <button
-//                       onClick={() => deleteActivity(a._id)}
-//                       title="ลบ"
-//                       className="text-red-400 hover:text-red-600"
-//                     >
-//                       <TrashIcon className="w-5 h-5" />
-//                     </button>
-//                     <button
-//                       onClick={() => showParticipants(a.participants)}
-//                       title="ดูรายชื่อ"
-//                       className="text-green-400 hover:text-green-600"
-//                     >
-//                       <CheckCircleIcon className="w-5 h-5" />
-//                     </button>
-//                     <button
-//                       onClick={() => downloadParticipants(a.participants, a)}
-//                       className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
-//                     >
-//                       ดาวน์โหลด
-//                     </button>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-
-//         <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
-//           <DialogTitle className="bg-white text-gray-900">
-//             {editId ? "แก้ไขกิจกรรม" : "สร้างกิจกรรมใหม่"}
-//           </DialogTitle>
-//           <DialogContent className="bg-white text-gray-900">
-//             <div className="space-y-6 mt-4">
-//               <div>
-//                 <TextField
-//                   label="ชื่อกิจกรรม"
-//                   fullWidth
-//                   value={formData.title}
-//                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-//                   variant="outlined"
-//                   InputLabelProps={{ style: { color: "#374151" } }}
-//                   InputProps={{ style: { backgroundColor: "#f3f4f6" } }}
-//                   helperText="ระบุชื่อกิจกรรม เช่น การแข่งขันเขียนโปรแกรม"
-//                 />
-//               </div>
-
-//               <div>
-//                 <FormControl fullWidth variant="outlined">
-//                   <InputLabel style={{ color: "#374151" }}>เลือกข่าวสาร (ถ้ามี)</InputLabel>
-//                   <Select
-//                     value={formData.newsId}
-//                     onChange={(e) => setFormData({ ...formData, newsId: e.target.value })}
-//                     style={{ backgroundColor: "#f3f4f6" }}
-//                     label="เลือกข่าวสาร (ถ้ามี)"
-//                   >
-//                     <MenuItem value="">— ไม่เลือก —</MenuItem>
-//                     {newsList.map((n) => (
-//                       <MenuItem key={n._id} value={n._id}>
-//                         <img
-//                           src={n.image}
-//                           alt={n.title}
-//                           className="w-8 h-8 inline mr-2 rounded"
-//                         />
-//                         {n.title}
-//                       </MenuItem>
-//                     ))}
-//                   </Select>
-//                   <Typography variant="caption" color="textSecondary">
-//                     เลือกข่าวที่เกี่ยวข้องกับกิจกรรม (ถ้ามี)
-//                   </Typography>
-//                 </FormControl>
-//               </div>
-
-//               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={th}>
-//                 <div>
-//                   <DateTimePicker
-//                     label="วันเปิดลงทะเบียน"
-//                     value={formData.registerStart}
-//                     onChange={(value) => setFormData({ ...formData, registerStart: value })}
-//                     slotProps={{
-//                       textField: {
-//                         fullWidth: true,
-//                         variant: "outlined",
-//                         InputLabelProps: { style: { color: "#374151" } },
-//                         InputProps: { style: { backgroundColor: "#f3f4f6" } },
-//                         helperText: "เลือกวันที่และเวลาที่เริ่มเปิดให้ลงทะเบียน",
-//                       },
-//                     }}
-//                     format="dd/MM/yyyy HH:mm"
-//                   />
-//                 </div>
-//                 <div>
-//                   <DateTimePicker
-//                     label="วันปิดลงทะเบียน"
-//                     value={formData.registerEnd}
-//                     onChange={(value) => setFormData({ ...formData, registerEnd: value })}
-//                     slotProps={{
-//                       textField: {
-//                         fullWidth: true,
-//                         variant: "outlined",
-//                         InputLabelProps: { style: { color: "#374151" } },
-//                         InputProps: { style: { backgroundColor: "#f3f4f6" } },
-//                         helperText: "เลือกวันที่และเวลาที่ปิดการลงทะเบียน",
-//                       },
-//                     }}
-//                     format="dd/MM/yyyy HH:mm"
-//                   />
-//                 </div>
-//                 <div>
-//                   <DateTimePicker
-//                     label="เวลาเริ่มกิจกรรม"
-//                     value={formData.activityStart}
-//                     onChange={(value) => setFormData({ ...formData, activityStart: value })}
-//                     slotProps={{
-//                       textField: {
-//                         fullWidth: true,
-//                         variant: "outlined",
-//                         InputLabelProps: { style: { color: "#374151" } },
-//                         InputProps: { style: { backgroundColor: "#f3f4f6" } },
-//                         helperText: "เลือกวันที่และเวลาที่กิจกรรมเริ่ม",
-//                       },
-//                     }}
-//                     format="dd/MM/yyyy HH:mm"
-//                   />
-//                 </div>
-//                 <div>
-//                   <DateTimePicker
-//                     label="เวลาสิ้นสุดกิจกรรม"
-//                     value={formData.activityEnd}
-//                     onChange={(value) => setFormData({ ...formData, activityEnd: value })}
-//                     slotProps={{
-//                       textField: {
-//                         fullWidth: true,
-//                         variant: "outlined",
-//                         InputLabelProps: { style: { color: "#374151" } },
-//                         InputProps: { style: { backgroundColor: "#f3f4f6" } },
-//                         helperText: "เลือกวันที่และเวลาที่กิจกรรมสิ้นสุด",
-//                       },
-//                     }}
-//                     format="dd/MM/yyyy HH:mm"
-//                   />
-//                 </div>
-//               </LocalizationProvider>
-
-//               <div>
-//                 <TextField
-//                   label="สถานที่จัดกิจกรรม"
-//                   fullWidth
-//                   value={formData.location}
-//                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-//                   variant="outlined"
-//                   InputLabelProps={{ style: { color: "#374151" } }}
-//                   InputProps={{ style: { backgroundColor: "#f3f4f6" } }}
-//                   helperText="ระบุสถานที่ เช่น ห้องประชุม A101"
-//                 />
-//               </div>
-
-//               <div>
-//                 <TextField
-//                   label="จำนวนผู้เข้าร่วมสูงสุด"
-//                   type="number"
-//                   fullWidth
-//                   value={formData.maxParticipants}
-//                   onChange={(e) =>
-//                     setFormData({ ...formData, maxParticipants: parseInt(e.target.value) })
-//                   }
-//                   variant="outlined"
-//                   InputLabelProps={{ style: { color: "#374151" } }}
-//                   InputProps={{ style: { backgroundColor: "#f3f4f6" } }}
-//                   helperText="ระบุจำนวนสูงสุด เช่น 50"
-//                 />
-//               </div>
-
-//               <div>
-//                 <FormControl fullWidth variant="outlined">
-//                   <InputLabel style={{ color: "#374151" }}>สถานะ</InputLabel>
-//                   <Select
-//                     value={formData.status}
-//                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-//                     style={{ backgroundColor: "#f3f4f6" }}
-//                     label="สถานะ"
-//                   >
-//                     <MenuItem value="open">เปิดลงทะเบียน</MenuItem>
-//                     <MenuItem value="closed">ปิดลงทะเบียน</MenuItem>
-//                   </Select>
-//                   <Typography variant="caption" color="textSecondary">
-//                     เลือกสถานะของกิจกรรม
-//                   </Typography>
-//                 </FormControl>
-//               </div>
-//             </div>
-//           </DialogContent>
-//           <DialogActions className="bg-white">
-//             <Button
-//               onClick={() => setOpenDialog(false)}
-//               style={{ color: "#fff", backgroundColor: "#6b7280" }}
-//             >
-//               ยกเลิก
-//             </Button>
-//             <Button
-//               variant="contained"
-//               onClick={handleCreateOrEditActivity}
-//               style={{ backgroundColor: "#2563eb", color: "#fff" }}
-//             >
-//               บันทึก
-//             </Button>
-//           </DialogActions>
-//         </Dialog>
-//       </div>
-//     </div>
-//   );
-// }
-
-
 "use client";
 
 import { useEffect, useState } from "react";
-import { PencilIcon, TrashIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
 import {
   Dialog,
@@ -831,12 +13,13 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Typography,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { th } from "date-fns/locale";
+import { Pencil, Trash2, Eye, Download, Plus, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Activity {
   _id: string;
@@ -858,6 +41,7 @@ interface Participant {
   year: string;
   phone: string;
   department?: string;
+  program?: string;
 }
 
 interface News {
@@ -891,7 +75,9 @@ export default function AdminActivities() {
         title: "ข้อผิดพลาด",
         text: "ไม่สามารถโหลดข้อมูลกิจกรรมได้",
         icon: "error",
-        customClass: { popup: "swal2-high-zindex fade-in" },
+        confirmButtonColor: "#f97316",
+        background: "#0c0c0e",
+        color: "#ffffff"
       });
     }
   }
@@ -908,13 +94,15 @@ export default function AdminActivities() {
         title: "ข้อผิดพลาด",
         text: "ไม่สามารถโหลดข้อมูลข่าวสารได้",
         icon: "error",
-        customClass: { popup: "swal2-high-zindex fade-in" },
+        confirmButtonColor: "#f97316",
+        background: "#0c0c0e",
+        color: "#ffffff"
       });
     }
   }
 
   async function handleCreateOrEditActivity() {
-    if (isLoading) return; // ป้องกันการกดซ้ำ
+    if (isLoading) return;
 
     setIsLoading(true);
     Swal.fire({
@@ -922,7 +110,8 @@ export default function AdminActivities() {
       html: '<div class="loader mx-auto"></div>',
       allowOutsideClick: false,
       showConfirmButton: false,
-      customClass: { popup: "swal2-high-zindex animate-popup-loading" },
+      background: "#0c0c0e",
+      color: "#ffffff"
     });
 
     const now = new Date();
@@ -938,15 +127,17 @@ export default function AdminActivities() {
       if (date && new Date(date) < now) {
         setIsLoading(false);
         Swal.close();
-        setOpenDialog(false); // ปิด Dialog
+        setOpenDialog(false);
         setTimeout(() => {
           Swal.fire({
             title: "ข้อผิดพลาด",
             text: `${name} ไม่สามารถเป็นวันที่ในอดีตได้`,
             icon: "error",
-            customClass: { popup: "swal2-high-zindex fade-in" },
+            confirmButtonColor: "#f97316",
+            background: "#0c0c0e",
+            color: "#ffffff"
           });
-        }, 200); // หน่วงเวลา 200ms
+        }, 200);
         return;
       }
     }
@@ -961,7 +152,9 @@ export default function AdminActivities() {
           title: "ข้อผิดพลาด",
           text: "วันปิดลงทะเบียนต้องอยู่หลังวันเปิดลงทะเบียน",
           icon: "error",
-          customClass: { popup: "swal2-high-zindex fade-in" },
+          confirmButtonColor: "#f97316",
+          background: "#0c0c0e",
+          color: "#ffffff"
         });
       }, 200);
       return;
@@ -976,7 +169,9 @@ export default function AdminActivities() {
           title: "ข้อผิดพลาด",
           text: "เวลาสิ้นสุดกิจกรรมต้องอยู่หลังเวลาเริ่มกิจกรรม",
           icon: "error",
-          customClass: { popup: "swal2-high-zindex fade-in" },
+          confirmButtonColor: "#f97316",
+          background: "#0c0c0e",
+          color: "#ffffff"
         });
       }, 200);
       return;
@@ -999,13 +194,15 @@ export default function AdminActivities() {
       setIsLoading(false);
       Swal.close();
       if (res.ok) {
-        setOpenDialog(false); // ปิด Dialog
+        setOpenDialog(false);
         setTimeout(() => {
           Swal.fire({
             title: "สำเร็จ",
             text: editId ? "แก้ไขกิจกรรมเรียบร้อย" : "สร้างกิจกรรมเรียบร้อย",
             icon: "success",
-            customClass: { popup: "swal2-high-zindex animate-successPopup" },
+            confirmButtonColor: "#f97316",
+            background: "#0c0c0e",
+            color: "#ffffff"
           });
         }, 200);
         fetchActivities();
@@ -1018,7 +215,9 @@ export default function AdminActivities() {
             title: "ข้อผิดพลาด",
             text: errorData.message || "ไม่สามารถดำเนินการได้",
             icon: "error",
-            customClass: { popup: "swal2-high-zindex fade-in" },
+            confirmButtonColor: "#f97316",
+            background: "#0c0c0e",
+            color: "#ffffff"
           });
         }, 200);
       }
@@ -1032,7 +231,9 @@ export default function AdminActivities() {
           title: "ข้อผิดพลาด",
           text: "เกิดข้อผิดพลาดที่เซิร์ฟเวอร์",
           icon: "error",
-          customClass: { popup: "swal2-high-zindex fade-in" },
+          confirmButtonColor: "#f97316",
+          background: "#0c0c0e",
+          color: "#ffffff"
         });
       }, 200);
     }
@@ -1046,7 +247,11 @@ export default function AdminActivities() {
       showCancelButton: true,
       confirmButtonText: "ลบ",
       cancelButtonText: "ยกเลิก",
-      customClass: { popup: "swal2-high-zindex fade-in" },
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#3f3f46",
+      background: "#0c0c0e",
+      color: "#ffffff",
+      customClass: { popup: "swal2-high-zindex" },
     });
     if (!confirm.isConfirmed) return;
 
@@ -1061,24 +266,23 @@ export default function AdminActivities() {
           title: "ลบสำเร็จ",
           text: "กิจกรรมถูกลบเรียบร้อย",
           icon: "success",
-          customClass: { popup: "swal2-high-zindex animate-successPopup" },
+          confirmButtonColor: "#f97316",
+          background: "#0c0c0e",
+          color: "#ffffff"
         });
         fetchActivities();
       } else {
-        Swal.fire({
-          title: "ข้อผิดพลาด",
-          text: "ไม่สามารถลบกิจกรรมได้",
-          icon: "error",
-          customClass: { popup: "swal2-high-zindex fade-in" },
-        });
+        throw new Error();
       }
     } catch (error) {
       console.error("Delete error:", error);
       Swal.fire({
         title: "ข้อผิดพลาด",
-        text: "เกิดข้อผิดพลาดที่เซิร์ฟเวอร์",
+        text: "ไม่สามารถลบกิจกรรมได้",
         icon: "error",
-        customClass: { popup: "swal2-high-zindex fade-in" },
+        confirmButtonColor: "#f97316",
+        background: "#0c0c0e",
+        color: "#ffffff"
       });
     }
   }
@@ -1089,7 +293,9 @@ export default function AdminActivities() {
         title: "ไม่มีผู้ลงทะเบียน",
         text: "ยังไม่มีผู้ลงทะเบียนในกิจกรรมนี้",
         icon: "info",
-        customClass: { popup: "swal2-high-zindex fade-in text-left whitespace-pre-line" },
+        confirmButtonColor: "#f97316",
+        background: "#0c0c0e",
+        color: "#ffffff"
       });
       return;
     }
@@ -1103,7 +309,10 @@ export default function AdminActivities() {
       title: "รายชื่อผู้ลงทะเบียน",
       text,
       icon: "info",
-      customClass: { popup: "swal2-high-zindex fade-in text-left whitespace-pre-line" },
+      confirmButtonColor: "#f97316",
+      background: "#0c0c0e",
+      color: "#ffffff",
+      customClass: { popup: "text-left whitespace-pre-line font-light" },
     });
   }
 
@@ -1113,7 +322,9 @@ export default function AdminActivities() {
         title: "ไม่มีผู้ลงทะเบียน",
         text: "ยังไม่มีผู้ลงทะเบียนในกิจกรรมนี้",
         icon: "info",
-        customClass: { popup: "swal2-high-zindex fade-in" },
+        confirmButtonColor: "#f97316",
+        background: "#0c0c0e",
+        color: "#ffffff"
       });
       return;
     }
@@ -1134,7 +345,7 @@ export default function AdminActivities() {
 
   function openCreateDialog() {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // ตั้งเวลาเป็น 00:00
+    today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
     const nextWeek = new Date(today);
@@ -1171,201 +382,241 @@ export default function AdminActivities() {
     setOpenDialog(true);
   }
 
+  // MUI input styles helper
+  const inputSx = {
+    "& .MuiOutlinedInput-root": {
+      color: "#ffffff",
+      backgroundColor: "rgba(255, 255, 255, 0.01)",
+      borderRadius: "14px",
+      "& fieldset": { borderColor: "rgba(255,255,255,0.08)" },
+      "&:hover fieldset": { borderColor: "rgba(255,255,255,0.15)" },
+      "&.Mui-focused fieldset": { borderColor: "#f97316" }
+    },
+    "& .MuiInputLabel-root": { color: "#9ca3af" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#f97316" },
+    "& .MuiFormHelperText-root": { color: "#6b7280" }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">จัดการกิจกรรม</h1>
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+      <div className="max-w-7xl mx-auto space-y-10">
+        
+        {/* หัวข้อ */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 select-none">
+          <div className="space-y-2">
+            <h2 className="text-[10px] tracking-[0.25em] font-light text-orange-500 uppercase">
+              ACTIVITY CONFIGURATION
+            </h2>
+            <h1 className="text-2xl font-light text-gray-200 tracking-wide">
+              จัดการและสร้างกิจกรรมนักศึกษา
+            </h1>
+          </div>
           <button
             onClick={openCreateDialog}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition"
+            className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-black text-xs font-medium tracking-wider rounded-xl shadow-[0_5px_15px_rgba(249,115,22,0.15)] hover:shadow-[0_8px_20px_rgba(249,115,22,0.3)] transition duration-300"
           >
-            + เพิ่มกิจกรรมใหม่
+            <Plus className="h-4 w-4" />
+            <span>เพิ่มกิจกรรมใหม่</span>
           </button>
         </div>
 
-        <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-gray-700">
-              <tr>
-                <th className="p-4">ชื่อกิจกรรม</th>
-                <th className="p-4">เปิดลงทะเบียน</th>
-                <th className="p-4">ปิดลงทะเบียน</th>
-                <th className="p-4">เริ่มกิจกรรม</th>
-                <th className="p-4">สิ้นสุดกิจกรรม</th>
-                <th className="p-4">สถานที่</th>
-                <th className="p-4">สถานะ</th>
-                <th className="p-4 text-center">การจัดการ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activities.map((a) => (
-                <tr
-                  key={a._id}
-                  className="border-t border-gray-700 hover:bg-gray-600 transition"
-                >
-                  <td className="p-4">{a.title}</td>
-                  <td className="p-4">{new Date(a.registerStart).toLocaleString("th-TH")}</td>
-                  <td className="p-4">{new Date(a.registerEnd).toLocaleString("th-TH")}</td>
-                  <td className="p-4">{new Date(a.activityStart).toLocaleString("th-TH")}</td>
-                  <td className="p-4">{new Date(a.activityEnd).toLocaleString("th-TH")}</td>
-                  <td className="p-4">{a.location}</td>
-                  <td className="p-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        a.status === "open"
-                          ? "bg-green-600 text-white"
-                          : "bg-red-600 text-white"
-                      }`}
-                    >
-                      {a.status === "open" ? "เปิด" : "ปิด"}
-                    </span>
-                  </td>
-                  <td className="p-4 flex justify-center gap-3">
-                    <button
-                      onClick={() => openEditDialog(a)}
-                      title="แก้ไข"
-                      className="text-blue-400 hover:text-blue-600"
-                    >
-                      <PencilIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => deleteActivity(a._id)}
-                      title="ลบ"
-                      className="text-red-400 hover:text-red-600"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => showParticipants(a.participants)}
-                      title="ดูรายชื่อ"
-                      className="text-green-400 hover:text-green-600"
-                    >
-                      <CheckCircleIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => downloadParticipants(a.participants, a)}
-                      className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
-                    >
-                      ดาวน์โหลด
-                    </button>
-                  </td>
+        {/* ตารางข้อมูล */}
+        <div className="bg-white/[0.01] border border-white/[0.04] backdrop-blur-xl rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-white/[0.02] border-b border-white/[0.04] select-none">
+                  <th className="p-4 pl-6 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase">ชื่อกิจกรรม</th>
+                  <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase">เปิดลงทะเบียน</th>
+                  <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase">ปิดลงทะเบียน</th>
+                  <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase">เริ่มกิจกรรม</th>
+                  <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase">สถานที่</th>
+                  <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase">สถานะ</th>
+                  <th className="p-4 pr-6 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase text-center">การจัดการ</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <AnimatePresence>
+                  {activities.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="p-12 text-center text-gray-500 font-light text-sm">
+                        ไม่มีข้อมูลกิจกรรมในขณะนี้
+                      </td>
+                    </tr>
+                  ) : (
+                    activities.map((a, idx) => (
+                      <motion.tr
+                        key={a._id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: idx * 0.03 }}
+                        className="border-b border-white/[0.02] hover:bg-white/[0.01] transition duration-300"
+                      >
+                        <td className="p-4 pl-6 text-sm font-light text-gray-200">{a.title}</td>
+                        <td className="p-4 text-xs font-light text-gray-400">
+                          {new Date(a.registerStart).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })} น.
+                        </td>
+                        <td className="p-4 text-xs font-light text-gray-400">
+                          {new Date(a.registerEnd).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })} น.
+                        </td>
+                        <td className="p-4 text-xs font-light text-gray-400">
+                          {new Date(a.activityStart).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })} น.
+                        </td>
+                        <td className="p-4 text-xs font-light text-gray-400 truncate max-w-[120px]">{a.location}</td>
+                        <td className="p-4">
+                          <span
+                            className={`text-[9px] tracking-wider px-2.5 py-1 rounded-lg border font-light ${
+                              a.status === "open"
+                                ? "bg-green-500/5 border-green-500/20 text-green-400"
+                                : "bg-red-500/5 border-red-500/20 text-red-400"
+                            }`}
+                          >
+                            {a.status === "open" ? "OPEN" : "CLOSED"}
+                          </span>
+                        </td>
+                        <td className="p-4 pr-6 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => openEditDialog(a)}
+                              title="แก้ไข"
+                              className="p-2 border border-white/[0.08] hover:bg-white/[0.03] rounded-xl text-gray-400 hover:text-white transition duration-300"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => deleteActivity(a._id)}
+                              title="ลบ"
+                              className="p-2 border border-red-500/10 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition duration-300"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => showParticipants(a.participants)}
+                              title="ดูรายชื่อผู้ลงทะเบียน"
+                              className="p-2 border border-white/[0.08] hover:bg-white/[0.03] rounded-xl text-gray-400 hover:text-white transition duration-300"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => downloadParticipants(a.participants, a)}
+                              className="px-3 py-1.5 bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] text-[10px] font-light tracking-wider rounded-xl text-gray-300 hover:text-white transition duration-300 flex items-center gap-1"
+                            >
+                              <Download className="h-3 w-3 text-orange-500/80" />
+                              <span>CSV</span>
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))
+                  )}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm" classes={{ paper: "fade-in" }}>
-          <DialogTitle className="bg-white text-gray-900">
-            {editId ? "แก้ไขกิจกรรม" : "สร้างกิจกรรมใหม่"}
+        {/* Dialog (MUI) */}
+        <Dialog 
+          open={openDialog} 
+          onClose={() => setOpenDialog(false)} 
+          fullWidth 
+          maxWidth="sm"
+          PaperProps={{
+            style: {
+              backgroundColor: "#0c0c0e",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: "24px",
+              padding: "16px",
+              color: "#ffffff"
+            }
+          }}
+        >
+          <DialogTitle style={{ color: "#ffffff", fontWeight: "300", letterSpacing: "0.05em" }} className="border-b border-white/[0.04] pb-4">
+            {editId ? "แก้ไขรายละเอียดกิจกรรม" : "สร้างกิจกรรมผู้เข้าร่วมใหม่"}
           </DialogTitle>
-          <DialogContent className="bg-white text-gray-900">
+          <DialogContent className="pt-6">
             <div className="space-y-6 mt-4">
               <div>
                 <TextField
                   label="ชื่อกิจกรรม"
                   fullWidth
-                  value={formData.title}
+                  value={formData.title || ""}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   variant="outlined"
-                  InputLabelProps={{ style: { color: "#374151" } }}
-                  InputProps={{ style: { backgroundColor: "#f3f4f6" } }}
-                  helperText="ระบุชื่อกิจกรรม เช่น การแข่งขันเขียนโปรแกรม"
+                  sx={inputSx}
                 />
               </div>
 
               <div>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel style={{ color: "#374151" }}>เลือกข่าวสาร (ถ้ามี)</InputLabel>
+                <FormControl fullWidth variant="outlined" sx={inputSx}>
+                  <InputLabel>เลือกข่าวสารที่เกี่ยวข้อง (ถ้ามี)</InputLabel>
                   <Select
-                    value={formData.newsId}
+                    value={formData.newsId || ""}
                     onChange={(e) => setFormData({ ...formData, newsId: e.target.value })}
-                    style={{ backgroundColor: "#f3f4f6" }}
-                    label="เลือกข่าวสาร (ถ้ามี)"
+                    label="เลือกข่าวสารที่เกี่ยวข้อง (ถ้ามี)"
                   >
                     <MenuItem value="">— ไม่เลือก —</MenuItem>
                     {newsList.map((n) => (
                       <MenuItem key={n._id} value={n._id}>
-                        <img
-                          src={n.image}
-                          alt={n.title}
-                          className="w-8 h-8 inline mr-2 rounded"
-                        />
                         {n.title}
                       </MenuItem>
                     ))}
                   </Select>
-                  <Typography variant="caption" color="textSecondary">
-                    เลือกข่าวที่เกี่ยวข้องกับกิจกรรม (ถ้ามี)
-                  </Typography>
                 </FormControl>
               </div>
 
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={th}>
-                <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <DateTimePicker
                     label="วันเปิดลงทะเบียน"
-                    value={formData.registerStart}
+                    value={formData.registerStart ? new Date(formData.registerStart) : null}
                     onChange={(value) => setFormData({ ...formData, registerStart: value })}
                     slotProps={{
                       textField: {
                         fullWidth: true,
                         variant: "outlined",
-                        InputLabelProps: { style: { color: "#374151" } },
-                        InputProps: { style: { backgroundColor: "#f3f4f6" } },
-                        helperText: "เลือกวันที่และเวลาที่เริ่มเปิดให้ลงทะเบียน",
+                        sx: inputSx
                       },
                     }}
                     format="dd/MM/yyyy HH:mm"
                   />
-                </div>
-                <div>
                   <DateTimePicker
                     label="วันปิดลงทะเบียน"
-                    value={formData.registerEnd}
+                    value={formData.registerEnd ? new Date(formData.registerEnd) : null}
                     onChange={(value) => setFormData({ ...formData, registerEnd: value })}
                     slotProps={{
                       textField: {
                         fullWidth: true,
                         variant: "outlined",
-                        InputLabelProps: { style: { color: "#374151" } },
-                        InputProps: { style: { backgroundColor: "#f3f4f6" } },
-                        helperText: "เลือกวันที่และเวลาที่ปิดการลงทะเบียน",
+                        sx: inputSx
                       },
                     }}
                     format="dd/MM/yyyy HH:mm"
                   />
                 </div>
-                <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <DateTimePicker
                     label="เวลาเริ่มกิจกรรม"
-                    value={formData.activityStart}
+                    value={formData.activityStart ? new Date(formData.activityStart) : null}
                     onChange={(value) => setFormData({ ...formData, activityStart: value })}
                     slotProps={{
                       textField: {
                         fullWidth: true,
                         variant: "outlined",
-                        InputLabelProps: { style: { color: "#374151" } },
-                        InputProps: { style: { backgroundColor: "#f3f4f6" } },
-                        helperText: "เลือกวันที่และเวลาที่กิจกรรมเริ่ม",
+                        sx: inputSx
                       },
                     }}
                     format="dd/MM/yyyy HH:mm"
                   />
-                </div>
-                <div>
                   <DateTimePicker
                     label="เวลาสิ้นสุดกิจกรรม"
-                    value={formData.activityEnd}
+                    value={formData.activityEnd ? new Date(formData.activityEnd) : null}
                     onChange={(value) => setFormData({ ...formData, activityEnd: value })}
                     slotProps={{
                       textField: {
                         fullWidth: true,
                         variant: "outlined",
-                        InputLabelProps: { style: { color: "#374151" } },
-                        InputProps: { style: { backgroundColor: "#f3f4f6" } },
-                        helperText: "เลือกวันที่และเวลาที่กิจกรรมสิ้นสุด",
+                        sx: inputSx
                       },
                     }}
                     format="dd/MM/yyyy HH:mm"
@@ -1377,64 +628,64 @@ export default function AdminActivities() {
                 <TextField
                   label="สถานที่จัดกิจกรรม"
                   fullWidth
-                  value={formData.location}
+                  value={formData.location || ""}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   variant="outlined"
-                  InputLabelProps={{ style: { color: "#374151" } }}
-                  InputProps={{ style: { backgroundColor: "#f3f4f6" } }}
-                  helperText="ระบุสถานที่ เช่น ห้องประชุม A101"
+                  sx={inputSx}
                 />
               </div>
 
               <div>
                 <TextField
-                  label="จำนวนผู้เข้าร่วมสูงสุด"
+                  label="จำนวนผู้เข้าร่วมสูงสุด (คน)"
                   type="number"
                   fullWidth
-                  value={formData.maxParticipants}
+                  value={formData.maxParticipants || 1}
                   onChange={(e) =>
                     setFormData({ ...formData, maxParticipants: parseInt(e.target.value) })
                   }
                   variant="outlined"
-                  InputLabelProps={{ style: { color: "#374151" } }}
-                  InputProps={{ style: { backgroundColor: "#f3f4f6" } }}
-                  helperText="ระบุจำนวนสูงสุด เช่น 50"
+                  sx={inputSx}
                 />
               </div>
 
               <div>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel style={{ color: "#374151" }}>สถานะ</InputLabel>
+                <FormControl fullWidth variant="outlined" sx={inputSx}>
+                  <InputLabel>สถานะการลงทะเบียน</InputLabel>
                   <Select
-                    value={formData.status}
+                    value={formData.status || "open"}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    style={{ backgroundColor: "#f3f4f6" }}
-                    label="สถานะ"
+                    label="สถานะการลงทะเบียน"
                   >
                     <MenuItem value="open">เปิดลงทะเบียน</MenuItem>
                     <MenuItem value="closed">ปิดลงทะเบียน</MenuItem>
                   </Select>
-                  <Typography variant="caption" color="textSecondary">
-                    เลือกสถานะของกิจกรรม
-                  </Typography>
                 </FormControl>
               </div>
             </div>
           </DialogContent>
-          <DialogActions className="bg-white">
+          <DialogActions className="pt-4 border-t border-white/[0.04]">
             <Button
               onClick={() => setOpenDialog(false)}
-              style={{ color: "#fff", backgroundColor: "#6b7280" }}
+              style={{ color: "#a1a1aa", textTransform: "none", fontSize: "12px", letterSpacing: "0.05em" }}
             >
               ยกเลิก
             </Button>
             <Button
               variant="contained"
               onClick={handleCreateOrEditActivity}
-              style={{ backgroundColor: "#2563eb", color: "#fff" }}
               disabled={isLoading}
+              style={{ 
+                backgroundColor: "#f97316", 
+                color: "#000000", 
+                borderRadius: "12px", 
+                textTransform: "none", 
+                fontSize: "12px", 
+                letterSpacing: "0.05em",
+                fontWeight: "500" 
+              }}
             >
-              บันทึก
+              บันทึกการอัปเดต
             </Button>
           </DialogActions>
         </Dialog>
