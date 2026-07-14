@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import Image from "next/image";
 import { 
   User as UserIcon, 
   Mail, 
@@ -26,6 +27,7 @@ interface UserData {
   year?: string;
   phone?: string;
   role: string;
+  image?: string;
 }
 
 export default function AdminUsersPage() {
@@ -230,8 +232,18 @@ export default function AdminUsersPage() {
                       >
                         <td className="p-4 pl-6 text-sm font-light text-gray-200">
                           <div className="flex items-center gap-3">
-                            <div className="h-7 w-7 rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center">
-                              <UserIcon className="h-3.5 w-3.5 text-gray-400" />
+                            <div className="h-7 w-7 rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center overflow-hidden relative">
+                              {user.image ? (
+                                <Image
+                                  src={user.image}
+                                  alt={user.name}
+                                  width={28}
+                                  height={28}
+                                  className="object-cover h-full w-full"
+                                />
+                              ) : (
+                                <UserIcon className="h-3.5 w-3.5 text-gray-400" />
+                              )}
                             </div>
                             <span>{user.name}</span>
                           </div>

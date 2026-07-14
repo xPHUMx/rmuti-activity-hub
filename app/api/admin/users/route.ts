@@ -29,7 +29,7 @@ import User from "@/models/User";
 // ดึงรายชื่อผู้ใช้ทั้งหมด
 export async function GET() {
   await connectToDatabase();
-  const users = await User.find({}, "name email role studentId department year phone").sort({ role: 1 });
+  const users = await User.find({}, "name email role studentId department year phone image").sort({ role: 1 });
   return NextResponse.json(users);
 }
 
