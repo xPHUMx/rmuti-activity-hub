@@ -61,6 +61,10 @@ export default function AdminActivities() {
   const [formData, setFormData] = useState<any>({});
   const [newsList, setNewsList] = useState<News[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [participantsOpen, setParticipantsOpen] = useState(false);
+  const [activeParticipants, setActiveParticipants] = useState<Participant[]>([]);
+  const [activeActivityTitle, setActiveActivityTitle] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchActivities();
@@ -313,33 +317,22 @@ export default function AdminActivities() {
     }
   }
 
-  function showParticipants(participants: Participant[]) {
+  function showParticipants(participants: Participant[], activityTitle: string) {
     if (participants.length === 0) {
       Swal.fire({
         title: "ไม่มีผู้ลงทะเบียน",
         text: "ยังไม่มีผู้ลงทะเบียนในกิจกรรมนี้",
         icon: "info",
         confirmButtonColor: "#f97316",
-        background: "#0c0c0e",
-        color: "#ffffff"
+        background: theme === "dark" ? "#0c0c0e" : "#ffffff",
+        color: theme === "dark" ? "#ffffff" : "#1f2937"
       });
       return;
     }
-    const text = participants
-      .map(
-        (p, i) =>
-          `${i + 1}. ${p.fullName} (${p.studentId}) ชั้นปี/กลุ่ม: ${p.year} เบอร์: ${p.phone} สาขา: ${p.department || "-"} [${p.checkedIn ? "เช็คอินแล้ว" : "ยังไม่เช็คอิน"}]`
-      )
-      .join("\n");
-    Swal.fire({
-      title: "รายชื่อผู้ลงทะเบียน",
-      text,
-      icon: "info",
-      confirmButtonColor: "#f97316",
-      background: "#0c0c0e",
-      color: "#ffffff",
-      customClass: { popup: "text-left whitespace-pre-line font-light" },
-    });
+    setActiveParticipants(participants);
+    setActiveActivityTitle(activityTitle);
+    setSearchTerm("");
+    setParticipantsOpen(true);
   }
 
   function downloadParticipants(participants: Participant[], activity: Activity) {
@@ -517,7 +510,7 @@ export default function AdminActivities() {
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                             <button
-                              onClick={() => showParticipants(a.participants)}
+                              onClick={() => showParticipants(a.participants, a.title)}
                               title="ดูรายชื่อผู้ลงทะเบียน"
                               className="p-2 border border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-white/[0.03] rounded-xl text-gray-550 dark:text-gray-400 hover:text-black hover:dark:text-white transition duration-300"
                             >
@@ -712,6 +705,124 @@ export default function AdminActivities() {
               }}
             >
               บันทึกการอัปเดต
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Dialog แสดงรายชื่อผู้เข้าร่วมแบบ Sheet */}
+        <Dialog
+          open={participantsOpen}
+          onClose={() => setParticipantsOpen(false)}
+          fullWidth
+          maxWidth="lg"
+          PaperProps={{
+            style: {
+              backgroundColor: theme === "dark" ? "#0c0c0e" : "#ffffff",
+              border: theme === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)",
+              borderRadius: "24px",
+              padding: "16px",
+              color: theme === "dark" ? "#ffffff" : "#111827",
+            }
+          }}
+        >
+          <DialogTitle className="border-b border-gray-200 dark:border-white/[0.04] pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <span className="text-[10px] tracking-[0.25em] font-light text-orange-500 block mb-1">REGISTERED PARTICIPANTS</span>
+              <span className="text-lg font-light tracking-wide">{activeActivityTitle}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="ค้นหารายชื่อ/รหัส..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="px-3.5 py-1.5 bg-gray-50 dark:bg-white/[0.02] border border-gray-250 dark:border-white/[0.08] text-xs font-light rounded-xl focus:outline-none focus:border-orange-500/40 text-gray-800 dark:text-white"
+              />
+              <button
+                onClick={() => {
+                  const activityMock: any = { title: activeActivityTitle };
+                  downloadParticipants(activeParticipants, activityMock);
+                }}
+                className="px-3 py-1.5 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] hover:bg-gray-100 dark:hover:bg-white/[0.04] text-[10px] font-light tracking-wider rounded-xl text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition duration-300 flex items-center gap-1 shadow-sm dark:shadow-none"
+              >
+                <Download className="h-3 w-3 text-orange-500" />
+                <span>CSV</span>
+              </button>
+            </div>
+          </DialogTitle>
+          <DialogContent className="pt-6">
+            <div className="overflow-x-auto border border-gray-200 dark:border-white/[0.06] rounded-2xl max-h-[50vh]">
+              <table className="w-full text-left border-collapse min-w-[700px]">
+                <thead>
+                  <tr className="bg-gray-50 dark:bg-white/[0.02] border-b border-gray-200 dark:border-white/[0.06] select-none text-xs font-medium text-gray-700 dark:text-gray-300">
+                    <th className="p-3 border-r border-gray-200 dark:border-white/[0.06] text-center w-12 font-light">#</th>
+                    <th className="p-3 border-r border-gray-200 dark:border-white/[0.06] font-light">รหัสนักศึกษา</th>
+                    <th className="p-3 border-r border-gray-200 dark:border-white/[0.06] font-light">ชื่อ-นามสกุล</th>
+                    <th className="p-3 border-r border-gray-200 dark:border-white/[0.06] font-light">ชั้นปี/กลุ่ม</th>
+                    <th className="p-3 border-r border-gray-200 dark:border-white/[0.06] font-light">เบอร์โทรศัพท์</th>
+                    <th className="p-3 border-r border-gray-200 dark:border-white/[0.06] font-light">สาขาวิชา</th>
+                    <th className="p-3 text-center font-light">สถานะการเช็คอิน</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeParticipants.filter(
+                    (p) =>
+                      p.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      p.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      p.year.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      p.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      (p.department && p.department.toLowerCase().includes(searchTerm.toLowerCase()))
+                  ).length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="p-8 text-center text-gray-400 font-light text-sm bg-gray-50/50 dark:bg-transparent">
+                        ไม่พบรายชื่อผู้ลงทะเบียนที่ตรงตามเงื่อนไขค้นหา
+                      </td>
+                    </tr>
+                  ) : (
+                    activeParticipants
+                      .filter(
+                        (p) =>
+                          p.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          p.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          p.year.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          p.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (p.department && p.department.toLowerCase().includes(searchTerm.toLowerCase()))
+                      )
+                      .map((p, idx) => (
+                        <tr
+                          key={idx}
+                          className="border-b border-gray-200 dark:border-white/[0.04] hover:bg-gray-50 dark:hover:bg-white/[0.01] text-xs font-light"
+                        >
+                          <td className="p-2.5 border-r border-gray-200 dark:border-white/[0.04] text-center text-gray-400">{idx + 1}</td>
+                          <td className="p-2.5 border-r border-gray-200 dark:border-white/[0.04] text-gray-800 dark:text-gray-200 select-all font-mono">{p.studentId}</td>
+                          <td className="p-2.5 border-r border-gray-200 dark:border-white/[0.04] font-medium text-gray-900 dark:text-white">{p.fullName}</td>
+                          <td className="p-2.5 border-r border-gray-200 dark:border-white/[0.04] text-gray-600 dark:text-gray-400">{p.year}</td>
+                          <td className="p-2.5 border-r border-gray-200 dark:border-white/[0.04] text-gray-600 dark:text-gray-400 font-mono">{p.phone}</td>
+                          <td className="p-2.5 border-r border-gray-200 dark:border-white/[0.04] text-gray-600 dark:text-gray-400">{p.department || "-"}</td>
+                          <td className="p-2.5 text-center">
+                            <span
+                              className={`text-[9px] tracking-wider px-2 py-0.5 rounded border font-light inline-block ${
+                                p.checkedIn
+                                  ? "bg-green-500/5 border-green-500/20 text-green-400"
+                                  : "bg-gray-500/5 border-gray-500/20 text-gray-400 dark:text-gray-500"
+                              }`}
+                            >
+                              {p.checkedIn ? "เช็คอินแล้ว" : "ยังไม่เช็คอิน"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </DialogContent>
+          <DialogActions className="pt-4 border-t border-gray-200 dark:border-white/[0.04]">
+            <Button
+              onClick={() => setParticipantsOpen(false)}
+              style={{ color: theme === "dark" ? "#a1a1aa" : "#4b5563", textTransform: "none", fontSize: "12px", letterSpacing: "0.05em" }}
+            >
+              ปิดหน้าต่าง
             </Button>
           </DialogActions>
         </Dialog>
