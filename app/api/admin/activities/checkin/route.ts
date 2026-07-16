@@ -35,14 +35,48 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. ตรวจสอบว่าเคยลงทะเบียน / เข้าร่วมในกิจกรรมนี้หรือยัง
-    const alreadyRegistered = activity.participants.some(
+    const participant = activity.participants.find(
       (p: any) => p.studentId === user.studentId || p.fullName === user.name
     );
 
-    if (alreadyRegistered) {
+    if (participant) {
+      // นักศึกษาลงทะเบียนไว้แล้วในเว็บ -> ทำการเช็คอินหน้างาน
+      if (participant.checkedIn) {
+        return NextResponse.json(
+          { 
+            message: `นักศึกษา ${user.name} ได้เช็คอินเข้าร่วมกิจกรรมนี้เรียบร้อยแล้ว`,
+            success: true,
+            user 
+          },
+          { status: 200 }
+        );
+      }
+
+      // ทำการเช็คอินในฝั่ง Activity
+      participant.checkedIn = true;
+      participant.checkInDate = new Date();
+      await activity.save();
+
+      // ทำการเช็คอินในฝั่ง User
+      const userReg = user.registeredActivities.find(
+        (reg: any) => reg.activityId.toString() === activityId.toString()
+      );
+      if (userReg) {
+        userReg.checkedIn = true;
+        userReg.checkInDate = new Date();
+      } else {
+        user.registeredActivities.push({
+          activityId: activity._id,
+          registrationDate: new Date(),
+          checkedIn: true,
+          checkInDate: new Date()
+        });
+      }
+      await user.save();
+
       return NextResponse.json(
         { 
-          message: `นักศึกษา ${user.name} ได้ลงทะเบียน/เข้าร่วมในกิจกรรมนี้เรียบร้อยแล้ว`,
+          message: `เช็คอินและบันทึกชั่วโมงกิจกรรมของนักศึกษา ${user.name} สำเร็จ!`,
           success: true,
           user 
         },
@@ -50,7 +84,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. บันทึกเข้าร่วมกิจกรรมในฝั่ง Activity
+    // 4. บันทึกเข้าร่วมกิจกรรมในฝั่ง Activity (เช็คอินทันทีสำหรับผู้ที่ไม่ได้ลงทะเบียนล่วงหน้า)
     activity.participants.push({
       fullName: user.name,
       studentId: user.studentId || "EXTERNAL",
@@ -58,7 +92,9 @@ export async function POST(req: NextRequest) {
       program: user.program || "-",
       year: user.year || "1",
       phone: user.phone || "-",
-      registeredAt: new Date()
+      registeredAt: new Date(),
+      checkedIn: true,
+      checkInDate: new Date()
     });
 
     // ปิดรับอัตโนมัติหากจำนวนผู้ลงทะเบียนเต็ม
@@ -67,16 +103,18 @@ export async function POST(req: NextRequest) {
     }
     await activity.save();
 
-    // 5. บันทึกเข้าร่วมกิจกรรมในฝั่ง User
+    // 5. บันทึกเข้าร่วมกิจกรรมในฝั่ง User (เช็คอินทันทีสำหรับผู้ที่ไม่ได้ลงทะเบียนล่วงหน้า)
     user.registeredActivities.push({
       activityId: activity._id,
-      registrationDate: new Date()
+      registrationDate: new Date(),
+      checkedIn: true,
+      checkInDate: new Date()
     });
     await user.save();
 
     return NextResponse.json(
       { 
-        message: `เช็คอินและลงทะเบียนนักศึกษา ${user.name} สำเร็จ!`,
+        message: `ลงทะเบียนและเช็คอินนักศึกษา ${user.name} สำเร็จ!`,
         success: true,
         user 
       },

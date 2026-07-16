@@ -42,6 +42,8 @@ interface Participant {
   phone: string;
   department?: string;
   program?: string;
+  checkedIn?: boolean;
+  checkInDate?: string;
 }
 
 interface News {
@@ -324,7 +326,7 @@ export default function AdminActivities() {
     const text = participants
       .map(
         (p, i) =>
-          `${i + 1}. ${p.fullName} (${p.studentId}) ชั้นปี/กลุ่ม: ${p.year} เบอร์: ${p.phone} สาขา: ${p.department || "-"}`
+          `${i + 1}. ${p.fullName} (${p.studentId}) ชั้นปี/กลุ่ม: ${p.year} เบอร์: ${p.phone} สาขา: ${p.department || "-"} [${p.checkedIn ? "เช็คอินแล้ว" : "ยังไม่เช็คอิน"}]`
       )
       .join("\n");
     Swal.fire({
@@ -351,11 +353,11 @@ export default function AdminActivities() {
       return;
     }
     const csv =
-      "ลำดับ,ชื่อ-นามสกุล,รหัสนักศึกษา,ชั้นปี/กลุ่มเรียน,เบอร์โทร,สาขา\n" +
+      "ลำดับ,ชื่อ-นามสกุล,รหัสนักศึกษา,ชั้นปี/กลุ่มเรียน,เบอร์โทร,สาขา,สถานะเช็คอิน\n" +
       participants
         .map(
           (p, i) =>
-            `${i + 1},${p.fullName},${p.studentId},${p.year},${p.phone},${p.department || "-"}`
+            `${i + 1},${p.fullName},${p.studentId},${p.year},${p.phone},${p.department || "-"},${p.checkedIn ? "เช็คอินแล้ว" : "ยังไม่เช็คอิน"}`
         )
         .join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });

@@ -116,6 +116,8 @@ const UserSchema = new mongoose.Schema({
           required: true,
         },
         registrationDate: { type: Date, default: Date.now },
+        checkedIn: { type: Boolean, default: false },
+        checkInDate: { type: Date, default: null },
       },
     ],
     default: [],

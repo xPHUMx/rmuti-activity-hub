@@ -19,7 +19,8 @@ import {
   QrCode, 
   MapPin, 
   BookOpen,
-  Award
+  Award,
+  Check
 } from "lucide-react";
 
 type Activity = {
@@ -48,6 +49,8 @@ type Registration = {
     location: string;
   };
   registrationDate: string;
+  checkedIn?: boolean;
+  checkInDate?: string;
 };
 
 const sliderSettings = {
@@ -139,7 +142,7 @@ export default function HomePage() {
 
   // Calculate Student Stats
   const targetHours = 40;
-  const completedHours = registrations.length * 6; // Assume 6 hours per activity
+  const completedHours = registrations.filter((r: any) => r.checkedIn).length * 6; // Only checked-in activities count towards hours
   const hoursProgress = Math.min((completedHours / targetHours) * 100, 100);
 
   // Find next upcoming activity location
@@ -391,9 +394,15 @@ export default function HomePage() {
                         <span className="text-[10px] tracking-wider font-light text-orange-500 border border-orange-500/20 px-3 py-1 rounded-full bg-orange-500/5">
                           +6 ชม.
                         </span>
-                        <span className="text-[10px] tracking-wider font-light text-gray-400 bg-white/[0.03] px-3 py-1 rounded-full border border-white/[0.04]">
-                          ลงทะเบียนแล้ว
-                        </span>
+                        {reg.checkedIn ? (
+                          <span className="text-[10px] tracking-wider font-light text-emerald-400 bg-emerald-500/5 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-1">
+                            <Check className="h-3 w-3" /> เช็คอินแล้ว
+                          </span>
+                        ) : (
+                          <span className="text-[10px] tracking-wider font-light text-gray-400 bg-white/[0.03] px-3 py-1 rounded-full border border-white/[0.04]">
+                            ยังไม่เช็คอิน
+                          </span>
+                        )}
                       </div>
                     </motion.div>
                   );

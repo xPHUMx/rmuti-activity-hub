@@ -163,6 +163,8 @@ const ParticipantSchema = new mongoose.Schema({
   year: { type: String, required: false },
   phone: { type: String, required: false },
   registeredAt: { type: Date, default: Date.now },
+  checkedIn: { type: Boolean, default: false },
+  checkInDate: { type: Date, default: null },
 });
 
 // โครงสร้างของกิจกรรม
