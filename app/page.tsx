@@ -154,7 +154,7 @@ export default function HomePage() {
   const nextLocation = nextActivity ? nextActivity.location : "ไม่มีกิจกรรมถัดไป";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white px-4 py-12 md:py-20 font-sarabun transition-colors duration-300">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -167,7 +167,7 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center text-gray-500 font-light text-lg py-20"
+              className="text-center text-gray-600 dark:text-gray-500 font-light text-lg py-20"
             >
               ไม่มีข่าวสารให้แสดงในขณะนี้
             </motion.div>
@@ -208,7 +208,7 @@ export default function HomePage() {
                 className="flex justify-center mt-8"
               >
                 <Link href="/news">
-                  <button className="border border-orange-500/30 hover:border-orange-500 text-white hover:text-black hover:bg-orange-500 px-8 py-2.5 rounded-xl text-xs font-light tracking-widest transition-all duration-500 shadow-[0_0_15px_rgba(249,115,22,0.03)] hover:shadow-[0_0_25px_rgba(249,115,22,0.2)]">
+                  <button className="border border-orange-500/30 hover:border-orange-500 text-gray-800 dark:text-white hover:text-black hover:bg-orange-500 px-8 py-2.5 rounded-xl text-xs font-light tracking-widest transition-all duration-500 shadow-[0_0_15px_rgba(249,115,22,0.03)] hover:shadow-[0_0_25px_rgba(249,115,22,0.2)]">
                     ดูข่าวสารทั้งหมด
                   </button>
                 </Link>
@@ -225,16 +225,16 @@ export default function HomePage() {
             initial="hidden"
             animate="visible"
             whileHover="hover"
-            className="bg-white/[0.02] border border-white/[0.04] p-8 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between"
+            className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] p-8 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between"
           >
             <div className="flex justify-between items-start mb-4">
-              <Award className="h-7 w-7 text-orange-500/80 p-1.5 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
+              <Award className="h-7 w-7 text-orange-500/80 p-1.5 bg-gray-100 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] rounded-xl" />
               <span className="text-[9px] font-light text-orange-500 tracking-[0.2em]">ATTENDED</span>
             </div>
             <div>
-              <h3 className="text-xs font-light text-gray-400 mb-1">กิจกรรมที่เข้าร่วมแล้ว</h3>
-              <p className="text-4xl font-extralight text-white">{completedActivitiesCount}</p>
-              <p className="text-[10px] text-gray-500 mt-4">เช็คอินเข้าร่วมกิจกรรมเรียบร้อยแล้ว</p>
+              <h3 className="text-xs font-light text-gray-600 dark:text-gray-400 mb-1">กิจกรรมที่เข้าร่วมแล้ว</h3>
+              <p className="text-4xl font-extralight text-gray-900 dark:text-white">{completedActivitiesCount}</p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-4">เช็คอินเข้าร่วมกิจกรรมเรียบร้อยแล้ว</p>
             </div>
           </motion.div>
 
@@ -244,16 +244,16 @@ export default function HomePage() {
             initial="hidden"
             animate="visible"
             whileHover="hover"
-            className="bg-white/[0.02] border border-white/[0.04] p-8 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between"
+            className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] p-8 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between"
           >
             <div className="flex justify-between items-start mb-4">
-              <CalendarRange className="h-7 w-7 text-orange-500/80 p-1.5 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
+              <CalendarRange className="h-7 w-7 text-orange-500/80 p-1.5 bg-gray-100 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] rounded-xl" />
               <span className="text-[9px] font-light text-orange-500 tracking-[0.2em]">REGISTERED</span>
             </div>
             <div>
-              <h3 className="text-xs font-light text-gray-400 mb-1">กิจกรรมที่ลงทะเบียนไว้</h3>
-              <p className="text-4xl font-extralight text-white">{registrations.length}</p>
-              <p className="text-[10px] text-gray-500 mt-4">รวมกิจกรรมทั้งหมดทุกสถานะ</p>
+              <h3 className="text-xs font-light text-gray-600 dark:text-gray-400 mb-1">กิจกรรมที่ลงทะเบียนไว้</h3>
+              <p className="text-4xl font-extralight text-gray-900 dark:text-white">{registrations.length}</p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-4">รวมกิจกรรมทั้งหมดทุกสถานะ</p>
             </div>
           </motion.div>
 
@@ -263,16 +263,16 @@ export default function HomePage() {
             initial="hidden"
             animate="visible"
             whileHover="hover"
-            className="bg-white/[0.02] border border-white/[0.04] p-8 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between"
+            className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] p-8 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between"
           >
             <div className="flex justify-between items-start mb-4">
-              <MapPin className="h-7 w-7 text-orange-500/80 p-1.5 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
+              <MapPin className="h-7 w-7 text-orange-500/80 p-1.5 bg-gray-100 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] rounded-xl" />
               <span className="text-[9px] font-light text-orange-500 tracking-[0.2em]">NEXT LOCATION</span>
             </div>
             <div>
-              <h3 className="text-xs font-light text-gray-400 mb-1">สถานที่จัดกิจกรรมถัดไป</h3>
-              <p className="text-base font-light text-white truncate">{nextLocation}</p>
-              <p className="text-[10px] text-gray-500 mt-4">
+              <h3 className="text-xs font-light text-gray-600 dark:text-gray-400 mb-1">สถานที่จัดกิจกรรมถัดไป</h3>
+              <p className="text-base font-light text-gray-900 dark:text-white truncate">{nextLocation}</p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-4">
                 {nextActivity ? "จากกิจกรรมถัดไปในตารางเรียน" : "ไม่มีตารางกิจกรรมถัดไปในขณะนี้"}
               </p>
             </div>
@@ -283,55 +283,55 @@ export default function HomePage() {
         <section className="space-y-6">
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-3.5 bg-orange-500 rounded-full" />
-            <h2 className="text-xs font-light tracking-[0.2em] text-gray-400 uppercase">ทางลัดกิจกรรม / Quick Actions</h2>
+            <h2 className="text-xs font-light tracking-[0.2em] text-gray-600 dark:text-gray-400 uppercase">ทางลัดกิจกรรม / Quick Actions</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 select-none">
             {/* Quick Register */}
             <Link href="/register" className="group">
-              <div className="bg-white/[0.01] border border-white/[0.04] group-hover:border-orange-500/20 p-6 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer shadow-sm">
+              <div className="bg-white dark:bg-white/[0.01] border border-gray-200 dark:border-white/[0.04] group-hover:border-orange-500/20 p-6 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer shadow-sm">
                 <div className="flex items-center gap-4">
-                  <BookOpen className="h-5 w-5 text-gray-400 group-hover:text-orange-500 transition-colors" />
-                  <span className="text-xs font-light text-gray-300 group-hover:text-white transition-colors">ลงทะเบียนกิจกรรมใหม่</span>
+                  <BookOpen className="h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-orange-500 transition-colors" />
+                  <span className="text-xs font-light text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">ลงทะเบียนกิจกรรมใหม่</span>
                 </div>
-                <ArrowUpRight className="h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
+                <ArrowUpRight className="h-4 w-4 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
               </div>
             </Link>
 
             {/* Quick Calendar */}
             <Link href="/calendar" className="group">
-              <div className="bg-white/[0.01] border border-white/[0.04] group-hover:border-orange-500/20 p-6 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer shadow-sm">
+              <div className="bg-white dark:bg-white/[0.01] border border-gray-200 dark:border-white/[0.04] group-hover:border-orange-500/20 p-6 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer shadow-sm">
                 <div className="flex items-center gap-4">
-                  <Calendar className="h-5 w-5 text-gray-400 group-hover:text-orange-500 transition-colors" />
-                  <span className="text-xs font-light text-gray-300 group-hover:text-white transition-colors">ปฏิทินตารางกิจกรรม</span>
+                  <Calendar className="h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-orange-500 transition-colors" />
+                  <span className="text-xs font-light text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">ปฏิทินตารางกิจกรรม</span>
                 </div>
-                <ArrowUpRight className="h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
+                <ArrowUpRight className="h-4 w-4 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
               </div>
             </Link>
 
             {/* Personal QR Check-in */}
             <div 
               onClick={() => setShowQRModal(true)}
-              className="group bg-white/[0.01] border border-white/[0.04] hover:border-orange-500/20 p-6 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer shadow-sm"
+              className="group bg-white dark:bg-white/[0.01] border border-gray-200 dark:border-white/[0.04] hover:border-orange-500/20 p-6 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer shadow-sm"
             >
               <div className="flex items-center gap-4">
-                <QrCode className="h-5 w-5 text-gray-400 group-hover:text-orange-500 transition-colors" />
-                <span className="text-xs font-light text-gray-300 group-hover:text-white transition-colors">แสดง QR Code เช็คอิน</span>
+                <QrCode className="h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-orange-500 transition-colors" />
+                <span className="text-xs font-light text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">แสดง QR Code เช็คอิน</span>
               </div>
-              <ArrowUpRight className="h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
+              <ArrowUpRight className="h-4 w-4 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
             </div>
           </div>
         </section>
 
         {/* My Registered Activities Schedule */}
-        <section className="bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-          <div className="p-6 md:p-8 border-b border-white/[0.04] flex items-center gap-3">
+        <section className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] backdrop-blur-xl rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300">
+          <div className="p-6 md:p-8 border-b border-gray-200 dark:border-white/[0.04] flex items-center gap-3">
             <Clock className="text-orange-500 text-base" />
-            <h3 className="text-xs font-light tracking-[0.15em] text-gray-300 uppercase">ตารางกิจกรรมของฉัน / My Activities</h3>
+            <h3 className="text-xs font-light tracking-[0.15em] text-gray-700 dark:text-gray-300 uppercase">ตารางกิจกรรมของฉัน / My Activities</h3>
           </div>
           <div className="p-6 md:p-8">
             {registrations.length === 0 ? (
               <div className="text-center py-16 space-y-4">
-                <p className="text-sm font-light text-gray-500">คุณยังไม่มีกิจกรรมที่ลงทะเบียนไว้</p>
+                <p className="text-sm font-light text-gray-600 dark:text-gray-500">คุณยังไม่มีกิจกรรมที่ลงทะเบียนไว้</p>
                 <Link href="/register">
                   <button className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-black text-xs font-light tracking-widest rounded-xl transition duration-300">
                     ไปหน้าลงทะเบียนกิจกรรม
@@ -360,13 +360,13 @@ export default function HomePage() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.4, delay: index * 0.05 }}
-                      className="group bg-white/[0.01] border border-white/[0.03] hover:border-orange-500/10 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition duration-300"
+                      className="group bg-gray-50 dark:bg-white/[0.01] border border-gray-100 dark:border-white/[0.03] hover:border-orange-500/10 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition duration-300"
                     >
                       <div className="space-y-1">
-                        <h4 className="text-sm font-light text-gray-200 group-hover:text-white transition-colors">
+                        <h4 className="text-sm font-light text-gray-800 dark:text-gray-200 group-hover:text-black dark:group-hover:text-white transition-colors">
                           {act.title}
                         </h4>
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-light text-gray-500">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-light text-gray-600 dark:text-gray-500">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
                             {formattedDate} น.
@@ -411,20 +411,20 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-[#0b0b0b] border border-white/[0.08] p-8 rounded-3xl max-w-sm w-full text-center relative shadow-[0_20px_50px_rgba(249,115,22,0.15)] flex flex-col items-center select-none"
+              className="bg-white dark:bg-[#0b0b0b] border border-gray-200 dark:border-white/[0.08] p-8 rounded-3xl max-w-sm w-full text-center relative shadow-[0_20px_50px_rgba(249,115,22,0.15)] flex flex-col items-center select-none transition-colors duration-300"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={() => setShowQRModal(false)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-white transition"
+                className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition"
               >
                 <X className="h-5 w-5" />
               </button>
               <h2 className="text-[10px] tracking-[0.25em] font-light text-orange-500 uppercase mb-2">STUDENT ID PASS</h2>
-              <p className="text-base font-light text-gray-200 mb-6">{session?.user?.name || "STUDENT"}</p>
+              <p className="text-base font-light text-gray-800 dark:text-gray-200 mb-6">{session?.user?.name || "STUDENT"}</p>
               
               {/* Real Dynamic QR Code */}
-              <div className="w-48 h-48 bg-white p-3 rounded-2xl flex items-center justify-center relative shadow-inner overflow-hidden select-none">
+              <div className="w-48 h-48 bg-white p-3 rounded-2xl flex items-center justify-center relative shadow-inner overflow-hidden select-none border border-gray-100">
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(session?.user?.email || "unknown")}`}
                   alt="Student QR Pass"

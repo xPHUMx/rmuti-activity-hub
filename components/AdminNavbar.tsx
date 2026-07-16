@@ -16,8 +16,11 @@ import {
   Menu, 
   X,
   User,
-  QrCode
+  QrCode,
+  Sun,
+  Moon
 } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
 
 const navigation = [
   { name: "หน้าหลัก", href: "/admin/dashboard", icon: Home },
@@ -28,6 +31,7 @@ const navigation = [
 ];
 
 export default function AdminNavbar() {
+  const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
@@ -47,8 +51,8 @@ export default function AdminNavbar() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 pt-4 px-4 select-none font-sarabun">
-      <div className="max-w-6xl mx-auto bg-[#0a0a0af0] backdrop-blur-xl border border-white/[0.04] px-6 py-3 rounded-2xl flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+    <header className="fixed top-0 left-0 right-0 z-50 pt-4 px-4 select-none font-sarabun transition-colors duration-300">
+      <div className="max-w-6xl mx-auto bg-white/90 dark:bg-[#0a0a0af0] backdrop-blur-xl border border-gray-200 dark:border-white/[0.04] px-6 py-3 rounded-2xl flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] transition-all duration-300">
         
         {/* Logo */}
         <Link href="/admin/dashboard" className="flex items-center gap-2 cursor-pointer">
@@ -61,7 +65,7 @@ export default function AdminNavbar() {
               priority
             />
           </div>
-          <div className="h-4 w-[1px] bg-white/10 hidden sm:block" />
+          <div className="h-4 w-[1px] bg-gray-200 dark:bg-white/10 hidden sm:block" />
           <span className="text-[10px] tracking-[0.25em] font-light text-orange-500 uppercase hidden sm:block">
             Admin Panel
           </span>
@@ -73,7 +77,7 @@ export default function AdminNavbar() {
             const isActive = pathname === item.href;
             return (
               <Link key={item.name} href={item.href} className="relative px-4 py-2">
-                <span className={`relative z-10 flex items-center gap-2 text-xs font-light tracking-wide transition-colors duration-300 ${isActive ? 'text-orange-500' : 'text-gray-400 hover:text-white'}`}>
+                <span className={`relative z-10 flex items-center gap-2 text-xs font-light tracking-wide transition-colors duration-300 ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
                   <item.icon className="h-4 w-4" />
                   {item.name}
                 </span>
@@ -82,7 +86,7 @@ export default function AdminNavbar() {
                 {isActive && (
                   <motion.div
                     layoutId="admin-active-tab"
-                    className="absolute inset-0 bg-white/[0.02] border border-white/[0.04] rounded-xl"
+                    className="absolute inset-0 bg-gray-100 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] rounded-xl"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   >
                     {/* Tiny glowing bar at the bottom */}
@@ -96,10 +100,24 @@ export default function AdminNavbar() {
 
         {/* Right Section: Dropdown Profile */}
         <div className="flex items-center gap-4">
+          {/* Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="relative rounded-xl p-2 border border-gray-200 dark:border-white/[0.04] bg-gray-50 dark:bg-white/[0.01] hover:bg-gray-100 dark:hover:bg-white/[0.03] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition duration-300"
+            aria-label="สลับโหมดสี"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-4 w-4 text-orange-500" />
+            ) : (
+              <Moon className="h-4 w-4 text-indigo-500" />
+            )}
+          </button>
+
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/[0.04] bg-white/[0.01] hover:bg-white/[0.03] transition duration-300 text-xs font-light text-gray-300"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-white/[0.04] bg-gray-50 dark:bg-white/[0.01] hover:bg-gray-100 dark:hover:bg-white/[0.03] transition duration-300 text-xs font-light text-gray-700 dark:text-gray-300"
             >
               <User className="h-3.5 w-3.5 text-orange-500/80" />
               <span className="hidden sm:block max-w-[100px] truncate">{session?.user?.name || "Admin"}</span>
@@ -118,11 +136,11 @@ export default function AdminNavbar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute right-0 mt-2 w-48 bg-[#0a0a0b] border border-white/[0.08] backdrop-blur-xl p-2 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.5)] z-20"
+                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#0a0a0b] border border-gray-200 dark:border-white/[0.08] backdrop-blur-xl p-2 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.5)] z-20 transition-colors duration-300"
                   >
                     <button
                       onClick={() => signOut({ callbackUrl: "/login" })}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-red-500/10 text-gray-300 hover:text-red-400 text-xs font-light transition duration-300"
+                      className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-red-500/10 text-gray-700 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 text-xs font-light transition duration-300"
                     >
                       <LogOut className="h-3.5 w-3.5" />
                       <span>ออกจากระบบ</span>
@@ -136,7 +154,7 @@ export default function AdminNavbar() {
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl border border-white/[0.04] bg-white/[0.01] text-gray-300 hover:text-white"
+            className="md:hidden p-2 rounded-xl border border-gray-200 dark:border-white/[0.04] bg-gray-50 dark:bg-white/[0.01] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           >
             {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
@@ -160,7 +178,7 @@ export default function AdminNavbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-64 bg-[#0a0a0bf8] border-l border-white/[0.04] backdrop-blur-xl p-6 flex flex-col gap-6 z-40 md:hidden pt-24"
+              className="fixed top-0 right-0 bottom-0 w-64 bg-white/95 dark:bg-[#0a0a0bf8] border-l border-gray-200 dark:border-white/[0.04] backdrop-blur-xl p-6 flex flex-col gap-6 z-40 md:hidden pt-24 transition-colors duration-300"
             >
               <div className="flex flex-col gap-2">
                 {navigation.map((item) => {
@@ -172,7 +190,7 @@ export default function AdminNavbar() {
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition duration-300 text-xs font-light ${
                         isActive
                           ? "bg-orange-500/10 border-orange-500/20 text-orange-500"
-                          : "bg-white/[0.01] border-white/[0.02] text-gray-400 hover:text-white"
+                          : "bg-gray-50 dark:bg-white/[0.01] border-gray-100 dark:border-white/[0.02] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                       }`}
                     >
                       <item.icon className="h-4 w-4" />

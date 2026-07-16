@@ -13,7 +13,8 @@ import { Fragment, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { Home, Newspaper, ClipboardList } from "lucide-react";
+import { Home, Newspaper, ClipboardList, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
 import { motion, AnimatePresence } from "framer-motion";
 
 const MySwal = withReactContent(Swal);
@@ -50,6 +51,7 @@ function classNames(...classes: any[]) {
 }
 
 export default function Navbar() {
+  const { theme, toggleTheme } = useTheme();
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const router = useRouter();
@@ -300,7 +302,7 @@ export default function Navbar() {
         </div>
       )}
 
-      <nav className="bg-[#0c0a09]/95 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] sticky top-0 z-50 border-b border-white/[0.04]">
+      <nav className="bg-white/95 dark:bg-[#0c0a09]/95 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] sticky top-0 z-50 border-b border-gray-200 dark:border-white/[0.04] transition-colors duration-300">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
@@ -316,7 +318,7 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Navigation (Center) */}
-            <div className="hidden md:flex items-center bg-white/[0.01] border border-white/[0.03] p-1 rounded-full relative">
+            <div className="hidden md:flex items-center bg-gray-100 dark:bg-white/[0.01] border border-gray-200 dark:border-white/[0.03] p-1 rounded-full relative transition-colors duration-300">
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
@@ -337,7 +339,7 @@ export default function Navbar() {
                         "relative flex items-center rounded-full py-1.5 cursor-pointer text-xs font-light tracking-wider transition-colors",
                         isActive
                           ? "bg-orange-500/10 text-orange-500 border border-orange-500/20"
-                          : "text-gray-400 hover:text-white hover:bg-white/[0.02] border border-transparent"
+                          : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-white/[0.02] border border-transparent"
                       )}
                     >
                       <Icon size={14} strokeWidth={2} />
@@ -379,9 +381,23 @@ export default function Navbar() {
 
             {/* Notifications & Profile (Right) */}
             <div className="relative flex items-center space-x-4" ref={dropdownRef}>
+              {/* Theme Toggle */}
               <button
                 type="button"
-                className="relative rounded-full p-2 text-gray-400 hover:text-white hover:bg-white/[0.03] transition-all duration-300"
+                onClick={toggleTheme}
+                className="relative rounded-full p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-all duration-300"
+                aria-label="สลับโหมดสี"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-5 w-5 text-orange-500" />
+                ) : (
+                  <Moon className="h-5 w-5 text-indigo-500" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                className="relative rounded-full p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-all duration-300"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 aria-label="ดูการแจ้งเตือน"
                 aria-haspopup="true"
@@ -423,11 +439,11 @@ export default function Navbar() {
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 mt-3 w-56 origin-top-right rounded-xl bg-black/90 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/[0.05] focus:outline-none overflow-hidden">
-                      <div className="p-4 border-b border-white/[0.05] bg-white/[0.01]">
+                    <Menu.Items className="absolute right-0 mt-3 w-56 origin-top-right rounded-xl bg-white dark:bg-black/90 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-gray-200 dark:border-white/[0.05] focus:outline-none overflow-hidden transition-colors duration-300">
+                      <div className="p-4 border-b border-gray-200 dark:border-white/[0.05] bg-gray-50 dark:bg-white/[0.01]">
                         <div className="text-center">
-                          <p className="text-xs font-light tracking-wider text-white mb-0.5">{session.user.name || "ผู้ใช้"}</p>
-                          <p className="text-[10px] text-gray-500 truncate">{session.user.email || "ไม่ระบุอีเมล"}</p>
+                          <p className="text-xs font-light tracking-wider text-gray-900 dark:text-white mb-0.5">{session.user.name || "ผู้ใช้"}</p>
+                          <p className="text-[10px] text-gray-600 dark:text-gray-500 truncate">{session.user.email || "ไม่ระบุอีเมล"}</p>
                         </div>
                       </div>
                       <div className="py-1">
@@ -436,7 +452,7 @@ export default function Navbar() {
                             <button
                               onClick={handleEditProfile}
                               className={classNames(
-                                active ? "bg-white/[0.04] text-orange-500" : "text-gray-300",
+                                active ? "bg-gray-100 dark:bg-white/[0.04] text-orange-500" : "text-gray-700 dark:text-gray-300",
                                 "flex items-center gap-2 w-full px-4 py-3 text-xs font-light tracking-wide transition-colors"
                               )}
                             >
@@ -450,8 +466,8 @@ export default function Navbar() {
                             <button
                               onClick={() => signOut()}
                               className={classNames(
-                                active ? "bg-white/[0.04] text-red-400" : "text-gray-300",
-                                "flex items-center gap-2 w-full px-4 py-3 text-xs font-light tracking-wide transition-colors border-t border-white/[0.02]"
+                                active ? "bg-gray-100 dark:bg-white/[0.04] text-red-400" : "text-gray-700 dark:text-gray-300",
+                                "flex items-center gap-2 w-full px-4 py-3 text-xs font-light tracking-wide transition-colors border-t border-gray-200 dark:border-white/[0.02]"
                               )}
                             >
                               <ArrowLeftStartOnRectangleIcon className="h-4 w-4" />
