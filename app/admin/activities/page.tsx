@@ -736,7 +736,7 @@ export default function AdminActivities() {
                 placeholder="ค้นหารายชื่อ/รหัส..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="px-3.5 py-1.5 bg-gray-50 dark:bg-white/[0.02] border border-gray-250 dark:border-white/[0.08] text-xs font-light rounded-xl focus:outline-none focus:border-orange-500/40 text-gray-800 dark:text-white"
+                className="px-3.5 py-1.5 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.08] text-xs font-light rounded-xl focus:outline-none focus:border-orange-500/40 text-gray-800 dark:text-white"
               />
               <button
                 onClick={() => {
@@ -801,10 +801,10 @@ export default function AdminActivities() {
                           <td className="p-2.5 border-r border-gray-200 dark:border-white/[0.04] text-gray-600 dark:text-gray-400">{p.department || "-"}</td>
                           <td className="p-2.5 text-center">
                             <span
-                              className={`text-[9px] tracking-wider px-2 py-0.5 rounded border font-light inline-block ${
+                              className={`text-[9px] tracking-wider px-2 py-0.5 rounded border font-medium inline-block ${
                                 p.checkedIn
-                                  ? "bg-green-500/5 border-green-500/20 text-green-400"
-                                  : "bg-gray-500/5 border-gray-500/20 text-gray-400 dark:text-gray-500"
+                                  ? "bg-green-500/10 dark:bg-green-500/5 border-green-500/20 text-green-600 dark:text-green-400"
+                                  : "bg-gray-500/10 dark:bg-gray-500/5 border-gray-500/20 text-gray-600 dark:text-gray-400"
                               }`}
                             >
                               {p.checkedIn ? "เช็คอินแล้ว" : "ยังไม่เช็คอิน"}
