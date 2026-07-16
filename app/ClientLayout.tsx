@@ -18,7 +18,7 @@ export default function ClientLayout({
       {pathname !== "/login" && (
         <>
           <VersionBadge />
-          <Chatbot />
+          {/* <Chatbot /> */}
         </>
       )}
       <AdminButton />
