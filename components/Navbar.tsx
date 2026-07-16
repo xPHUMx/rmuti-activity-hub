@@ -310,10 +310,10 @@ export default function Navbar() {
               <Image
                 src="/img/logohaed1.png"
                 alt="โลโก้"
-                width={120}
-                height={120}
+                width={160}
+                height={160}
                 priority
-                className="object-contain transition-transform duration-300 hover:scale-105"
+                className="h-[52px] w-auto object-contain transition-transform duration-300 hover:scale-105"
               />
             </div>
 

@@ -56,7 +56,7 @@ export default function AdminNavbar() {
         
         {/* Logo */}
         <Link href="/admin/dashboard" className="flex items-center gap-2 cursor-pointer">
-          <div className="relative w-16 h-8">
+          <div className="relative w-28 h-10">
             <Image
               src="/img/logohaed1.png"
               alt="RMUTI Logo"
