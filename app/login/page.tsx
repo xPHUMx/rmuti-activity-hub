@@ -50,12 +50,12 @@ export default function LoginPage() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] px-4">
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] px-4 transition-colors duration-300">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-full max-w-md bg-white/[0.02] backdrop-blur-2xl p-10 md:p-12 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.6)] border border-white/[0.04] flex flex-col items-center"
+        className="w-full max-w-md bg-white dark:bg-white/[0.02] backdrop-blur-2xl p-10 md:p-12 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.6)] border border-gray-200 dark:border-white/[0.04] flex flex-col items-center transition-all duration-300"
       >
         {/* Logo Container */}
         <div className="relative w-48 h-20 mb-8 select-none">
@@ -73,7 +73,7 @@ export default function LoginPage() {
           <h2 className="text-[10px] tracking-[0.3em] font-light text-orange-500 uppercase">
             RMUTI Activity Hub
           </h2>
-          <p className="text-xl font-extralight text-gray-300 tracking-wide">
+          <p className="text-xl font-extralight text-gray-700 dark:text-gray-300 tracking-wide">
             เข้าสู่ระบบเพื่อใช้งานระบบกิจกรรม
           </p>
         </div>
@@ -82,10 +82,10 @@ export default function LoginPage() {
         <button
           onClick={handleLogin}
           disabled={loggingIn}
-          className="bg-white text-black hover:bg-orange-500 hover:text-black w-full rounded-full flex justify-center items-center text-xs font-light tracking-[0.15em] py-3.5 px-6 transition duration-500 transform hover:scale-[1.02] border border-white/[0.1] hover:border-orange-500 shadow-[0_5px_15px_rgba(255,255,255,0.05)] hover:shadow-[0_10px_25px_rgba(249,115,22,0.2)] disabled:opacity-50"
+          className="bg-gray-900 dark:bg-white text-white dark:text-black hover:bg-orange-500 hover:text-black w-full rounded-full flex justify-center items-center text-xs font-light tracking-[0.15em] py-3.5 px-6 transition duration-500 transform hover:scale-[1.02] border border-transparent dark:border-white/[0.1] hover:border-orange-500 shadow-[0_5px_15px_rgba(0,0,0,0.05)] dark:shadow-[0_5px_15px_rgba(255,255,255,0.05)] hover:shadow-[0_10px_25px_rgba(249,115,22,0.2)] disabled:opacity-50"
         >
           {loggingIn ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent" />
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-current border-t-transparent" />
           ) : (
             <>
               <Image
@@ -101,8 +101,8 @@ export default function LoginPage() {
         </button>
 
         {/* Informative Footer */}
-        <div className="mt-8 border-t border-white/[0.04] pt-6 w-full text-center">
-          <p className="text-[10px] tracking-wide font-light text-gray-500 uppercase">
+        <div className="mt-8 border-t border-gray-200 dark:border-white/[0.04] pt-6 w-full text-center">
+          <p className="text-[10px] tracking-wide font-light text-gray-400 dark:text-gray-500 uppercase">
             โปรดใช้บัญชีอีเมลมหาวิทยาลัยในการเข้าสู่ระบบ
           </p>
           <p className="text-[9px] text-orange-500/60 font-light mt-1">

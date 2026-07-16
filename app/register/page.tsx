@@ -517,20 +517,20 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white px-4 py-12 md:py-20 transition-colors duration-300">
       <div className="container mx-auto max-w-7xl">
         {/* Title */}
         <div className="text-center mb-16 space-y-3 select-none">
           <h2 className="text-[10px] tracking-[0.3em] font-light text-orange-500 uppercase">
             Available Activities
           </h2>
-          <h1 className="text-3xl font-extralight text-gray-200 tracking-wide">
+          <h1 className="text-3xl font-extralight text-gray-800 dark:text-gray-200 tracking-wide">
             ลงทะเบียนเข้าร่วมกิจกรรม
           </h1>
         </div>
 
         {activities.length === 0 ? (
-          <div className="p-16 text-center text-gray-500 font-light text-sm bg-white/[0.01] border border-white/[0.03] rounded-3xl">
+          <div className="p-16 text-center text-gray-600 dark:text-gray-500 font-light text-sm bg-white dark:bg-white/[0.01] border border-gray-200 dark:border-white/[0.03] rounded-3xl shadow-sm dark:shadow-none">
             ไม่มีกิจกรรมที่เปิดให้ลงทะเบียนในขณะนี้
           </div>
         ) : (
@@ -547,11 +547,11 @@ export default function RegisterPage() {
                 <motion.div
                   key={a._id}
                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  className="bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl p-6 rounded-3xl flex flex-col justify-between hover:border-orange-500/30 transition-all duration-300 shadow-[0_15px_30px_rgba(0,0,0,0.4)] relative group"
+                  className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] backdrop-blur-xl p-6 rounded-3xl flex flex-col justify-between hover:border-orange-500/30 transition-all duration-300 shadow-[0_15px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_15px_30px_rgba(0,0,0,0.4)] relative group"
                 >
                   {/* Header Status */}
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-[10px] tracking-widest text-gray-500 uppercase font-light">
+                    <span className="text-[10px] tracking-widest text-gray-650 dark:text-gray-500 uppercase font-light">
                       ACTIVITY
                     </span>
                     <div className="flex items-center gap-1.5">
@@ -566,32 +566,32 @@ export default function RegisterPage() {
                   <div className="mb-5">
                     <h3 
                       onClick={() => handleActivityInfo(a)}
-                      className="text-lg font-extralight text-gray-200 tracking-wide hover:text-orange-500 transition-colors cursor-pointer line-clamp-2"
+                      className="text-lg font-extralight text-gray-800 dark:text-gray-200 tracking-wide hover:text-orange-500 transition-colors cursor-pointer line-clamp-2"
                     >
                       {a.title}
                     </h3>
                   </div>
 
                   {/* Details list */}
-                  <div className="space-y-4 text-xs text-gray-400 font-light mb-6">
+                  <div className="space-y-4 text-xs text-gray-600 dark:text-gray-400 font-light mb-6">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-orange-500/60" />
                       <span className="truncate">{a.location}</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <Calendar className="h-4 w-4 text-gray-500 mt-0.5" />
+                      <Calendar className="h-4 w-4 text-gray-550 mt-0.5" />
                       <div>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">ช่วงเวลาจัดกิจกรรม</p>
-                        <p className="text-gray-300">
+                        <p className="text-[10px] text-gray-600 dark:text-gray-500 uppercase tracking-wider mb-0.5">ช่วงเวลาจัดกิจกรรม</p>
+                        <p className="text-gray-800 dark:text-gray-300">
                           {new Date(a.activityStart).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })} - {new Date(a.activityEnd).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
-                      <Clock className="h-4 w-4 text-gray-500 mt-0.5" />
+                      <Clock className="h-4 w-4 text-gray-550 mt-0.5" />
                       <div>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">ช่วงเวลาลงทะเบียน</p>
-                        <p className="text-gray-300">
+                        <p className="text-[10px] text-gray-600 dark:text-gray-500 uppercase tracking-wider mb-0.5">ช่วงเวลาลงทะเบียน</p>
+                        <p className="text-gray-800 dark:text-gray-300">
                           {new Date(a.registerStart).toLocaleDateString("th-TH")} - {new Date(a.registerEnd).toLocaleDateString("th-TH")}
                         </p>
                       </div>
@@ -599,14 +599,14 @@ export default function RegisterPage() {
                   </div>
 
                   {/* Progress and Action Footer */}
-                  <div className="space-y-4 border-t border-white/[0.04] pt-4 mt-auto">
+                  <div className="space-y-4 border-t border-gray-200 dark:border-white/[0.04] pt-4 mt-auto">
                     {/* Participation bar */}
                     <div>
-                      <div className="flex justify-between items-center text-[10px] text-gray-400 mb-1.5 font-light">
+                      <div className="flex justify-between items-center text-[10px] text-gray-650 dark:text-gray-400 mb-1.5 font-light">
                         <span>ความจุผู้เข้าร่วม</span>
-                        <span className="text-gray-200 font-medium">{a.participants.length} / {a.maxParticipants} คน</span>
+                        <span className="text-gray-800 dark:text-gray-200 font-medium">{a.participants.length} / {a.maxParticipants} คน</span>
                       </div>
-                      <div className="w-full h-1 bg-white/[0.04] rounded-full overflow-hidden">
+                      <div className="w-full h-1 bg-gray-100 dark:bg-white/[0.04] rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-gradient-to-r from-orange-600 to-orange-400 transition-all duration-500" 
                           style={{ width: `${percent}%` }}
@@ -618,7 +618,7 @@ export default function RegisterPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleActivityInfo(a)}
-                        className="flex-1 bg-white/[0.02] hover:bg-white/[0.06] text-xs font-light tracking-wider py-2.5 px-3 rounded-xl border border-white/[0.06] text-gray-300 transition-colors"
+                        className="flex-1 bg-gray-50 dark:bg-white/[0.02] hover:bg-gray-100 dark:hover:bg-white/[0.06] text-xs font-light tracking-wider py-2.5 px-3 rounded-xl border border-gray-200 dark:border-white/[0.06] text-gray-750 dark:text-gray-300 transition-colors"
                       >
                         รายละเอียด
                       </button>
@@ -641,7 +641,7 @@ export default function RegisterPage() {
                           ลงทะเบียน
                         </button>
                       ) : (
-                        <div className="flex-1 bg-white/[0.02] border border-white/[0.04] text-gray-500 text-xs font-light tracking-wider py-2.5 px-3 rounded-xl text-center select-none">
+                        <div className="flex-1 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] text-gray-400 dark:text-gray-500 text-xs font-light tracking-wider py-2.5 px-3 rounded-xl text-center select-none">
                           ปิดแล้ว
                         </div>
                       )}
@@ -659,17 +659,17 @@ export default function RegisterPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-black/90 border border-white/[0.05] p-8 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.8)] w-full max-w-sm flex flex-col"
+            className="bg-white dark:bg-[#0a0a0b] border border-gray-200 dark:border-white/[0.05] p-8 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.8)] w-full max-w-sm flex flex-col transition-all duration-300"
           >
             <h2 className="text-lg font-light text-center text-orange-500 tracking-wider mb-6">
               ยืนยันการลงทะเบียน
             </h2>
-            <p className="mb-6 text-center text-sm font-light text-gray-300">
-              คุณต้องการลงทะเบียนเข้าร่วมกิจกรรม <strong className="text-white font-normal">{selectedActivity.title}</strong> ใช่หรือไม่?
+            <p className="mb-6 text-center text-sm font-light text-gray-650 dark:text-gray-300">
+              คุณต้องการลงทะเบียนเข้าร่วมกิจกรรม <strong className="text-gray-900 dark:text-white font-normal">{selectedActivity.title}</strong> ใช่หรือไม่?
             </p>
             
             <div className="mb-8">
-              <label className="block text-[10px] tracking-wider font-light text-gray-500 uppercase mb-2">
+              <label className="block text-[10px] tracking-wider font-light text-gray-600 dark:text-gray-500 uppercase mb-2">
                 ชั้นปี / กลุ่มเรียน
               </label>
               <input
@@ -677,7 +677,7 @@ export default function RegisterPage() {
                 name="year"
                 value={userInfo.year}
                 onChange={handleTextChange}
-                className="block w-full rounded-xl bg-white/[0.02] border border-white/[0.08] text-sm text-white px-4 py-3 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 placeholder-gray-600 transition-all font-light"
+                className="block w-full rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.08] text-sm text-gray-900 dark:text-white px-4 py-3 focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 placeholder-gray-400 dark:placeholder-gray-600 transition-all font-light"
                 placeholder="เช่น ECP4N"
                 required
               />
@@ -686,7 +686,7 @@ export default function RegisterPage() {
             <div className="flex gap-3">
               <button 
                 onClick={() => setShowPopup(false)} 
-                className="flex-1 border border-white/[0.08] hover:bg-white/[0.03] text-gray-300 text-xs font-light tracking-wider py-3 rounded-xl transition-colors"
+                className="flex-1 border border-gray-200 dark:border-white/[0.08] hover:bg-gray-100 dark:hover:bg-white/[0.03] text-gray-750 dark:text-gray-300 text-xs font-light tracking-wider py-3 rounded-xl transition-colors"
               >
                 ยกเลิก
               </button>

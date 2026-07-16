@@ -421,26 +421,26 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <h1 className="text-4xl font-semibold text-center mb-6">ปฏิทินกิจกรรม</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white px-4 py-12 md:py-20 font-sarabun transition-colors duration-300">
+      <h1 className="text-3xl font-extralight text-center mb-10 text-gray-800 dark:text-gray-200">ปฏิทินกิจกรรม / Calendar</h1>
 
-      <div className="flex justify-between items-center mb-4">
-        <button onClick={() => changeMonth(-1)} className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center">
+      <div className="flex justify-between items-center max-w-3xl mx-auto mb-6 select-none">
+        <button onClick={() => changeMonth(-1)} className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-white border border-gray-200 dark:border-transparent font-light py-2.5 px-4 rounded-xl flex items-center transition duration-300 shadow-sm">
           <ChevronLeft className="w-5 h-5 mr-2" /> ก่อนหน้า
         </button>
-        <span className="text-lg font-semibold">{format(currentDate, "MMMM yyyy", { locale: th })}</span>
-        <button onClick={() => changeMonth(1)} className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center">
+        <span className="text-lg font-light text-gray-800 dark:text-white">{format(currentDate, "MMMM yyyy", { locale: th })}</span>
+        <button onClick={() => changeMonth(1)} className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-white border border-gray-200 dark:border-transparent font-light py-2.5 px-4 rounded-xl flex items-center transition duration-300 shadow-sm">
           ถัดไป <ChevronRight className="w-5 h-5 ml-2" />
         </button>
       </div>
 
-      <div className="flex justify-end mb-4">
-        <button onClick={downloadCalendarAsImage} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center">
+      <div className="flex justify-end max-w-3xl mx-auto mb-6">
+        <button onClick={downloadCalendarAsImage} className="bg-orange-500 hover:bg-orange-600 text-black font-medium py-2.5 px-5 rounded-xl flex items-center shadow-[0_5px_15px_rgba(249,115,22,0.1)] hover:shadow-[0_8px_20px_rgba(249,115,22,0.25)] transition duration-300">
           <Download className="w-5 h-5 mr-2" /> ดาวน์โหลดปฏิทิน
         </button>
       </div>
 
-      <div className="overflow-hidden bg-gray-800 p-4 rounded-lg shadow-xl max-w-3xl mx-auto">
+      <div className="overflow-hidden bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-3xl mx-auto transition-all duration-300">
         <FullCalendar
           ref={calendarRef}
           plugins={[dayGridPlugin, interactionPlugin]}

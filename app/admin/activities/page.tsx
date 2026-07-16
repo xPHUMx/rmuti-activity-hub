@@ -20,6 +20,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { th } from "date-fns/locale";
 import { Pencil, Trash2, Eye, Download, Plus, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "@/hooks/useTheme";
 
 interface Activity {
   _id: string;
@@ -53,6 +54,7 @@ interface News {
 }
 
 export default function AdminActivities() {
+  const { theme } = useTheme();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [editId, setEditId] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -409,20 +411,20 @@ export default function AdminActivities() {
   // MUI input styles helper
   const inputSx = {
     "& .MuiOutlinedInput-root": {
-      color: "#ffffff",
-      backgroundColor: "rgba(255, 255, 255, 0.01)",
+      color: theme === "dark" ? "#ffffff" : "#111827",
+      backgroundColor: theme === "dark" ? "rgba(255, 255, 255, 0.01)" : "rgba(0, 0, 0, 0.02)",
       borderRadius: "14px",
-      "& fieldset": { borderColor: "rgba(255,255,255,0.08)" },
-      "&:hover fieldset": { borderColor: "rgba(255,255,255,0.15)" },
+      "& fieldset": { borderColor: theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)" },
+      "&:hover fieldset": { borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.2)" },
       "&.Mui-focused fieldset": { borderColor: "#f97316" }
     },
-    "& .MuiInputLabel-root": { color: "#9ca3af" },
+    "& .MuiInputLabel-root": { color: theme === "dark" ? "#9ca3af" : "#4b5563" },
     "& .MuiInputLabel-root.Mui-focused": { color: "#f97316" },
-    "& .MuiFormHelperText-root": { color: "#6b7280" }
+    "& .MuiFormHelperText-root": { color: theme === "dark" ? "#6b7280" : "#9ca3af" }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white px-4 py-12 md:py-20 font-sarabun transition-colors duration-300">
       <div className="max-w-7xl mx-auto space-y-10">
         
         {/* หัวข้อ */}
@@ -431,7 +433,7 @@ export default function AdminActivities() {
             <h2 className="text-[10px] tracking-[0.25em] font-light text-orange-500 uppercase">
               ACTIVITY CONFIGURATION
             </h2>
-            <h1 className="text-2xl font-light text-gray-200 tracking-wide">
+            <h1 className="text-2xl font-light text-gray-808 dark:text-gray-200 tracking-wide">
               จัดการและสร้างกิจกรรมนักศึกษา
             </h1>
           </div>
@@ -445,11 +447,11 @@ export default function AdminActivities() {
         </div>
 
         {/* ตารางข้อมูล */}
-        <div className="bg-white/[0.01] border border-white/[0.04] backdrop-blur-xl rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="bg-white dark:bg-white/[0.01] border border-gray-200 dark:border-white/[0.04] backdrop-blur-xl rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-white/[0.02] border-b border-white/[0.04] select-none">
+                <tr className="bg-gray-50 dark:bg-white/[0.02] border-b border-gray-200 dark:border-white/[0.04] select-none">
                   <th className="p-4 pl-6 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase">ชื่อกิจกรรม</th>
                   <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase">เปิดลงทะเบียน</th>
                   <th className="p-4 text-[10px] tracking-[0.2em] font-light text-orange-500 uppercase">ปิดลงทะเบียน</th>
@@ -463,7 +465,7 @@ export default function AdminActivities() {
                 <AnimatePresence>
                   {activities.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-12 text-center text-gray-500 font-light text-sm">
+                      <td colSpan={7} className="p-12 text-center text-gray-650 dark:text-gray-500 font-light text-sm">
                         ไม่มีข้อมูลกิจกรรมในขณะนี้
                       </td>
                     </tr>
@@ -474,19 +476,19 @@ export default function AdminActivities() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: idx * 0.03 }}
-                        className="border-b border-white/[0.02] hover:bg-white/[0.01] transition duration-300"
+                        className="border-b border-gray-100 dark:border-white/[0.02] hover:bg-gray-50 dark:hover:bg-white/[0.01] transition duration-300"
                       >
-                        <td className="p-4 pl-6 text-sm font-light text-gray-200">{a.title}</td>
-                        <td className="p-4 text-xs font-light text-gray-400">
+                        <td className="p-4 pl-6 text-sm font-light text-gray-800 dark:text-gray-200">{a.title}</td>
+                        <td className="p-4 text-xs font-light text-gray-600 dark:text-gray-400">
                           {new Date(a.registerStart).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })} น.
                         </td>
-                        <td className="p-4 text-xs font-light text-gray-400">
+                        <td className="p-4 text-xs font-light text-gray-600 dark:text-gray-400">
                           {new Date(a.registerEnd).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })} น.
                         </td>
-                        <td className="p-4 text-xs font-light text-gray-400">
+                        <td className="p-4 text-xs font-light text-gray-600 dark:text-gray-400">
                           {new Date(a.activityStart).toLocaleString("th-TH", { dateStyle: "short", timeStyle: "short" })} น.
                         </td>
-                        <td className="p-4 text-xs font-light text-gray-400 truncate max-w-[120px]">{a.location}</td>
+                        <td className="p-4 text-xs font-light text-gray-600 dark:text-gray-400 truncate max-w-[120px]">{a.location}</td>
                         <td className="p-4">
                           <span
                             className={`text-[9px] tracking-wider px-2.5 py-1 rounded-lg border font-light ${
@@ -503,27 +505,27 @@ export default function AdminActivities() {
                             <button
                               onClick={() => openEditDialog(a)}
                               title="แก้ไข"
-                              className="p-2 border border-white/[0.08] hover:bg-white/[0.03] rounded-xl text-gray-400 hover:text-white transition duration-300"
+                              className="p-2 border border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-white/[0.03] rounded-xl text-gray-550 dark:text-gray-400 hover:text-black hover:dark:text-white transition duration-300"
                             >
                               <Pencil className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => deleteActivity(a._id)}
                               title="ลบ"
-                              className="p-2 border border-red-500/10 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition duration-300"
+                              className="p-2 border border-red-200 dark:border-red-500/10 hover:bg-red-500/10 rounded-xl text-gray-550 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition duration-300"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => showParticipants(a.participants)}
                               title="ดูรายชื่อผู้ลงทะเบียน"
-                              className="p-2 border border-white/[0.08] hover:bg-white/[0.03] rounded-xl text-gray-400 hover:text-white transition duration-300"
+                              className="p-2 border border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-white/[0.03] rounded-xl text-gray-550 dark:text-gray-400 hover:text-black hover:dark:text-white transition duration-300"
                             >
                               <Eye className="w-3.5 h-3.5" />
                             </button>
                             <button
                               onClick={() => downloadParticipants(a.participants, a)}
-                              className="px-3 py-1.5 bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] text-[10px] font-light tracking-wider rounded-xl text-gray-300 hover:text-white transition duration-300 flex items-center gap-1"
+                              className="px-3 py-1.5 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.06] hover:bg-gray-100 dark:hover:bg-white/[0.04] text-[10px] font-light tracking-wider rounded-xl text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition duration-300 flex items-center gap-1 shadow-sm dark:shadow-none"
                             >
                               <Download className="h-3 w-3 text-orange-500/80" />
                               <span>CSV</span>
@@ -547,15 +549,15 @@ export default function AdminActivities() {
           maxWidth="sm"
           PaperProps={{
             style: {
-              backgroundColor: "#0c0c0e",
-              border: "1px solid rgba(255,255,255,0.08)",
+              backgroundColor: theme === "dark" ? "#0c0c0e" : "#ffffff",
+              border: theme === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)",
               borderRadius: "24px",
               padding: "16px",
-              color: "#ffffff"
+              color: theme === "dark" ? "#ffffff" : "#111827"
             }
           }}
         >
-          <DialogTitle style={{ color: "#ffffff", fontWeight: "300", letterSpacing: "0.05em" }} className="border-b border-white/[0.04] pb-4">
+          <DialogTitle style={{ color: theme === "dark" ? "#ffffff" : "#111827", fontWeight: "300", letterSpacing: "0.05em" }} className="border-b border-gray-200 dark:border-white/[0.04] pb-4">
             {editId ? "แก้ไขรายละเอียดกิจกรรม" : "สร้างกิจกรรมผู้เข้าร่วมใหม่"}
           </DialogTitle>
           <DialogContent className="pt-6">
@@ -688,10 +690,10 @@ export default function AdminActivities() {
               </div>
             </div>
           </DialogContent>
-          <DialogActions className="pt-4 border-t border-white/[0.04]">
+          <DialogActions className="pt-4 border-t border-gray-200 dark:border-white/[0.04]">
             <Button
               onClick={() => setOpenDialog(false)}
-              style={{ color: "#a1a1aa", textTransform: "none", fontSize: "12px", letterSpacing: "0.05em" }}
+              style={{ color: theme === "dark" ? "#a1a1aa" : "#4b5563", textTransform: "none", fontSize: "12px", letterSpacing: "0.05em" }}
             >
               ยกเลิก
             </Button>

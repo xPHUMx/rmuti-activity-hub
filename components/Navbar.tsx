@@ -385,14 +385,23 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="relative rounded-full p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-all duration-300"
+                className="w-[58px] h-7 rounded-full p-0.5 bg-gray-200 dark:bg-[#2c2d30] border border-gray-300/40 dark:border-white/[0.04] transition-colors duration-300 relative flex items-center cursor-pointer focus:outline-none shadow-inner"
                 aria-label="สลับโหมดสี"
               >
-                {theme === "dark" ? (
-                  <Sun className="h-5 w-5 text-orange-500" />
-                ) : (
-                  <Moon className="h-5 w-5 text-indigo-500" />
-                )}
+                <motion.div
+                  layout
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  className="w-6 h-6 rounded-full flex items-center justify-center bg-black dark:bg-white shadow-md z-10"
+                  style={{
+                    marginLeft: theme === "dark" ? "0" : "auto",
+                  }}
+                >
+                  {theme === "dark" ? (
+                    <Sun className="h-3.5 w-3.5 text-black" />
+                  ) : (
+                    <Moon className="h-3.5 w-3.5 text-white" />
+                  )}
+                </motion.div>
               </button>
 
               <button

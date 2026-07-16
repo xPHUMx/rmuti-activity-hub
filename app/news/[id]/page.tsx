@@ -120,20 +120,20 @@ export default function NewsDetailPage() {
 
   if (!news) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white transition-colors duration-300">
         <div className="luxury-loader" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white px-4 py-12 md:py-20 font-sarabun transition-colors duration-300">
       <div className="container mx-auto max-w-4xl">
         {/* Top Bar Action Buttons */}
         <div className="flex justify-between items-center mb-10 select-none">
           <button
             onClick={() => router.push("/news")}
-            className="flex items-center space-x-2 px-4 py-2.5 border border-white/[0.08] hover:bg-white/[0.03] text-gray-300 rounded-xl transition duration-300 text-xs font-light tracking-wider"
+            className="flex items-center space-x-2 px-4 py-2.5 border border-gray-200 dark:border-white/[0.08] hover:bg-gray-100 dark:hover:bg-white/[0.03] text-gray-700 dark:text-gray-300 rounded-xl transition duration-300 text-xs font-light tracking-wider"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -166,15 +166,15 @@ export default function NewsDetailPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-white"
+          className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_70px_rgba(0,0,0,0.6)] text-gray-900 dark:text-white transition-all duration-300"
         >
           {/* Title */}
-          <h1 className="text-2xl md:text-3xl font-light text-gray-100 tracking-wide leading-tight mb-8">
+          <h1 className="text-2xl md:text-3xl font-light text-gray-800 dark:text-gray-100 tracking-wide leading-tight mb-8">
             {news.title}
           </h1>
 
           {/* Image */}
-          <div className="w-full relative h-[450px] mb-8 overflow-hidden rounded-2xl bg-white/[0.01]">
+          <div className="w-full relative h-[450px] mb-8 overflow-hidden rounded-2xl bg-gray-100 dark:bg-white/[0.01]">
             <Image
               src={news.image}
               alt={news.title}
@@ -186,7 +186,7 @@ export default function NewsDetailPage() {
           </div>
 
           {/* Content text */}
-          <div className="text-gray-300 font-light leading-relaxed text-sm md:text-base whitespace-pre-line space-y-4 select-text">
+          <div className="text-gray-700 dark:text-gray-300 font-light leading-relaxed text-sm md:text-base whitespace-pre-line space-y-4 select-text">
             {news.content}
           </div>
         </motion.article>

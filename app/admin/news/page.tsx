@@ -243,7 +243,7 @@ export default function AdminNewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white px-4 py-12 md:py-20 font-sarabun transition-colors duration-300">
       <div className="max-w-7xl mx-auto space-y-16">
         
         {/* หัวข้อ */}
@@ -251,7 +251,7 @@ export default function AdminNewsPage() {
           <h2 className="text-[10px] tracking-[0.25em] font-light text-orange-500 uppercase">
             NEWS CONFIGURATION
           </h2>
-          <h1 className="text-2xl font-light text-gray-200 tracking-wide">
+          <h1 className="text-2xl font-light text-gray-808 dark:text-gray-200 tracking-wide">
             จัดการและสร้างข่าวประชาสัมพันธ์
           </h1>
         </div>
@@ -261,15 +261,15 @@ export default function AdminNewsPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-2xl mx-auto space-y-6"
+          className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-w-2xl mx-auto space-y-6 transition-all duration-300"
         >
-          <div className="flex items-center gap-3 border-b border-white/[0.04] pb-4">
+          <div className="flex items-center gap-3 border-b border-gray-200 dark:border-white/[0.04] pb-4">
             <PlusCircle className="h-5 w-5 text-orange-500/80" />
-            <h2 className="text-sm font-light tracking-wide text-gray-200">
+            <h2 className="text-sm font-light tracking-wide text-gray-800 dark:text-gray-200">
               {editingId ? "แก้ไขรายละเอียดข่าวสาร" : "เขียนข่าวสารประชาสัมพันธ์ใหม่"}
             </h2>
             {editingId && (
-              <button onClick={resetForm} className="ml-auto text-xs font-light text-gray-500 hover:text-white flex items-center gap-1">
+              <button onClick={resetForm} className="ml-auto text-xs font-light text-gray-555 hover:text-gray-900 dark:hover:text-white flex items-center gap-1">
                 <X className="h-3 w-3" /> ยกเลิก
               </button>
             )}
@@ -277,39 +277,39 @@ export default function AdminNewsPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-[10px] tracking-wider text-gray-500 uppercase mb-2">หัวข้อข่าวสาร</label>
+              <label className="block text-[10px] tracking-wider text-gray-655 dark:text-gray-500 uppercase mb-2">หัวข้อข่าวสาร</label>
               <input
                 type="text"
                 placeholder="กรอกชื่อหัวข้อข่าวสาร..."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-[#0f0f10] border border-white/[0.08] focus:border-orange-500/40 text-sm font-light text-white rounded-2xl p-3.5 focus:outline-none transition duration-300"
+                className="w-full bg-white dark:bg-[#0f0f10] border border-gray-200 dark:border-white/[0.08] focus:border-orange-500/40 text-sm font-light text-gray-850 dark:text-white rounded-2xl p-3.5 focus:outline-none transition duration-300"
               />
             </div>
 
             <div>
-              <label className="block text-[10px] tracking-wider text-gray-500 uppercase mb-2">เนื้อหาข่าวสาร</label>
+              <label className="block text-[10px] tracking-wider text-gray-655 dark:text-gray-500 uppercase mb-2">เนื้อหาข่าวสาร</label>
               <textarea
                 placeholder="กรอกเนื้อหารายละเอียดข่าวสารที่นี่..."
                 value={content}
                 rows={5}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full bg-[#0f0f10] border border-white/[0.08] focus:border-orange-500/40 text-sm font-light text-white rounded-2xl p-3.5 focus:outline-none transition duration-300"
+                className="w-full bg-white dark:bg-[#0f0f10] border border-gray-200 dark:border-white/[0.08] focus:border-orange-500/40 text-sm font-light text-gray-855 dark:text-white rounded-2xl p-3.5 focus:outline-none transition duration-300"
               />
             </div>
 
             {!editingId && (
               <div>
-                <label className="block text-[10px] tracking-wider text-gray-500 uppercase mb-2">รูปภาพหน้าปก</label>
-                <div className="relative w-full bg-[#0f0f10] border border-dashed border-white/[0.08] hover:border-orange-500/20 rounded-2xl p-6 transition duration-300 flex flex-col items-center justify-center cursor-pointer">
+                <label className="block text-[10px] tracking-wider text-gray-655 dark:text-gray-500 uppercase mb-2">รูปภาพหน้าปก</label>
+                <div className="relative w-full bg-white dark:bg-[#0f0f10] border border-dashed border-gray-200 dark:border-white/[0.08] hover:border-orange-500/20 rounded-2xl p-6 transition duration-300 flex flex-col items-center justify-center cursor-pointer">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => setFile(e.target.files?.[0] || null)}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
-                  <ImageIcon className="h-6 w-6 text-gray-500 mb-2" />
-                  <span className="text-xs font-light text-gray-400">
+                  <ImageIcon className="h-6 w-6 text-gray-550 mb-2" />
+                  <span className="text-xs font-light text-gray-600 dark:text-gray-400">
                     {file ? file.name : "เลือกรูปภาพประกอบข่าวสาร"}
                   </span>
                 </div>
@@ -322,9 +322,9 @@ export default function AdminNewsPage() {
                   type="checkbox"
                   checked={pinned}
                   onChange={(e) => setPinned(e.target.checked)}
-                  className="rounded border-white/[0.08] bg-[#0f0f10] text-orange-500 focus:ring-0 cursor-pointer h-4 w-4"
+                  className="rounded border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0f0f10] text-orange-500 focus:ring-0 cursor-pointer h-4 w-4"
                 />
-                <span className="text-xs font-light text-gray-400 hover:text-white transition">ปักหมุดเป็นข่าวแนะนำหลัก</span>
+                <span className="text-xs font-light text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition">ปักหมุดเป็นข่าวแนะนำหลัก</span>
               </label>
             )}
 
@@ -349,7 +349,7 @@ export default function AdminNewsPage() {
         <section className="space-y-6">
           <div className="flex items-center gap-2 select-none">
             <div className="w-1.5 h-3.5 bg-orange-500 rounded-full" />
-            <h2 className="text-xs font-light tracking-[0.2em] text-gray-400 uppercase">ข่าวสารทั้งหมดในระบบ / News Directory</h2>
+            <h2 className="text-xs font-light tracking-[0.2em] text-gray-655 dark:text-gray-400 uppercase">ข่าวสารทั้งหมดในระบบ / News Directory</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -362,11 +362,11 @@ export default function AdminNewsPage() {
                   exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.4, delay: index * 0.05 }}
                   whileHover={{ y: -4 }}
-                  className="bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl p-5 rounded-3xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between h-[420px]"
+                  className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] backdrop-blur-xl p-5 rounded-3xl shadow-[0_15px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/20 transition-all duration-300 flex flex-col justify-between h-[420px]"
                 >
                   <div className="space-y-4">
                     {/* Cover image */}
-                    <div className="relative w-full h-40 overflow-hidden rounded-2xl bg-white/[0.01]">
+                    <div className="relative w-full h-40 overflow-hidden rounded-2xl bg-gray-100 dark:bg-white/[0.01]">
                       <Image
                         src={item.image}
                         alt={item.title}
@@ -383,28 +383,28 @@ export default function AdminNewsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <h3 className="text-sm font-light text-gray-100 line-clamp-1 group-hover:text-white transition">
+                      <h3 className="text-sm font-light text-gray-800 dark:text-gray-100 line-clamp-1 group-hover:text-white transition">
                         {item.title}
                       </h3>
-                      <p className="text-xs font-light text-gray-500 line-clamp-3 leading-relaxed">
+                      <p className="text-xs font-light text-gray-600 dark:text-gray-500 line-clamp-3 leading-relaxed">
                         {item.content}
                       </p>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="space-y-2 pt-4 border-t border-white/[0.03] select-none">
+                  <div className="space-y-2 pt-4 border-t border-gray-200 dark:border-white/[0.03] select-none">
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => handleEditNews(item)}
-                        className="flex items-center justify-center gap-1 px-3 py-2 border border-white/[0.08] hover:bg-white/[0.03] text-[10px] font-light tracking-wider rounded-xl transition duration-300 text-gray-300 hover:text-white"
+                        className="flex items-center justify-center gap-1 px-3 py-2 border border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-white/[0.03] text-[10px] font-light tracking-wider rounded-xl transition duration-300 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white"
                       >
                         <Pencil className="h-3 w-3 text-orange-500/80" />
                         <span>แก้ไข</span>
                       </button>
                       <button
                         onClick={() => handleDeleteNews(item)}
-                        className="flex items-center justify-center gap-1 px-3 py-2 border border-red-500/10 hover:bg-red-500/10 text-[10px] font-light tracking-wider rounded-xl transition duration-300 text-gray-400 hover:text-red-400"
+                        className="flex items-center justify-center gap-1 px-3 py-2 border border-red-200 dark:border-red-500/10 hover:bg-red-500/10 text-[10px] font-light tracking-wider rounded-xl transition duration-300 text-gray-550 dark:text-gray-400 hover:text-red-550 dark:hover:text-red-400"
                       >
                         <Trash className="h-3 w-3" />
                         <span>ลบ</span>
@@ -413,7 +413,7 @@ export default function AdminNewsPage() {
 
                     <button
                       onClick={() => handleTogglePinned(item._id)}
-                      className="w-full flex items-center justify-center gap-1.5 px-3 py-2 bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.04] text-[10px] font-light tracking-wider rounded-xl transition duration-300 text-gray-300"
+                      className="w-full flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.04] text-[10px] font-light tracking-wider rounded-xl transition duration-300 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white"
                     >
                       {item.pinned ? (
                         <>

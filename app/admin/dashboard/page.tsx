@@ -379,6 +379,7 @@ import {
 } from "chart.js";
 import { Users, CalendarRange, Newspaper } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTheme } from "@/hooks/useTheme";
 
 // ลงทะเบียนคอมโพเนนต์ Chart.js
 ChartJS.register(Title, Tooltip, ArcElement, CategoryScale, LinearScale, DoughnutController);
@@ -417,12 +418,12 @@ const SummaryCard: React.FC<{
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay }}
     whileHover={{ y: -4 }}
-    className="relative bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/30 transition-all duration-300 flex flex-col items-center"
+    className="relative bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/30 transition-all duration-300 flex flex-col items-center"
   >
-    <div className="flex items-center justify-center mb-4 text-3xl p-3 bg-white/[0.02] rounded-2xl border border-white/[0.04]">
+    <div className="flex items-center justify-center mb-4 text-3xl p-3 bg-gray-100 dark:bg-white/[0.02] rounded-2xl border border-gray-200 dark:border-white/[0.04]">
       {icon}
     </div>
-    <h2 className="text-xs font-light text-gray-400 tracking-wider text-center uppercase mb-2">{title}</h2>
+    <h2 className="text-xs font-light text-gray-600 dark:text-gray-400 tracking-wider text-center uppercase mb-2">{title}</h2>
     <p className={`text-4xl font-extralight tracking-tight text-center ${color}`}>{value}</p>
   </motion.div>
 );
@@ -439,9 +440,9 @@ const DoughnutChartCard: React.FC<{
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay }}
     whileHover={{ y: -4 }}
-    className="relative bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/30 transition-all duration-300 flex flex-col items-center justify-between"
+    className="relative bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] backdrop-blur-xl p-8 rounded-3xl shadow-[0_15px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:border-orange-500/30 transition-all duration-300 flex flex-col items-center justify-between"
   >
-    <h3 className="text-xs font-light text-gray-400 tracking-wider text-center uppercase mb-6">{title}</h3>
+    <h3 className="text-xs font-light text-gray-600 dark:text-gray-400 tracking-wider text-center uppercase mb-6">{title}</h3>
     <div className="h-48 w-full max-w-[200px] flex items-center justify-center relative">
       <Doughnut data={data} options={options} />
     </div>
@@ -449,6 +450,7 @@ const DoughnutChartCard: React.FC<{
 );
 
 export default function AdminDashboard() {
+  const { theme } = useTheme();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [newsCount, setNewsCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -517,12 +519,14 @@ export default function AdminDashboard() {
     },
   };
 
+  const trackColor = theme === "dark" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.05)";
+
   // ข้อมูลกราฟ
   const participationData: ChartData<"doughnut"> = {
     datasets: [
       {
         data: [calculateParticipationRate(), 100 - calculateParticipationRate()],
-        backgroundColor: ["#f97316", "rgba(255,255,255,0.03)"],
+        backgroundColor: ["#f97316", trackColor],
         borderWidth: 0,
         hoverOffset: 15,
       },
@@ -533,7 +537,7 @@ export default function AdminDashboard() {
     datasets: [
       {
         data: [activities.length, Math.max(100 - activities.length, 0)],
-        backgroundColor: ["#fb923c", "rgba(255,255,255,0.03)"],
+        backgroundColor: ["#fb923c", trackColor],
         borderWidth: 0,
         hoverOffset: 15,
       },
@@ -544,7 +548,7 @@ export default function AdminDashboard() {
     datasets: [
       {
         data: [newsCount, Math.max(100 - newsCount, 0)],
-        backgroundColor: ["#ea580c", "rgba(255,255,255,0.03)"],
+        backgroundColor: ["#ea580c", trackColor],
         borderWidth: 0,
         hoverOffset: 15,
       },
@@ -553,21 +557,21 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white transition-colors duration-300">
         <div className="luxury-loader" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white px-4 py-12 md:py-20 font-sarabun transition-colors duration-300">
       <div className="container mx-auto max-w-7xl">
         {/* หัวข้อแดชบอร์ด */}
         <div className="text-center mb-16 space-y-3 select-none">
           <h2 className="text-[10px] tracking-[0.3em] font-light text-orange-500 uppercase">
             ADMINISTRATION
           </h2>
-          <h1 className="text-3xl font-extralight text-gray-200 tracking-wide">
+          <h1 className="text-3xl font-extralight text-gray-800 dark:text-gray-200 tracking-wide">
             แผงควบคุมและข้อมูลสถิติ
           </h1>
         </div>
@@ -578,21 +582,21 @@ export default function AdminDashboard() {
             title="เปอร์เซ็นต์ผู้เข้าร่วม"
             value={`${calculateParticipationRate().toFixed(2)}%`}
             icon={<Users className="h-6 w-6 text-orange-500/80" />}
-            color="text-white"
+            color="text-gray-900 dark:text-white"
             delay={0.05}
           />
           <SummaryCard
             title="จำนวนกิจกรรมทั้งหมด"
             value={activities.length}
             icon={<CalendarRange className="h-6 w-6 text-orange-500/80" />}
-            color="text-white"
+            color="text-gray-900 dark:text-white"
             delay={0.1}
           />
           <SummaryCard
             title="จำนวนข่าวสารทั้งหมด"
             value={newsCount}
             icon={<Newspaper className="h-6 w-6 text-orange-500/80" />}
-            color="text-white"
+            color="text-gray-900 dark:text-white"
             delay={0.15}
           />
         </div>

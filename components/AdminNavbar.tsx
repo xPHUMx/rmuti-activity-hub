@@ -104,14 +104,23 @@ export default function AdminNavbar() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="relative rounded-xl p-2 border border-gray-200 dark:border-white/[0.04] bg-gray-50 dark:bg-white/[0.01] hover:bg-gray-100 dark:hover:bg-white/[0.03] text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition duration-300"
+            className="w-[58px] h-7 rounded-full p-0.5 bg-gray-200 dark:bg-[#2c2d30] border border-gray-300/40 dark:border-white/[0.04] transition-colors duration-300 relative flex items-center cursor-pointer focus:outline-none shadow-inner"
             aria-label="สลับโหมดสี"
           >
-            {theme === "dark" ? (
-              <Sun className="h-4 w-4 text-orange-500" />
-            ) : (
-              <Moon className="h-4 w-4 text-indigo-500" />
-            )}
+            <motion.div
+              layout
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              className="w-6 h-6 rounded-full flex items-center justify-center bg-black dark:bg-white shadow-md z-10"
+              style={{
+                marginLeft: theme === "dark" ? "0" : "auto",
+              }}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-3.5 w-3.5 text-black" />
+              ) : (
+                <Moon className="h-3.5 w-3.5 text-white" />
+              )}
+            </motion.div>
           </button>
 
           <div className="relative">

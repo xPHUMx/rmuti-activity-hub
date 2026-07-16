@@ -9,6 +9,7 @@ import {
   QrCode
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTheme } from "@/hooks/useTheme";
 
 interface Activity {
   _id: string;
@@ -17,6 +18,7 @@ interface Activity {
 }
 
 export default function AdminScanPage() {
+  const { theme } = useTheme();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivityId, setSelectedActivityId] = useState("");
   const [scanning, setScanning] = useState(false);
@@ -47,8 +49,8 @@ export default function AdminScanPage() {
         title: "กรุณาเลือกกิจกรรม",
         text: "เลือกกิจกรรมที่ต้องการสแกนก่อนเปิดกล้อง",
         confirmButtonColor: "#f97316",
-        background: "#0c0c0e",
-        color: "#ffffff"
+        background: theme === "dark" ? "#0c0c0e" : "#ffffff",
+        color: theme === "dark" ? "#ffffff" : "#1f2937"
       });
       return;
     }
@@ -76,8 +78,8 @@ export default function AdminScanPage() {
             title: "กำลังตรวจสอบ...",
             allowOutsideClick: false,
             showConfirmButton: false,
-            background: "#0c0c0e",
-            color: "#ffffff",
+            background: theme === "dark" ? "#0c0c0e" : "#ffffff",
+            color: theme === "dark" ? "#ffffff" : "#1f2937",
             didOpen: () => {
               Swal.showLoading();
             }
@@ -102,8 +104,8 @@ export default function AdminScanPage() {
                 title: "เช็คอินสำเร็จ!",
                 text: result.message,
                 confirmButtonColor: "#f97316",
-                background: "#0c0c0e",
-                color: "#ffffff"
+                background: theme === "dark" ? "#0c0c0e" : "#ffffff",
+                color: theme === "dark" ? "#ffffff" : "#1f2937"
               });
             } else {
               await Swal.fire({
@@ -111,8 +113,8 @@ export default function AdminScanPage() {
                 title: "เช็คอินไม่สำเร็จ",
                 text: result.message || "เกิดข้อผิดพลาดในการตรวจสอบ",
                 confirmButtonColor: "#f97316",
-                background: "#0c0c0e",
-                color: "#ffffff"
+                background: theme === "dark" ? "#0c0c0e" : "#ffffff",
+                color: theme === "dark" ? "#ffffff" : "#1f2937"
               });
             }
           } catch {
@@ -121,8 +123,8 @@ export default function AdminScanPage() {
               title: "ข้อผิดพลาด",
               text: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้",
               confirmButtonColor: "#f97316",
-              background: "#0c0c0e",
-              color: "#ffffff"
+              background: theme === "dark" ? "#0c0c0e" : "#ffffff",
+              color: theme === "dark" ? "#ffffff" : "#1f2937"
             });
           } finally {
             // ทำการสแกนต่อหลังจากปิด Alert
@@ -149,8 +151,8 @@ export default function AdminScanPage() {
         title: "ไม่สามารถเข้าถึงกล้องได้",
         text: "กรุณาเปิดสิทธิ์การใช้งานกล้องในเบราว์เซอร์ของคุณ",
         confirmButtonColor: "#f97316",
-        background: "#0c0c0e",
-        color: "#ffffff"
+        background: theme === "dark" ? "#0c0c0e" : "#ffffff",
+        color: theme === "dark" ? "#ffffff" : "#1f2937"
       });
     }
   };
@@ -176,7 +178,7 @@ export default function AdminScanPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white px-4 py-12 md:py-20 font-sarabun transition-colors duration-300">
       <div className="max-w-xl mx-auto space-y-8">
         
         {/* หัวข้อ */}
@@ -184,15 +186,15 @@ export default function AdminScanPage() {
           <h2 className="text-[10px] tracking-[0.25em] font-light text-orange-500 uppercase">
             QR CODE ATTENDANCE CHECK-IN
           </h2>
-          <h1 className="text-2xl font-light text-gray-200 tracking-wide">
+          <h1 className="text-2xl font-light text-gray-808 dark:text-gray-200 tracking-wide">
             สแกนคิวอาร์โค้ดเช็คชื่อ
           </h1>
         </div>
 
         {/* ฟอร์มเลือกกิจกรรม */}
-        <div className="bg-white/[0.02] border border-white/[0.04] p-6 rounded-3xl backdrop-blur-xl shadow-lg space-y-4">
+        <div className="bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] p-6 rounded-3xl backdrop-blur-xl shadow-[0_15px_30px_rgba(0,0,0,0.05)] dark:shadow-lg space-y-4 transition-all duration-300">
           <div>
-            <label className="block text-[10px] tracking-wider text-gray-500 uppercase mb-2">กิจกรรมที่ต้องการเช็คชื่อ</label>
+            <label className="block text-[10px] tracking-wider text-gray-655 dark:text-gray-500 uppercase mb-2">กิจกรรมที่ต้องการเช็คชื่อ</label>
             <select
               value={selectedActivityId}
               onChange={(e) => {
@@ -201,13 +203,13 @@ export default function AdminScanPage() {
                   stopScanner();
                 }
               }}
-              className="w-full bg-[#0f0f10] border border-white/[0.08] focus:border-orange-500/40 text-sm font-light text-white rounded-2xl p-3.5 focus:outline-none transition duration-300 cursor-pointer"
+              className="w-full bg-white dark:bg-[#0f0f10] border border-gray-200 dark:border-white/[0.08] focus:border-orange-500/40 text-sm font-light text-gray-850 dark:text-white rounded-2xl p-3.5 focus:outline-none transition duration-300 cursor-pointer"
             >
               {activities.length === 0 ? (
                 <option value="">— ไม่มีกิจกรรมในระบบขณะนี้ —</option>
               ) : (
                 activities.map((a) => (
-                  <option key={a._id} value={a._id} className="bg-[#0f0f10]">
+                  <option key={a._id} value={a._id} className="bg-white dark:bg-[#0f0f10] text-gray-800 dark:text-white">
                     {a.title} ({a.location})
                   </option>
                 ))
@@ -227,7 +229,7 @@ export default function AdminScanPage() {
             ) : (
               <button
                 onClick={stopScanner}
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] text-white text-xs font-light tracking-widest rounded-2xl transition duration-300"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 dark:bg-white/[0.05] border border-gray-200 dark:border-white/[0.08] hover:bg-gray-100 dark:hover:bg-white/[0.08] text-gray-700 dark:text-white text-xs font-light tracking-widest rounded-2xl transition duration-300 shadow-sm"
               >
                 <RefreshCw className="h-4 w-4 animate-spin" />
                 <span>ปิดกล้องสแกน</span>
@@ -237,7 +239,7 @@ export default function AdminScanPage() {
         </div>
 
         {/* Viewport สแกนกล้อง */}
-        <div className="relative aspect-square w-full max-w-sm mx-auto bg-black/60 rounded-3xl overflow-hidden border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center justify-center">
+        <div className="relative aspect-square w-full max-w-sm mx-auto bg-black/60 rounded-3xl overflow-hidden border border-gray-200 dark:border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center justify-center transition-all duration-300">
           <div id={scannerId} className="w-full h-full object-cover" />
 
           {/* สัญลักษณ์ Scan Line เมื่อเปิดสแกน */}
@@ -263,8 +265,8 @@ export default function AdminScanPage() {
           )}
 
           {!scanning && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none space-y-3 bg-[#0d0d0e]">
-              <QrCode className="h-12 w-12 text-gray-600" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none space-y-3 bg-white dark:bg-[#0d0d0e] transition-colors duration-300">
+              <QrCode className="h-12 w-12 text-gray-400 dark:text-gray-600" />
               <p className="text-xs font-light text-gray-500 uppercase tracking-widest">CAMERA VIEWPORT CLOSE</p>
               <p className="text-[10px] font-light text-orange-500/60 uppercase">กดเปิดกล้องเพื่อเริ่มต้นสแกนเช็คอิน</p>
             </div>

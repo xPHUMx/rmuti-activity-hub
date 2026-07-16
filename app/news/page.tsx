@@ -191,14 +191,14 @@ export default function NewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#080808] text-white px-4 py-12 md:py-20 font-sarabun">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-[#0a0a0a] dark:via-[#121212] dark:to-[#080808] text-gray-900 dark:text-white px-4 py-12 md:py-20 font-sarabun transition-colors duration-300">
       <div className="container mx-auto max-w-7xl">
         {/* Title */}
         <div className="text-center mb-16 space-y-3 select-none">
           <h2 className="text-[10px] tracking-[0.3em] font-light text-orange-500 uppercase">
             News & Updates
           </h2>
-          <h1 className="text-3xl font-extralight text-gray-200 tracking-wide">
+          <h1 className="text-3xl font-extralight text-gray-800 dark:text-gray-200 tracking-wide">
             ข่าวสารและกิจกรรมประชาสัมพันธ์
           </h1>
         </div>
@@ -208,13 +208,13 @@ export default function NewsPage() {
           {currentNews.map((news, index) => (
             <motion.div
               key={news._id}
-              className="group bg-white/[0.02] border border-white/[0.04] backdrop-blur-xl rounded-3xl overflow-hidden hover:border-orange-500/30 transition-all duration-300 shadow-[0_15px_30px_rgba(0,0,0,0.4)] flex flex-col justify-between h-[450px]"
+              className="group bg-white dark:bg-white/[0.02] border border-gray-200 dark:border-white/[0.04] backdrop-blur-xl rounded-3xl overflow-hidden hover:border-orange-500/30 transition-all duration-300 shadow-[0_15px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_15px_30px_rgba(0,0,0,0.4)] flex flex-col justify-between h-[450px]"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05, duration: 0.5, type: "spring", stiffness: 200, damping: 25 }}
             >
               {/* รูปข้างบน */}
-              <div className="relative w-full h-56 bg-white/[0.01] overflow-hidden">
+              <div className="relative w-full h-56 bg-gray-100 dark:bg-white/[0.01] overflow-hidden">
                 <Image
                   src={news.image}
                   alt={news.title}
@@ -243,23 +243,23 @@ export default function NewsPage() {
               {/* เนื้อหาข้างล่าง */}
               <div className="p-6 flex flex-col flex-grow bg-transparent justify-between">
                 <div className="space-y-2">
-                  <div className="text-[9px] tracking-widest text-gray-500 font-light uppercase">
+                  <div className="text-[9px] tracking-widest text-gray-650 dark:text-gray-500 font-light uppercase">
                     {formatDate(news.createdAt)}
                   </div>
                   <h2 
                     onClick={() => router.push(`/news/${news._id}`)}
-                    className="text-base font-light text-gray-200 tracking-wide hover:text-orange-500 transition-colors cursor-pointer line-clamp-1"
+                    className="text-base font-light text-gray-800 dark:text-gray-200 tracking-wide hover:text-orange-500 transition-colors cursor-pointer line-clamp-1"
                   >
                     {news.title}
                   </h2>
-                  <p className="text-gray-400 text-xs font-light leading-relaxed line-clamp-3">
+                  <p className="text-gray-600 dark:text-gray-400 text-xs font-light leading-relaxed line-clamp-3">
                     {news.content}
                   </p>
                 </div>
 
                 <button
                   onClick={() => router.push(`/news/${news._id}`)}
-                  className="w-full bg-white/[0.02] hover:bg-orange-500 hover:text-black border border-white/[0.06] hover:border-orange-500 text-gray-300 text-xs font-light tracking-wider py-2.5 rounded-xl transition-all duration-500 mt-4"
+                  className="w-full bg-gray-50 dark:bg-white/[0.02] hover:bg-orange-500 hover:text-black border border-gray-200 dark:border-white/[0.06] hover:border-orange-500 text-gray-700 dark:text-gray-300 text-xs font-light tracking-wider py-2.5 rounded-xl transition-all duration-500 mt-4"
                 >
                   อ่านเพิ่มเติม
                 </button>
@@ -274,19 +274,19 @@ export default function NewsPage() {
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="border border-white/[0.08] hover:bg-white/[0.03] text-gray-300 disabled:opacity-20 disabled:pointer-events-none text-xs font-light tracking-wider px-5 py-2.5 rounded-xl transition-colors"
+              className="border border-gray-200 dark:border-white/[0.08] hover:bg-gray-100 dark:hover:bg-white/[0.03] text-gray-700 dark:text-gray-300 disabled:opacity-20 disabled:pointer-events-none text-xs font-light tracking-wider px-5 py-2.5 rounded-xl transition-colors"
             >
               ย้อนกลับ
             </button>
 
-            <span className="text-xs text-gray-500 font-light">
+            <span className="text-xs text-gray-600 dark:text-gray-500 font-light">
               หน้า {currentPage} จาก {totalPages}
             </span>
 
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="border border-white/[0.08] hover:bg-white/[0.03] text-gray-300 disabled:opacity-20 disabled:pointer-events-none text-xs font-light tracking-wider px-5 py-2.5 rounded-xl transition-colors"
+              className="border border-gray-200 dark:border-white/[0.08] hover:bg-gray-100 dark:hover:bg-white/[0.03] text-gray-700 dark:text-gray-300 disabled:opacity-20 disabled:pointer-events-none text-xs font-light tracking-wider px-5 py-2.5 rounded-xl transition-colors"
             >
               หน้าถัดไป
             </button>
