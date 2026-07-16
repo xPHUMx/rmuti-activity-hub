@@ -141,9 +141,7 @@ export default function HomePage() {
   }
 
   // Calculate Student Stats
-  const targetHours = 40;
-  const completedHours = registrations.filter((r: any) => r.checkedIn).length * 6; // Only checked-in activities count towards hours
-  const hoursProgress = Math.min((completedHours / targetHours) * 100, 100);
+  const completedActivitiesCount = registrations.filter((r: any) => r.checkedIn).length;
 
   // Find next upcoming activity location
   const nextActivity = registrations
@@ -221,7 +219,7 @@ export default function HomePage() {
 
         {/* Personalized Student Stats Cards */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 select-none">
-          {/* Hour Tracker */}
+          {/* Activity Tracker */}
           <motion.div
             variants={cardVariants}
             initial="hidden"
@@ -231,23 +229,12 @@ export default function HomePage() {
           >
             <div className="flex justify-between items-start mb-4">
               <Award className="h-7 w-7 text-orange-500/80 p-1.5 bg-white/[0.02] border border-white/[0.04] rounded-xl" />
-              <span className="text-[9px] font-light text-orange-500 tracking-[0.2em]">MY HOURS</span>
+              <span className="text-[9px] font-light text-orange-500 tracking-[0.2em]">ATTENDED</span>
             </div>
             <div>
-              <h3 className="text-xs font-light text-gray-400 mb-1">ชั่วโมงกิจกรรมสะสม</h3>
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-extralight text-white">{completedHours}</span>
-                <span className="text-xs text-gray-500">/ {targetHours} ชม.</span>
-              </div>
-              {/* Progress bar */}
-              <div className="w-full bg-white/[0.04] rounded-full h-1 mt-4 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${hoursProgress}%` }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                  className="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full"
-                />
-              </div>
+              <h3 className="text-xs font-light text-gray-400 mb-1">กิจกรรมที่เข้าร่วมแล้ว</h3>
+              <p className="text-4xl font-extralight text-white">{completedActivitiesCount}</p>
+              <p className="text-[10px] text-gray-500 mt-4">เช็คอินเข้าร่วมกิจกรรมเรียบร้อยแล้ว</p>
             </div>
           </motion.div>
 
@@ -391,9 +378,6 @@ export default function HomePage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-[10px] tracking-wider font-light text-orange-500 border border-orange-500/20 px-3 py-1 rounded-full bg-orange-500/5">
-                          +6 ชม.
-                        </span>
                         {reg.checkedIn ? (
                           <span className="text-[10px] tracking-wider font-light text-emerald-400 bg-emerald-500/5 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-1">
                             <Check className="h-3 w-3" /> เช็คอินแล้ว
